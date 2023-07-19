@@ -179,16 +179,14 @@ export const fillButton = styled.button<ButtonProps>``;
 
 export const Button = styled.button<ButtonProps>`
   /* border: none; */
-  ${
-  (props) =>
+  ${(props) =>
     props.isBorder === true
       ? css`
           border: 1px solid ${props.color};
         `
       : css`
           border: none;
-        `
-  }
+        `}
   width: ${(props) => props.width};
   flex-shrink: 1;
   opacity: ${(props) => props.opacity};
@@ -293,7 +291,7 @@ export const StockItem = styled.li`
 
 export const MemoContainer = styled.div<MemoContainerProps>`
   /* padding: 10px 0; */
-  width: 30%;
+  width: 100%;
   border-radius: 8px;
   box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
   ${(props) =>

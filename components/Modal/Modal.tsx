@@ -1,22 +1,25 @@
 import React, { ReactNode, SetStateAction, useEffect, useState } from 'react';
-import { ModalContainer, ModalContent, ModalOverLay, ModalTitle } from './style';
+import { ModalContainer, ModalContent, ModalOverLay, ModalTitle } from './styles';
+import { CSSTransition } from 'react-transition-group';
 
 interface Props {
   children?: ReactNode;
   title?: string;
-  visible?: boolean;
-  onClose?: () => void;
 }
 
-const Modal = ({ children, title, visible, onClose }: Props) => {
+const Modal = ({ children, title }: Props) => {
   return (
-    <ModalContainer isOpen={visible}>
-      <ModalOverLay isOpen={visible}>
+    <ModalContainer>
+      {/* <ModalOverLay>
         <ModalContent>
           <ModalTitle>{title}</ModalTitle>
           {children}
         </ModalContent>
-      </ModalOverLay>
+      </ModalOverLay> */}
+      {/* <ModalContent> */}
+      {/* <ModalTitle>{title}</ModalTitle>
+      {children} */}
+      {/* </ModalContent> */}
     </ModalContainer>
   );
 };

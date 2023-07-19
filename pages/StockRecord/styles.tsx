@@ -25,7 +25,7 @@ type MemoContainerProps = {
 
 export const CalendarContainer = styled.div`
   margin-right: 20px;
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   flex-direction: column;
 `;
@@ -33,9 +33,10 @@ export const CalendarContainer = styled.div`
 export const CalendarBox = styled.div`
   height: 100%;
   .react-calendar {
-    height: 100%;
-    width: 100%;
-    max-width: 100%;
+    padding: 10px;
+    /* height: 100%; */
+    /* width: 100%; */
+    /* max-width: 100%; */
     background-color: #fff;
     color: #222;
     border-radius: 8px;
@@ -43,7 +44,6 @@ export const CalendarBox = styled.div`
     box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.125em;
-    /* margin-right: 10px; */
   }
   .react-calendar__navigation__label > span {
     color: #f87171;
@@ -51,11 +51,12 @@ export const CalendarBox = styled.div`
   }
   .react-calendar__viewContainer {
     /* min-height: 550px; */
+    /* height: 100%; */
   }
   .react-calendar__tile {
-    min-width: 70px;
-    height: 130px;
-    /* min-height: 10vh; */
+    /* min-width: 70px; */
+    /* height: 50%; */
+
     /* 
     ${mq[0]} {
       height: 100px;
@@ -106,7 +107,7 @@ export const CalendarBox = styled.div`
 
   .react-calendar__tile,
   .react-calendar__month-view__days__day {
-    font-size: 14px;
+    font-size: 16px;
     & abbr {
       text-decoration: none;
       border-radius: 50%;
@@ -285,7 +286,7 @@ export const CalendarBox = styled.div`
 // `;
 
 export const recordContainer = styled.div`
-  min-width: 1000px;
+  /* min-width: 1000px; */
   width: 100%;
   height: 100%;
   display: flex;
@@ -345,14 +346,14 @@ export const SearchContainer = styled.div`
 export const SearchForm = styled.div`
   /* position: relative; */
   display: flex;
-  justify-content: end;
+  /* justify-content: end; */
 `;
 
 export const SearchBox = styled.div`
   position: relative;
-  padding: 10px 15px;
+  padding: 8px 15px;
   background: #fff;
-  width: 30%;
+  width: 100%;
   border: 1px solid #dfe1e5;
   border-radius: 24px;
   position: relative;
@@ -362,9 +363,9 @@ export const SearchBox = styled.div`
 
 export const SearchImg = styled.img`
   position: absolute;
-  height: 22px;
+  height: 20px;
   width: auto;
-  top: 15px;
+  top: 13px;
   right: 14px;
   &:hover {
     cursor: pointer;
@@ -375,7 +376,7 @@ export const SearchImg = styled.img`
 export const SearchInput = styled.input`
   border: none;
   padding: 5px;
-  width: 90%;
+  width: 95%;
 `;
 
 export const Button = styled.button<ButtonProps>`
@@ -385,7 +386,7 @@ export const Button = styled.button<ButtonProps>`
   color: white;
   border-radius: 8px;
   font-size: 15px;
-  height: 30px;
+  height: 35px;
   border: none;
   background: ${(props) => props.color};
   margin-right: ${(props) => props.marginRight};

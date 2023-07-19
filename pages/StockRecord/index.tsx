@@ -142,7 +142,7 @@ const Login = () => {
   };
 
   if (!userData) {
-    return <Redirect to="/tlogin" />;
+    return <Redirect to="/login" />;
   }
 
   return (
@@ -162,8 +162,6 @@ const Login = () => {
           height: '10%',
           boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
           background: '#60d6bf',
-          // borderTopLeftRadius: '8px',
-          // borderTopRightRadius: '8px',
           display: 'flex',
           justifyContent: 'center',
           alignContent: 'center',
@@ -180,9 +178,11 @@ const Login = () => {
             display: 'flex',
             alignContent: 'center',
             width: '100%',
-            padding: '20px 10px  20px 20px',
+            padding: '20px 10px  60px 20px',
             borderBottomRightRadius: '8px',
-            boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
+            // boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
+            height: 'fit-content',
+            minHeight: '100%',
           }}
         >
           <CalendarContainer>
@@ -232,7 +232,8 @@ const Login = () => {
           {/* stockList */}
           <div
             style={{
-              width: '15%',
+              // width: '10%',
+              flex: '1 20%',
               borderRadius: '8px',
               boxShadow: '0 2px 8px 0 rgba(99, 99, 99, 0.2)',
               marginRight: '15px',
@@ -253,6 +254,7 @@ const Login = () => {
                   onClick={(e) => {
                     setIsSelected(true);
                     setSelectedItem(item);
+                    setIsRecord(false);
                   }}
                 >
                   {item.title}

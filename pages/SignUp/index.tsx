@@ -100,7 +100,7 @@ const SignUp = () => {
       </Form>
       <SignUpContainer>
         이미 회원이신가요?&nbsp;
-        <Link to="/tlogin">로그인</Link>
+        <Link to="/login">로그인</Link>
       </SignUpContainer>
     </SingUpContainer>
   );

@@ -18,7 +18,7 @@ import useInput from '@hooks/useInput';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 
-const Tlogin = () => {
+const Login = () => {
   const { data, error, revalidate, mutate } = useSWR('/api/users', fetcher);
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
@@ -46,11 +46,11 @@ const Tlogin = () => {
   );
 
   if (data === undefined) {
-    // return <div>로딩중...</div>;
+    return <div>로딩중...</div>;
   }
 
   if (data) {
-    return <Redirect to="/test" />;
+    return <Redirect to="/stockrecord" />;
   }
 
   return (
@@ -76,10 +76,10 @@ const Tlogin = () => {
       </Form>
       <SignUpContainer>
         아직 회원이 아니신가요?&nbsp;
-        <Link to="/tsignup">회원가입</Link>
+        <Link to="/signup">회원가입</Link>
       </SignUpContainer>
     </LoginContainer>
   );
 };
 
-export default Tlogin;
+export default Login;

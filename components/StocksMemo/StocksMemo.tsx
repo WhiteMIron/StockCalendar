@@ -5,6 +5,7 @@ import { ChangeInfoGroup, Content, NewsGroup, StockNameGroup, StockPriceGroup } 
 import ModalPortal from '@components/Modal/ModalPotal';
 import Modal from '@components/Modal/Modal';
 import { CSSTransition } from 'react-transition-group';
+import useInput from '@hooks/useInput';
 
 interface itemProps {
   selectedItem: { id: string; title: string; desc: string; reason: string };
@@ -13,7 +14,15 @@ interface itemProps {
 const StocksMemo = ({ selectedItem }: itemProps) => {
   const [stockState, onStockState] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  let timeoutId: NodeJS.Timeout;
+  const [stockName, setStockName] = useInput('');
+  const [stockPrice, setStockPrice] = useInput('');
+  const [stockChangePercent, setStockChangePercent] = useInput('');
+  const [stockIssue, setStockIssue] = useInput('');
+  const [stockFirstNews, setFirstNews] = useInput('');
+  const [stockSecondNews, setSecondNews] = useInput('');
+  const [stockThirdNews, setThirdNews] = useInput('');
+  const [stockFourthNews, setFourthNews] = useInput('');
+  const [stockNews, setStockNews] = useState([]);
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
@@ -24,13 +33,13 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
         <StockNameGroup>
           <Label>
             <span>종목명</span>
-            <Input marginBottom="10px" value=""></Input>
+            <Input marginBottom="10px" value={stockName} onChange={setStockName}></Input>
           </Label>
         </StockNameGroup>
         <StockPriceGroup>
           <Label>
             종가
-            <Input marginBottom="10px" value=""></Input>
+            <Input marginBottom="10px" value={stockPrice} onChange={setStockPrice}></Input>
           </Label>
         </StockPriceGroup>
 
@@ -85,12 +94,14 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
               </DownButton>
             )}
 
-            <Input id="rate" marginBottom="10px"></Input>
+            <Input id="rate" marginBottom="10px" value={stockChangePercent} onChange={setStockChangePercent}></Input>
           </Content>{' '}
         </ChangeInfoGroup>
         <Label>
           <span>이슈</span>
           <textarea
+            value={stockIssue}
+            onChange={setStockIssue}
             style={{
               width: '100%',
               height: '200px',
@@ -104,8 +115,10 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
         <NewsGroup>
           <Label>
             <span>뉴스</span>
-            <Input marginBottom="10px" value={selectedItem.title}></Input>
-            <Input marginBottom="10px" value={selectedItem.title}></Input>
+            <Input marginBottom="10px" value={stockFirstNews} onChange={setFirstNews}></Input>
+            <Input marginBottom="10px" value={stockSecondNews} onChange={setSecondNews}></Input>
+            <Input marginBottom="10px" value={stockThirdNews} onChange={setThirdNews}></Input>
+            <Input marginBottom="10px" value={stockFourthNews} onChange={setFourthNews}></Input>
           </Label>
         </NewsGroup>
         <BtnGroup>
@@ -125,27 +138,29 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
           </Button>
         </BtnGroup>
       </form>
-      {/* <ModalPortal>
-        <Modal visible={modalOpen} title={'입력한 내용으로 저장하시겠습니까?'} onClose={handleModal}>
-          <BtnGroup justifyContent="flex-end">
-            <Button
-              type="button"
-              width="25%"
-              onClick={handleModal}
-              bgColor="#fff"
-              color="#00BB9D"
-              marginRight="10px"
-              isBorder={true}
-            >
-              취소
-            </Button>
+      <ModalPortal show={modalOpen} onClose={handleModal}>
+        <CSSTransition in={modalOpen} mountOnEnter unmountOnExit timeout={{ enter: 700, exit: 700 }} classNames="modal">
+          <Modal title={'입력한 내용으로 저장하시겠습니까?'}>
+            {/* <BtnGroup justifyContent="flex-end">
+              <Button
+                type="button"
+                width="25%"
+                onClick={handleModal}
+                bgColor="#fff"
+                color="#00BB9D"
+                marginRight="10px"
+                isBorder={true}
+              >
+                취소
+              </Button>
 
-            <Button type="button" width="25%" onClick={handleModal} color="#fff" bgColor="#00BB9D">
-              저장
-            </Button>
-          </BtnGroup>
-        </Modal>
-      </ModalPortal> */}
+              <Button type="button" width="25%" onClick={handleModal} color="#fff" bgColor="#00BB9D">
+                저장
+              </Button>
+            </BtnGroup> */}
+          </Modal>
+        </CSSTransition>
+      </ModalPortal>
     </MemoContainer>
   );
 };
