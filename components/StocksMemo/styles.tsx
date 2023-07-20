@@ -193,7 +193,7 @@ export const Button = styled.button<ButtonProps>`
   color: ${(props) => props.color};
   border-radius: 8px;
   font-size: 15px;
-  height: 30px;
+  height: 35px;
 
   background: ${(props) => props.bgColor};
   margin-right: ${(props) => props.marginRight};
@@ -291,7 +291,7 @@ export const StockItem = styled.li`
 
 export const MemoContainer = styled.div<MemoContainerProps>`
   /* padding: 10px 0; */
-  width: 100%;
+  width: 60%;
   border-radius: 8px;
   box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
   ${(props) =>
@@ -315,10 +315,6 @@ export const Table = styled.table`
 `;
 export const Td = styled.td`
   padding: 10px;
-  /* padding-top: 10px;
-  padding-left: 20px;
-  padding-bottom: 15px;
-  padding-right: 10px; */
   border: 1px solid #dadada;
   > span {
     color: dodgerblue;

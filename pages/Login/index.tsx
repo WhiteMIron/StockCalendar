@@ -12,17 +12,22 @@ import {
   SignUpContainer,
   Error,
 } from './styles';
-import { Link, Redirect } from 'react-router-dom';
+// import { Link, Redirect, useNavigate } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom';
+
 import useSWR from 'swr';
 import useInput from '@hooks/useInput';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const { data, error, revalidate, mutate } = useSWR('/api/users', fetcher);
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
+  const navigate = useNavigate();
+
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
@@ -50,7 +55,7 @@ const Login = () => {
   }
 
   if (data) {
-    return <Redirect to="/stockrecord" />;
+    navigate('/stockrecord');
   }
 
   return (

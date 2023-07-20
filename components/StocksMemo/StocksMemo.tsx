@@ -15,6 +15,7 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
   const [stockState, onStockState] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [stockName, setStockName] = useInput('');
+  const [stockCode, setStockCode] = useInput('');
   const [stockPrice, setStockPrice] = useInput('');
   const [stockChangePercent, setStockChangePercent] = useInput('');
   const [stockIssue, setStockIssue] = useInput('');
@@ -29,23 +30,37 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
 
   return (
     <MemoContainer>
-      <form style={{ padding: '10px' }}>
-        <StockNameGroup>
+      <form style={{ padding: '20px' }}>
+        {/* <StockNameGroup>
           <Label>
             <span>종목명</span>
             <Input marginBottom="10px" value={stockName} onChange={setStockName}></Input>
           </Label>
+        </StockNameGroup> */}
+        <StockNameGroup>
+          <Label>
+            <span>종목코드</span>
+            <Input marginBottom="10px" value={stockCode} onChange={setStockCode}></Input>
+          </Label>
         </StockNameGroup>
+        {/* 
         <StockPriceGroup>
           <Label>
             종가
+            <Input marginBottom="10px" value={stockPrice} onChange={setStockPrice}></Input>
+          </Label>
+        </StockPriceGroup> */}
+
+        <StockPriceGroup>
+          <Label>
+            카테고리
             <Input marginBottom="10px" value={stockPrice} onChange={setStockPrice}></Input>
           </Label>
         </StockPriceGroup>
 
         <ChangeInfoGroup>
           <Content>
-            <span>변동률</span>
+            <span>전일대비</span>
           </Content>
           <Content>
             {stockState === 'up' ? (
@@ -94,7 +109,7 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
               </DownButton>
             )}
 
-            <Input id="rate" marginBottom="10px" value={stockChangePercent} onChange={setStockChangePercent}></Input>
+            {/* <Input id="rate" marginBottom="10px" value={stockChangePercent} onChange={setStockChangePercent}></Input> */}
           </Content>{' '}
         </ChangeInfoGroup>
         <Label>
@@ -104,7 +119,7 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
             onChange={setStockIssue}
             style={{
               width: '100%',
-              height: '200px',
+              height: '300px',
               border: '1px solid #dadada',
               resize: 'none',
               marginBottom: '10px',
@@ -118,7 +133,6 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
             <Input marginBottom="10px" value={stockFirstNews} onChange={setFirstNews}></Input>
             <Input marginBottom="10px" value={stockSecondNews} onChange={setSecondNews}></Input>
             <Input marginBottom="10px" value={stockThirdNews} onChange={setThirdNews}></Input>
-            <Input marginBottom="10px" value={stockFourthNews} onChange={setFourthNews}></Input>
           </Label>
         </NewsGroup>
         <BtnGroup>

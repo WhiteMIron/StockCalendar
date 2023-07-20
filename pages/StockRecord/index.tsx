@@ -33,12 +33,17 @@ import axios from 'axios';
 import useSWR from 'swr';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
-import { Redirect } from 'react-router';
+// import { Redirect, useNavigate } from 'react-router';
+
+import { Navigate, useNavigate } from 'react-router';
+import Layout from '@components/Layout';
 type ValuePiece = Date | null;
 
-const Login = () => {
+const StockRecord = () => {
   const [value, onChangeValue]: any = useState(new Date());
   // const [value, onChange] = useState<ValuePiece | [ValuePiece, ValuePiece]>(new Date());
+
+  const navigate = useNavigate();
   const [mark, setMark] = useState(['2023-04-27']);
   const [stockState, onStockState] = useState('');
   const [selected, setIsSelected] = useState(false);
@@ -142,45 +147,28 @@ const Login = () => {
   };
 
   if (!userData) {
-    return <Redirect to="/login" />;
+    navigate('/login');
   }
 
   return (
-    <div
-      style={{
-        minWidth: '1000px',
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        // padding: '80px',
-      }}
-    >
-      {/* <div onClick={onLogout}>로그아웃</div> */}
-      <div
-        style={{
-          height: '10%',
-          boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
-          background: '#60d6bf',
-          display: 'flex',
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}
-      >
-        <div style={{ padding: '0 20px 0 0', width: '100%', textAlign: 'right' }}>
-          <h1 style={{ color: '#fff' }}>5월 9일 22:58 test@naver.com</h1>
-        </div>
-      </div>
+    // <div
+    //   style={{
+    //     minWidth: '1000px',
+    //     width: '100%',
+    //     height: '100%',
+    //     display: 'flex',
+    //     flexDirection: 'column',
+    //   }}
+    // >
+    <Layout>
       <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
-        <SideNav />
         <div
           style={{
             display: 'flex',
             alignContent: 'center',
             width: '100%',
-            padding: '20px 10px  60px 20px',
+            padding: '20px 10px  20px 20px',
             borderBottomRightRadius: '8px',
-            // boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
             height: 'fit-content',
             minHeight: '100%',
           }}
@@ -232,14 +220,12 @@ const Login = () => {
           {/* stockList */}
           <div
             style={{
-              // width: '10%',
-              flex: '1 20%',
+              flex: '1 25%',
               borderRadius: '8px',
               boxShadow: '0 2px 8px 0 rgba(99, 99, 99, 0.2)',
               marginRight: '15px',
               minWidth: '200px',
               textAlign: 'center',
-              // background: '#f5f6fa',
               background: 'white',
               padding: '10px 10px',
             }}
@@ -267,16 +253,17 @@ const Login = () => {
           {isRecord ? <StocksMemo selectedItem={selectedItem}></StocksMemo> : null}
         </div>
       </div>
-      {/* <ReactApexChart options={options} type="line" height={350} /> */}
-      {/* <ReactApexChart options={options} series={series} type="treemap" height={350} /> */}
-    </div>
+      {/* <ReactApexChart options={options} type="line" height={350} /> 
+      <ReactApexChart options={options} series={series} type="treemap" height={350} />  
+     </div>*/}
+    </Layout>
   );
 };
 
-export default Login;
+export default StockRecord;
 
-{
-  /* <div style={{ textAlign: 'center' }} className="text-gray-500 mt-4">
+// {
+/* <div style={{ textAlign: 'center' }} className="text-gray-500 mt-4">
         {moment(value).format('YYYY년 MM월 DD일')}
       </div> */
-}
+// }
