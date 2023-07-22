@@ -375,3 +375,7 @@ export const BtnGroup = styled.div<ButtonGroupProps>`
 BtnGroup.defaultProps = {
   justifyContent: 'center',
 };
+
+export const Form = styled.form`
+  padding: 20px;
+`;

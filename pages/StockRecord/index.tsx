@@ -265,7 +265,12 @@ const StockRecord = () => {
 
           {selected ? <StocksReadMemo></StocksReadMemo> : null}
           {isRecord ? (
-            <StocksMemo setStocks={setStocks} setIsRecord={setIsRecord} selectedItem={selectedItem}></StocksMemo>
+            <StocksMemo
+              stocks={stocks}
+              setStocks={setStocks}
+              setIsRecord={setIsRecord}
+              selectedItem={selectedItem}
+            ></StocksMemo>
           ) : null}
         </div>
       </div>
