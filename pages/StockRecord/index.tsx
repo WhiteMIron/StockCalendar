@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
@@ -38,24 +38,33 @@ import fetcher from '@utils/fetcher';
 import { Navigate, useNavigate } from 'react-router';
 import Layout from '@components/Layout';
 type ValuePiece = Date | null;
-
+interface Istock {
+  id: number;
+  name: string;
+  current_price: string;
+  previous_close: string;
+  days_range: string;
+  title: string;
+  desc: string;
+  reason: string;
+}
+//
 const StockRecord = () => {
   const [value, onChangeValue]: any = useState(new Date());
   // const [value, onChange] = useState<ValuePiece | [ValuePiece, ValuePiece]>(new Date());
 
   const navigate = useNavigate();
+
+  const [stocks, setStocks] = useState<Istock[]>([]);
+  const [selectedItem, setSelectedItem] = useState<Istock>();
   const [mark, setMark] = useState(['2023-04-27']);
   const [stockState, onStockState] = useState('');
   const [selected, setIsSelected] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({
-    id: '',
-    title: '',
-    desc: '',
-    reason: '',
-  });
+
   const [isRecord, setIsRecord] = useState(false);
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
-  const [item, setItem] = useState(stockItem);
+  // const [item, setItem] = useState(stockItem);
+
   const {
     data: userData,
     error,
@@ -150,16 +159,21 @@ const StockRecord = () => {
     navigate('/login');
   }
 
+  useEffect(() => {
+    // e.preventDefault();
+    axios
+      .get('/api/stock', {})
+      .then((response) => {
+        console.log(response.data);
+        setStocks(response.data);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => {});
+  }, []);
+
   return (
-    // <div
-    //   style={{
-    //     minWidth: '1000px',
-    //     width: '100%',
-    //     height: '100%',
-    //     display: 'flex',
-    //     flexDirection: 'column',
-    //   }}
-    // >
     <Layout>
       <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
         <div
@@ -234,28 +248,29 @@ const StockRecord = () => {
               +추가
             </Button>
             <ul className="stock-list">
-              {item.map((item: any) => (
+              {stocks.map((stock: Istock) => (
                 <StockItem
-                  key={item.id}
+                  key={stock.id}
                   onClick={(e) => {
                     setIsSelected(true);
-                    setSelectedItem(item);
+                    setSelectedItem(stock);
                     setIsRecord(false);
                   }}
                 >
-                  {item.title}
+                  {stock.name}
                 </StockItem>
               ))}
             </ul>
           </div>
 
           {selected ? <StocksReadMemo></StocksReadMemo> : null}
-          {isRecord ? <StocksMemo selectedItem={selectedItem}></StocksMemo> : null}
+          {isRecord ? (
+            <StocksMemo setStocks={setStocks} setIsRecord={setIsRecord} selectedItem={selectedItem}></StocksMemo>
+          ) : null}
         </div>
       </div>
       {/* <ReactApexChart options={options} type="line" height={350} /> 
-      <ReactApexChart options={options} series={series} type="treemap" height={350} />  
-     </div>*/}
+      <ReactApexChart options={options} series={series} type="treemap" height={350} /> */}
     </Layout>
   );
 };

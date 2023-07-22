@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
 
 import { Button, DownButton, Input, Label, UpButton, MemoContainer, BtnGroup } from './styles';
 import { ChangeInfoGroup, Content, NewsGroup, StockNameGroup, StockPriceGroup } from '@pages/StockRecord/styles';
@@ -6,55 +6,71 @@ import ModalPortal from '@components/Modal/ModalPotal';
 import Modal from '@components/Modal/Modal';
 import { CSSTransition } from 'react-transition-group';
 import useInput from '@hooks/useInput';
+import BackDrop from '@components/Modal/BackDrop';
+import axios from 'axios';
 
-interface itemProps {
-  selectedItem: { id: string; title: string; desc: string; reason: string };
+interface Istock {
+  id: number;
+  name: string;
+  current_price: string;
+  previous_close: string;
+  days_range: string;
+  title: string;
+  desc: string;
+  reason: string;
 }
 
-const StocksMemo = ({ selectedItem }: itemProps) => {
+interface itemProps {
+  selectedItem: Istock | undefined;
+  setIsRecord: React.Dispatch<SetStateAction<boolean>>;
+  setStocks: React.Dispatch<SetStateAction<Istock[]>>;
+}
+
+const StocksMemo = ({ setStocks, setIsRecord, selectedItem }: itemProps) => {
   const [stockState, onStockState] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [stockName, setStockName] = useInput('');
   const [stockCode, setStockCode] = useInput('');
-  const [stockPrice, setStockPrice] = useInput('');
-  const [stockChangePercent, setStockChangePercent] = useInput('');
+  const [stockCategory, setCategory] = useInput('');
   const [stockIssue, setStockIssue] = useInput('');
   const [stockFirstNews, setFirstNews] = useInput('');
   const [stockSecondNews, setSecondNews] = useInput('');
   const [stockThirdNews, setThirdNews] = useInput('');
-  const [stockFourthNews, setFourthNews] = useInput('');
   const [stockNews, setStockNews] = useState([]);
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
 
+  const onSubmit = useCallback((e) => {
+    e.preventDefault();
+    console.log('서버로 회원가입하기');
+
+    axios
+      .post('/api/test', { code: 328130, categoryName: stockCategory })
+      .then((response) => {
+        console.log(response);
+        setIsRecord(false);
+      })
+      .catch((error) => {
+        alert(error.response.data);
+        console.log(error.response);
+      })
+      .finally(() => {});
+  }, []);
+
   return (
     <MemoContainer>
       <form style={{ padding: '20px' }}>
-        {/* <StockNameGroup>
-          <Label>
-            <span>종목명</span>
-            <Input marginBottom="10px" value={stockName} onChange={setStockName}></Input>
-          </Label>
-        </StockNameGroup> */}
         <StockNameGroup>
           <Label>
             <span>종목코드</span>
             <Input marginBottom="10px" value={stockCode} onChange={setStockCode}></Input>
           </Label>
         </StockNameGroup>
-        {/* 
-        <StockPriceGroup>
-          <Label>
-            종가
-            <Input marginBottom="10px" value={stockPrice} onChange={setStockPrice}></Input>
-          </Label>
-        </StockPriceGroup> */}
 
         <StockPriceGroup>
           <Label>
             카테고리
-            <Input marginBottom="10px" value={stockPrice} onChange={setStockPrice}></Input>
+            <Input marginBottom="10px" value={stockCategory} onChange={setCategory}></Input>
           </Label>
         </StockPriceGroup>
 
@@ -108,9 +124,7 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
                 하락
               </DownButton>
             )}
-
-            {/* <Input id="rate" marginBottom="10px" value={stockChangePercent} onChange={setStockChangePercent}></Input> */}
-          </Content>{' '}
+          </Content>
         </ChangeInfoGroup>
         <Label>
           <span>이슈</span>
@@ -136,7 +150,17 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
           </Label>
         </NewsGroup>
         <BtnGroup>
-          <Button type="button" width="100%" bgColor="#fff" color="#00BB9D" marginRight="10px" isBorder={true}>
+          <Button
+            type="button"
+            width="100%"
+            bgColor="#fff"
+            color="#00BB9D"
+            marginRight="10px"
+            isBorder={true}
+            onClick={() => {
+              setIsRecord(false);
+            }}
+          >
             취소
           </Button>
           <Button
@@ -152,26 +176,45 @@ const StocksMemo = ({ selectedItem }: itemProps) => {
           </Button>
         </BtnGroup>
       </form>
-      <ModalPortal show={modalOpen} onClose={handleModal}>
-        <CSSTransition in={modalOpen} mountOnEnter unmountOnExit timeout={{ enter: 700, exit: 700 }} classNames="modal">
+      <ModalPortal onClose={handleModal}>
+        <CSSTransition
+          in={modalOpen}
+          mountOnEnter
+          unmountOnExit
+          timeout={{ enter: 300, exit: 100 }}
+          classNames="backdrop"
+        >
+          <BackDrop onClose={() => setModalOpen(false)} />
+        </CSSTransition>
+
+        <CSSTransition in={modalOpen} mountOnEnter unmountOnExit timeout={{ enter: 300, exit: 100 }} classNames="modal">
           <Modal title={'입력한 내용으로 저장하시겠습니까?'}>
-            {/* <BtnGroup justifyContent="flex-end">
+            <BtnGroup justifyContent="center">
               <Button
                 type="button"
                 width="25%"
-                onClick={handleModal}
-                bgColor="#fff"
-                color="#00BB9D"
+                onClick={() => {
+                  setModalOpen(false);
+                }}
+                bgColor="#8e8e8e"
                 marginRight="10px"
-                isBorder={true}
+                marginBottom="20px"
               >
                 취소
               </Button>
 
-              <Button type="button" width="25%" onClick={handleModal} color="#fff" bgColor="#00BB9D">
+              <Button
+                type="button"
+                width="25%"
+                onClick={(e) => {
+                  onSubmit(e);
+                  setModalOpen(false);
+                }}
+                bgColor="#00BB9D"
+              >
                 저장
               </Button>
-            </BtnGroup> */}
+            </BtnGroup>
           </Modal>
         </CSSTransition>
       </ModalPortal>

@@ -9,7 +9,7 @@ const mq = breakpoints.map((bp) => `@media (min-width: ${bp}px)`);
 const hq = heightBreakPoints.map((bp) => `@media (min-height: ${bp}px)`);
 
 type ButtonProps = {
-  color?: 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf';
+  color?: 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf' | '#fff';
   marginRight?: string;
   opacity?: string;
   width?: string;

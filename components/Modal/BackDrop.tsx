@@ -2,12 +2,10 @@ import React from 'react';
 import { BackDropContainer } from './styles';
 
 interface Props {
-  show: boolean;
   onClose: () => void;
 }
-
-const BackDrop = ({ show, onClose }: Props) => {
-  return show ? <BackDropContainer onClick={onClose}></BackDropContainer> : null;
+const BackDrop = ({ onClose }: Props) => {
+  return <BackDropContainer onClick={onClose}></BackDropContainer>;
 };
 
 export default BackDrop;

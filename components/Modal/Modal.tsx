@@ -10,16 +10,8 @@ interface Props {
 const Modal = ({ children, title }: Props) => {
   return (
     <ModalContainer>
-      {/* <ModalOverLay>
-        <ModalContent>
-          <ModalTitle>{title}</ModalTitle>
-          {children}
-        </ModalContent>
-      </ModalOverLay> */}
-      {/* <ModalContent> */}
-      {/* <ModalTitle>{title}</ModalTitle>
-      {children} */}
-      {/* </ModalContent> */}
+      <ModalTitle>{title}</ModalTitle>
+      {children}
     </ModalContainer>
   );
 };

@@ -10,6 +10,7 @@ type ButtonProps = {
   color?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf';
   bgColor?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf';
   marginRight?: string;
+  marginBottom?: string;
   opacity?: string;
   width?: string;
   isBorder?: boolean;
@@ -191,20 +192,19 @@ export const Button = styled.button<ButtonProps>`
   flex-shrink: 1;
   opacity: ${(props) => props.opacity};
   color: ${(props) => props.color};
+
   border-radius: 8px;
   font-size: 15px;
   height: 35px;
 
   background: ${(props) => props.bgColor};
   margin-right: ${(props) => props.marginRight};
+  margin-bottom: ${(props) => props.marginBottom};
   transition: all 0.5s ease-in-out;
 
   &:hover {
     cursor: pointer;
     opacity: 1;
-    /* transition: opacity 300ms ease-in-out; */
-    /* filter: brightness(110%); */
-
     ${(props) =>
       props.isBorder === true
         ? css`

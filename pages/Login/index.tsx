@@ -55,7 +55,7 @@ const Login = () => {
   }
 
   if (data) {
-    navigate('/stockrecord');
+    return <Navigate to="/stockrecord"></Navigate>;
   }
 
   return (
