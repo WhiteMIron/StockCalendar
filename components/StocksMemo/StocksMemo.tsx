@@ -18,16 +18,18 @@ interface Istock {
   title: string;
   desc: string;
   reason: string;
+  createdAt: Date;
 }
 
 interface itemProps {
   stocks: Istock[];
   selectedItem: Istock | undefined;
+  selectedDate: string;
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
 }
 
-const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem }: itemProps) => {
+const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem, selectedDate }: itemProps) => {
   const [stockState, onStockState] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [stockCode, setStockCode] = useInput('');
@@ -46,9 +48,8 @@ const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem }: itemProps)
     (e) => {
       setModalOpen(false);
       e.preventDefault();
-      console.log(stockCode);
       axios
-        .post('/api/test', { code: stockCode, categoryName: stockCategory })
+        .post('/api/stock', { code: stockCode, categoryName: stockCategory, date: selectedDate })
         .then((response) => {
           setIsRecord(false);
           setStocks([...stocks, response.data]);

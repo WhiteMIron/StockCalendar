@@ -1,9 +1,10 @@
 // import { MemoContainer } from '@pages/Test/styles';
 
 import { css } from '@emotion/react';
-import { DownAmount, DownButton, DownPrice, MemoContainer, Table, Tbody, Td, Th, Tr } from './styles';
+import { Button, DownAmount, DownButton, DownPrice, MemoContainer, Table, Tbody, Td, Th, Tr } from './styles';
 import React from 'react';
 import arrow from '@images/sp_ico5.png';
+import { abort } from 'process';
 const StocksReadMemo = () => {
   let link = 'https://finance.naver.com/item/main.nhn?code=';
   let code = '417010';
@@ -27,9 +28,39 @@ const StocksReadMemo = () => {
             <Tr>
               <Th>종목명</Th>
               <Td>
-                <a href="aaa" target="_blank">
-                  <strong>루닛</strong>
-                </a>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    position: 'relative',
+                  }}
+                >
+                  <a href="aaa" target="_blank">
+                    <strong
+                      style={{
+                        lineHeight: '1.8',
+                      }}
+                    >
+                      루닛
+                    </strong>
+                  </a>{' '}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      position: 'absolute',
+                      right: '20',
+                    }}
+                  >
+                    <Button marginRight="10px" bgColor="#76baff" padding="0 10px">
+                      수정
+                    </Button>
+                    <Button bgColor="#8e8e8e" padding="0 10px">
+                      {' '}
+                      삭제
+                    </Button>
+                  </div>
+                </div>
               </Td>
             </Tr>
             <Tr>

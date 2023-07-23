@@ -8,12 +8,13 @@ const mq = breakpoints.map((bp) => `@media (min-width: ${bp}px)`);
 
 type ButtonProps = {
   color?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf';
-  bgColor?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf';
+  bgColor?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf' | '#76baff';
   marginRight?: string;
   marginBottom?: string;
   opacity?: string;
   width?: string;
   isBorder?: boolean;
+  padding?: string;
 };
 type inputProps = {
   minWidth?: string;
@@ -201,7 +202,7 @@ export const Button = styled.button<ButtonProps>`
   margin-right: ${(props) => props.marginRight};
   margin-bottom: ${(props) => props.marginBottom};
   transition: all 0.5s ease-in-out;
-
+  padding: ${(props) => props.padding};
   &:hover {
     cursor: pointer;
     opacity: 1;

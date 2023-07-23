@@ -15,12 +15,14 @@ import {
   Label,
   Nav,
   NavTitle,
+  NewStockAlert,
   SearchBox,
   SearchContainer,
   SearchForm,
   SearchImg,
   SearchInput,
   StockItem,
+  StockTitle,
   UpButton,
 } from './styles';
 import { stockItem } from '../../mockup/stockItem';
@@ -47,23 +49,23 @@ interface Istock {
   title: string;
   desc: string;
   reason: string;
+  createdAt: Date;
 }
 //
 const StockRecord = () => {
-  const [value, onChangeValue]: any = useState(new Date());
-  // const [value, onChange] = useState<ValuePiece | [ValuePiece, ValuePiece]>(new Date());
+  // const [value, onChangeValue] = useState(new Date());
+  // const [value, onChangeValue] = useState<ValuePiece | [ValuePiece, ValuePiece]>(new Date());
+  const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
 
   const navigate = useNavigate();
 
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [selectedItem, setSelectedItem] = useState<Istock>();
   const [mark, setMark] = useState(['2023-04-27']);
-  const [stockState, onStockState] = useState('');
   const [selected, setIsSelected] = useState(false);
 
   const [isRecord, setIsRecord] = useState(false);
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
-  // const [item, setItem] = useState(stockItem);
 
   const {
     data: userData,
@@ -73,10 +75,7 @@ const StockRecord = () => {
   } = useSWR<IUser | false>('/api/users', fetcher, {
     dedupingInterval: 2000, // 2초
   });
-  const onClickDay = () => {
-    setIsSelected(false);
-    setIsRecord(false);
-  };
+
   const onClickAddBtn = () => {
     setIsRecord(true);
     setIsSelected(false);
@@ -160,18 +159,21 @@ const StockRecord = () => {
   }
 
   useEffect(() => {
-    // e.preventDefault();
+    const date = moment(dateValue?.toString()).format('YYYY/MM/DD');
     axios
-      .get('/api/stock', {})
+      .get('/api/stock', { params: { date: date } })
       .then((response) => {
-        console.log(response.data);
         setStocks(response.data);
       })
       .catch((error) => {
         console.log(error.response);
       })
-      .finally(() => {});
-  }, []);
+      .finally(() => {
+        setIsSelected(false);
+        setIsRecord(false);
+      });
+    return;
+  }, [dateValue]);
 
   return (
     <Layout>
@@ -181,7 +183,7 @@ const StockRecord = () => {
             display: 'flex',
             alignContent: 'center',
             width: '100%',
-            padding: '20px 10px  20px 20px',
+            padding: '20px 20px 40px 20px',
             borderBottomRightRadius: '8px',
             height: 'fit-content',
             minHeight: '100%',
@@ -210,10 +212,11 @@ const StockRecord = () => {
             </SearchForm>
             <CalendarBox>
               <Calendar
-                onClickDay={onClickDay}
-                onChange={onChangeValue}
-                value={value}
+                // onClickDay={onClickDay}
+                onChange={onChangeDateValue}
+                value={dateValue}
                 showNeighboringMonth={false}
+                maxDate={new Date()}
                 calendarType="US"
                 formatDay={(locale, date) => moment(date).format('DD')}
                 tileContent={({ date, view }) => {
@@ -257,7 +260,11 @@ const StockRecord = () => {
                     setIsRecord(false);
                   }}
                 >
-                  {stock.name}
+                  <StockTitle
+                    new={moment(stock.createdAt).format('YYYY/MM/DD') === moment().format('YYYY/MM/DD') ? true : false}
+                  >
+                    {stock.name}
+                  </StockTitle>
                 </StockItem>
               ))}
             </ul>
@@ -270,6 +277,7 @@ const StockRecord = () => {
               setStocks={setStocks}
               setIsRecord={setIsRecord}
               selectedItem={selectedItem}
+              selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
             ></StocksMemo>
           ) : null}
         </div>

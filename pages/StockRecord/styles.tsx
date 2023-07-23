@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import Calendar from 'react-calendar';
-
+import newStockAlert from '@images/new.png';
 const breakpoints = [576, 768, 992, 1200];
 // const breakpoints = [576, 700, 800, 1200];
 const heightBreakPoints = [400, 600, 700, 800, 900];
@@ -19,10 +19,9 @@ type inputProps = {
   marginBottom?: string;
 };
 
-type MemoContainerProps = {
-  active?: boolean;
+type StockTitleProps = {
+  new?: boolean;
 };
-
 export const CalendarContainer = styled.div`
   margin-right: 20px;
   /* width: 100%; */
@@ -436,6 +435,7 @@ export const NavTitle = styled.li`
 `;
 
 export const StockItem = styled.li`
+  margin-bottom: 5px;
   &:hover {
     cursor: pointer;
     text-decoration: underline;
@@ -476,3 +476,31 @@ export const StockPriceGroup = styled.div``;
 //       background: pink;
 //     `}
 // `;
+
+export const NewStockAlert = styled.img`
+  content: url(${newStockAlert});
+  margin-left: 5px;
+  width: 22px;
+  height: auto;
+`;
+
+export const StockTitle = styled.span<StockTitleProps>`
+  position: relative;
+
+  ${(props) =>
+    props.new === true &&
+    css`
+      &::after {
+        display: block;
+        content: '';
+        position: absolute;
+        top: 0;
+        right: -30;
+        background-image: url(${newStockAlert});
+        background-size: 20px 20px;
+        background-repeat: no-repeat;
+        width: 20px;
+        height: 20px;
+      }
+    `}
+`;
