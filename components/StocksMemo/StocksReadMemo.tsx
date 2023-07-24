@@ -2,10 +2,26 @@
 
 import { css } from '@emotion/react';
 import { Button, DownAmount, DownButton, DownPrice, MemoContainer, Table, Tbody, Td, Th, Tr } from './styles';
-import React from 'react';
-import arrow from '@images/sp_ico5.png';
-import { abort } from 'process';
-const StocksReadMemo = () => {
+import React, { SetStateAction } from 'react';
+interface Istock {
+  id: number;
+  name: string;
+  current_price: string;
+  previous_close: string;
+  days_range: string;
+  title: string;
+  desc: string;
+  reason: string;
+  createdAt: Date;
+  stockCode: string;
+}
+interface StocksReadMemoProps {
+  setIsRecord: React.Dispatch<SetStateAction<boolean>>;
+  setIsSelected: React.Dispatch<SetStateAction<boolean>>;
+  setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
+  selectedItem: Istock | null;
+}
+const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedItem }: StocksReadMemoProps) => {
   let link = 'https://finance.naver.com/item/main.nhn?code=';
   let code = '417010';
   return (
@@ -41,31 +57,40 @@ const StocksReadMemo = () => {
                         lineHeight: '1.8',
                       }}
                     >
-                      루닛
+                      {selectedItem!!.name}
                     </strong>
                   </a>{' '}
-                  <div
+                  {/* <div
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
                       position: 'absolute',
-                      right: '20',
+                      right: '10',
                     }}
                   >
-                    <Button marginRight="10px" bgColor="#76baff" padding="0 10px">
+                    <Button
+                      marginRight="10px"
+                      bgColor="#76baff"
+                      padding="0 10px"
+                      onClick={() => {
+                        setIsSelected(false);
+                        setIsRecord(true);
+                        setIsEditRecord(true);
+                      }}
+                    >
                       수정
                     </Button>
                     <Button bgColor="#8e8e8e" padding="0 10px">
                       {' '}
                       삭제
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </Td>
             </Tr>
             <Tr>
               <Th>종목코드</Th>
-              <Td>328130</Td>
+              <Td>{selectedItem!!.stockCode}</Td>
             </Tr>
 
             <Tr>
@@ -103,6 +128,29 @@ const StocksReadMemo = () => {
             </Tr>
           </Tbody>
         </Table>
+        {/* <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
+          <Button
+            marginRight="10px"
+            bgColor="#76baff"
+            padding="0 10px"
+            onClick={() => {
+              setIsSelected(false);
+              setIsRecord(true);
+              setIsEditRecord(true);
+            }}
+          >
+            수정
+          </Button>
+          <Button bgColor="#8e8e8e" padding="0 10px">
+            {' '}
+            삭제
+          </Button>
+        </div> */}
       </div>
     </MemoContainer>
   );

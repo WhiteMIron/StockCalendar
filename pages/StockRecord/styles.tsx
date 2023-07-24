@@ -485,22 +485,20 @@ export const NewStockAlert = styled.img`
 `;
 
 export const StockTitle = styled.span<StockTitleProps>`
-  position: relative;
-
   ${(props) =>
     props.new === true &&
     css`
       &::after {
-        display: block;
         content: '';
-        position: absolute;
-        top: 0;
-        right: -30;
+        display: inline-block;
         background-image: url(${newStockAlert});
         background-size: 20px 20px;
         background-repeat: no-repeat;
+        background-position: right;
+        margin-left: 0.5em;
         width: 20px;
         height: 20px;
+        vertical-align: top;
       }
     `}
 `;

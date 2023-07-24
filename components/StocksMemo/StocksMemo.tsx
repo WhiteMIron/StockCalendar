@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState, ChangeEvent } from 'react';
 
 import { Button, DownButton, Input, Label, UpButton, MemoContainer, BtnGroup, Form } from './styles';
 import { ChangeInfoGroup, Content, NewsGroup, StockNameGroup, StockPriceGroup } from '@pages/StockRecord/styles';
@@ -19,21 +19,34 @@ interface Istock {
   desc: string;
   reason: string;
   createdAt: Date;
+  stockCode: string;
 }
 
 interface itemProps {
   stocks: Istock[];
-  selectedItem: Istock | undefined;
+  selectedItem: Istock | null;
   selectedDate: string;
+  setIsSelected: React.Dispatch<SetStateAction<boolean>>;
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
+  setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
+  isEditRecord: boolean;
 }
 
-const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem, selectedDate }: itemProps) => {
-  const [stockState, onStockState] = useState('');
+const StocksMemo = ({
+  stocks,
+  setStocks,
+  setIsRecord,
+  selectedItem,
+  selectedDate,
+  isEditRecord,
+  setIsEditRecord,
+  setIsSelected,
+}: itemProps) => {
+  const [stockState, onStockState] = useState<boolean | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [stockCode, setStockCode] = useInput('');
-
+  // const [stockCode, setStockCode] = useInput('');
+  const [stockCode, setStockCode] = useState(selectedItem?.stockCode);
   const [stockCategory, setCategory] = useInput('');
   const [stockIssue, setStockIssue] = useInput('');
   const [stockFirstNews, setFirstNews] = useInput('');
@@ -43,13 +56,21 @@ const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem, selectedDate
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
+  const onStockCode = (e: ChangeEvent<HTMLInputElement>) => {
+    setStockCode(e.target.value);
+  };
 
   const onSubmit = useCallback(
     (e) => {
       setModalOpen(false);
       e.preventDefault();
       axios
-        .post('/api/stock', { code: stockCode, categoryName: stockCategory, date: selectedDate })
+        .post('/api/stock', {
+          code: stockCode,
+          categoryName: stockCategory,
+          date: selectedDate,
+          // isInterest: stockState,
+        })
         .then((response) => {
           setIsRecord(false);
           setStocks([...stocks, response.data]);
@@ -69,7 +90,15 @@ const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem, selectedDate
         <StockNameGroup>
           <Label>
             <span>종목코드</span>
-            <Input type="email" marginBottom="10px" value={stockCode} onChange={setStockCode}></Input>
+            <Input
+              type="email"
+              marginBottom="10px"
+              value={stockCode}
+              onChange={onStockCode}
+              onBlur={() => {
+                //여기다 관심종목 여부 조회해서 반영시키면 될듯?
+              }}
+            ></Input>
           </Label>
         </StockNameGroup>
 
@@ -82,52 +111,52 @@ const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem, selectedDate
 
         <ChangeInfoGroup>
           <Content>
-            <span>전일대비</span>
+            <span>관심종목</span>
           </Content>
           <Content>
-            {stockState === 'up' ? (
+            {stockState === true ? (
               <UpButton
                 type="button"
                 marginRight="10px"
                 onClick={() => {
-                  onStockState('up');
+                  onStockState(true);
                 }}
               >
-                상승
+                예
               </UpButton>
             ) : (
               <UpButton
                 type="button"
                 marginRight="10px"
                 onClick={() => {
-                  onStockState('up');
+                  onStockState(true);
                 }}
                 opacity="0.5"
               >
-                상승
+                예
               </UpButton>
             )}
 
-            {stockState == 'down' ? (
+            {stockState == false ? (
               <DownButton
                 type="button"
                 marginRight="10px"
                 onClick={() => {
-                  onStockState('down');
+                  onStockState(false);
                 }}
               >
-                하락
+                아니오
               </DownButton>
             ) : (
               <DownButton
                 type="button"
                 marginRight="10px"
                 onClick={() => {
-                  onStockState('down');
+                  onStockState(false);
                 }}
                 opacity="0.5"
               >
-                하락
+                아니오
               </DownButton>
             )}
           </Content>
@@ -164,7 +193,11 @@ const StocksMemo = ({ stocks, setStocks, setIsRecord, selectedItem, selectedDate
             marginRight="10px"
             isBorder={true}
             onClick={() => {
+              if (isEditRecord) {
+                setIsSelected(true);
+              }
               setIsRecord(false);
+              setIsEditRecord(false);
             }}
           >
             취소

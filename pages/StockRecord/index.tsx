@@ -25,7 +25,6 @@ import {
   StockTitle,
   UpButton,
 } from './styles';
-import { stockItem } from '../../mockup/stockItem';
 import StocksMemo from '@components/StocksMemo/StocksMemo';
 import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
 import SideNav from '@components/SideNav/SideNav';
@@ -35,22 +34,13 @@ import axios from 'axios';
 import useSWR from 'swr';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
-// import { Redirect, useNavigate } from 'react-router';
 
 import { Navigate, useNavigate } from 'react-router';
 import Layout from '@components/Layout';
+import StocksList from '@components/StockList/StockList';
+import { Istock } from '@typings/stock';
 type ValuePiece = Date | null;
-interface Istock {
-  id: number;
-  name: string;
-  current_price: string;
-  previous_close: string;
-  days_range: string;
-  title: string;
-  desc: string;
-  reason: string;
-  createdAt: Date;
-}
+
 //
 const StockRecord = () => {
   // const [value, onChangeValue] = useState(new Date());
@@ -60,11 +50,13 @@ const StockRecord = () => {
   const navigate = useNavigate();
 
   const [stocks, setStocks] = useState<Istock[]>([]);
-  const [selectedItem, setSelectedItem] = useState<Istock>();
+  const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
   const [mark, setMark] = useState(['2023-04-27']);
   const [selected, setIsSelected] = useState(false);
 
   const [isRecord, setIsRecord] = useState(false);
+  const [isEditRecord, setIsEditRecord] = useState(false);
+
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
 
   const {
@@ -89,6 +81,12 @@ const StockRecord = () => {
         mutate(false, false);
       });
   }, []);
+
+  const onStock = (stock: Istock) => {
+    setIsSelected(true);
+    setSelectedItem(stock);
+    setIsRecord(false);
+  };
   const series = [
     {
       name: 'Desktops',
@@ -216,7 +214,7 @@ const StockRecord = () => {
                 onChange={onChangeDateValue}
                 value={dateValue}
                 showNeighboringMonth={false}
-                maxDate={new Date()}
+                // maxDate={new Date()}
                 calendarType="US"
                 formatDay={(locale, date) => moment(date).format('DD')}
                 tileContent={({ date, view }) => {
@@ -234,47 +232,27 @@ const StockRecord = () => {
             </CalendarBox>
           </CalendarContainer>
 
-          {/* stockList */}
-          <div
-            style={{
-              flex: '1 25%',
-              borderRadius: '8px',
-              boxShadow: '0 2px 8px 0 rgba(99, 99, 99, 0.2)',
-              marginRight: '15px',
-              minWidth: '200px',
-              textAlign: 'center',
-              background: 'white',
-              padding: '10px 10px',
-            }}
-          >
+          <StocksList stocks={stocks} onStock={onStock}>
             <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
               +추가
             </Button>
-            <ul className="stock-list">
-              {stocks.map((stock: Istock) => (
-                <StockItem
-                  key={stock.id}
-                  onClick={(e) => {
-                    setIsSelected(true);
-                    setSelectedItem(stock);
-                    setIsRecord(false);
-                  }}
-                >
-                  <StockTitle
-                    new={moment(stock.createdAt).format('YYYY/MM/DD') === moment().format('YYYY/MM/DD') ? true : false}
-                  >
-                    {stock.name}
-                  </StockTitle>
-                </StockItem>
-              ))}
-            </ul>
-          </div>
+          </StocksList>
 
-          {selected ? <StocksReadMemo></StocksReadMemo> : null}
+          {selected ? (
+            <StocksReadMemo
+              selectedItem={selectedItem}
+              setIsSelected={setIsSelected}
+              setIsRecord={setIsRecord}
+              setIsEditRecord={setIsEditRecord}
+            ></StocksReadMemo>
+          ) : null}
           {isRecord ? (
             <StocksMemo
+              setIsEditRecord={setIsEditRecord}
+              isEditRecord={isEditRecord}
               stocks={stocks}
               setStocks={setStocks}
+              setIsSelected={setIsSelected}
               setIsRecord={setIsRecord}
               selectedItem={selectedItem}
               selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
