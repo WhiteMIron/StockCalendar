@@ -2,18 +2,7 @@ import { StockTitle } from '@pages/StockRecord/styles';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { StockItemContainer } from './styles';
-interface Istock {
-  id: number;
-  name: string;
-  current_price: string;
-  previous_close: string;
-  days_range: string;
-  title: string;
-  desc: string;
-  reason: string;
-  createdAt: Date;
-  stockCode: string;
-}
+import { Istock } from '@typings/stock';
 
 interface StocksItemProps {
   stock: Istock;

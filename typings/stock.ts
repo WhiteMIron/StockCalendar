@@ -1,3 +1,7 @@
+export interface Icategory {
+  id: number;
+  name: string;
+}
 export interface Istock {
   id: number;
   name: string;
@@ -8,5 +12,9 @@ export interface Istock {
   desc: string;
   reason: string;
   createdAt: Date;
-  stockCode: string;
+  stock_code: string;
+  diff_price: string;
+  Category: Icategory;
+  issue: string;
+  news: string;
 }

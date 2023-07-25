@@ -1,20 +1,24 @@
 // import { MemoContainer } from '@pages/Test/styles';
 
 import { css } from '@emotion/react';
-import { Button, DownAmount, DownButton, DownPrice, MemoContainer, Table, Tbody, Td, Th, Tr } from './styles';
+import {
+  Button,
+  DownAmount,
+  DownButton,
+  DownPrice,
+  Icon,
+  MemoContainer,
+  StockInfo,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Tr,
+} from './styles';
 import React, { SetStateAction } from 'react';
-interface Istock {
-  id: number;
-  name: string;
-  current_price: string;
-  previous_close: string;
-  days_range: string;
-  title: string;
-  desc: string;
-  reason: string;
-  createdAt: Date;
-  stockCode: string;
-}
+import { Istock } from '@typings/stock';
+import { stockItem } from '@mockup/stockItem';
+import link from '@images/link.png';
 interface StocksReadMemoProps {
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setIsSelected: React.Dispatch<SetStateAction<boolean>>;
@@ -22,8 +26,8 @@ interface StocksReadMemoProps {
   selectedItem: Istock | null;
 }
 const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedItem }: StocksReadMemoProps) => {
-  let link = 'https://finance.naver.com/item/main.nhn?code=';
-  let code = '417010';
+  let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
+
   return (
     <MemoContainer>
       <div>
@@ -51,16 +55,16 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
                     position: 'relative',
                   }}
                 >
-                  <a href="aaa" target="_blank">
-                    <strong
-                      style={{
-                        lineHeight: '1.8',
-                      }}
-                    >
+                  <a href={financeAddress + selectedItem?.stock_code} target="_blank">
+                    <StockInfo>
                       {selectedItem!!.name}
-                    </strong>
+                      <Icon>
+                        <img src={link} width="13px" height="13px"></img>
+                      </Icon>
+                      <span>네이버증권으로 이동합니다.</span>
+                    </StockInfo>
                   </a>{' '}
-                  {/* <div
+                  <div
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -74,7 +78,7 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
                       padding="0 10px"
                       onClick={() => {
                         setIsSelected(false);
-                        setIsRecord(true);
+                        setIsRecord(false);
                         setIsEditRecord(true);
                       }}
                     >
@@ -84,22 +88,24 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
                       {' '}
                       삭제
                     </Button>
-                  </div> */}
+                  </div>
                 </div>
               </Td>
             </Tr>
             <Tr>
               <Th>종목코드</Th>
-              <Td>{selectedItem!!.stockCode}</Td>
+              <Td>{selectedItem!!.stock_code}</Td>
             </Tr>
 
             <Tr>
               <Th>종가</Th>
               <Td>
                 <DownPrice>
-                  <strong>41,000</strong>
+                  <strong>{selectedItem!!.current_price}</strong>
                 </DownPrice>
-                <DownAmount>4,200 (-4.11%)</DownAmount>
+                <DownAmount>
+                  {selectedItem?.diff_price} ({selectedItem!!.days_range})
+                </DownAmount>
               </Td>
             </Tr>
 
@@ -128,29 +134,6 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
             </Tr>
           </Tbody>
         </Table>
-        {/* <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
-          <Button
-            marginRight="10px"
-            bgColor="#76baff"
-            padding="0 10px"
-            onClick={() => {
-              setIsSelected(false);
-              setIsRecord(true);
-              setIsEditRecord(true);
-            }}
-          >
-            수정
-          </Button>
-          <Button bgColor="#8e8e8e" padding="0 10px">
-            {' '}
-            삭제
-          </Button>
-        </div> */}
       </div>
     </MemoContainer>
   );

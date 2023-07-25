@@ -22,7 +22,7 @@ interface itemProps {
   isEditRecord: boolean;
 }
 
-const StocksMemo = ({
+const StocksEditMemo = ({
   stocks,
   setStocks,
   setIsRecord,
@@ -324,4 +324,4 @@ const StocksMemo = ({
   );
 };
 
-export default StocksMemo;
+export default StocksEditMemo;

@@ -21,7 +21,6 @@ import {
   SearchForm,
   SearchImg,
   SearchInput,
-  StockItem,
   StockTitle,
   UpButton,
 } from './styles';
@@ -39,12 +38,14 @@ import { Navigate, useNavigate } from 'react-router';
 import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
+import { StockListContainer } from '@components/StockList/styles';
+import StockItem from '@components/StockList/StockItem';
+import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
 type ValuePiece = Date | null;
 
-//
 const StockRecord = () => {
-  // const [value, onChangeValue] = useState(new Date());
-  // const [value, onChangeValue] = useState<ValuePiece | [ValuePiece, ValuePiece]>(new Date());
+  const [value, onChangeValue] = useState(new Date());
+  // const [dateValue, onChangeDateValue] = useState(new Date());
   const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
 
   const navigate = useNavigate();
@@ -68,9 +69,17 @@ const StockRecord = () => {
     dedupingInterval: 2000, // 2초
   });
 
+  const onClickDay = () => {
+    setIsRecord(false);
+    setSelectedItem(null);
+    setIsSelected(false);
+    setIsEditRecord(false);
+  };
   const onClickAddBtn = () => {
     setIsRecord(true);
+    setSelectedItem(null);
     setIsSelected(false);
+    setIsEditRecord(false);
   };
   const onLogout = useCallback(() => {
     axios
@@ -86,7 +95,14 @@ const StockRecord = () => {
     setIsSelected(true);
     setSelectedItem(stock);
     setIsRecord(false);
+    setIsEditRecord(false);
   };
+
+  const isToDay = (target1: Date | null | [Date | null, Date | null]) => {
+    // console.log(moment(target1?.toString()).isSame(moment()));
+    return true;
+  };
+
   const series = [
     {
       name: 'Desktops',
@@ -157,19 +173,24 @@ const StockRecord = () => {
   }
 
   useEffect(() => {
-    const date = moment(dateValue?.toString()).format('YYYY/MM/DD');
-    axios
-      .get('/api/stock', { params: { date: date } })
-      .then((response) => {
-        setStocks(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      })
-      .finally(() => {
-        setIsSelected(false);
-        setIsRecord(false);
-      });
+    let dateTmp;
+    if (dateValue) {
+      dateTmp = new Date(dateValue?.toString());
+
+      const date = moment(dateTmp).format('YYYY/MM/DD');
+      axios
+        .get('/api/stock', { params: { date: date } })
+        .then((response) => {
+          setStocks(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response);
+        })
+        .finally(() => {
+          setIsSelected(false);
+          setIsRecord(false);
+        });
+    }
     return;
   }, [dateValue]);
 
@@ -210,11 +231,10 @@ const StockRecord = () => {
             </SearchForm>
             <CalendarBox>
               <Calendar
-                // onClickDay={onClickDay}
+                onClickDay={onClickDay}
                 onChange={onChangeDateValue}
                 value={dateValue}
                 showNeighboringMonth={false}
-                // maxDate={new Date()}
                 calendarType="US"
                 formatDay={(locale, date) => moment(date).format('DD')}
                 tileContent={({ date, view }) => {
@@ -233,9 +253,11 @@ const StockRecord = () => {
           </CalendarContainer>
 
           <StocksList stocks={stocks} onStock={onStock}>
-            <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
-              +추가
-            </Button>
+            {isToDay(dateValue) ? (
+              <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
+                +추가
+              </Button>
+            ) : null}
           </StocksList>
 
           {selected ? (
@@ -258,9 +280,22 @@ const StockRecord = () => {
               selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
             ></StocksMemo>
           ) : null}
+
+          {isEditRecord ? (
+            <StocksEditMemo
+              setIsEditRecord={setIsEditRecord}
+              isEditRecord={isEditRecord}
+              stocks={stocks}
+              setStocks={setStocks}
+              setIsSelected={setIsSelected}
+              setIsRecord={setIsRecord}
+              selectedItem={selectedItem}
+              selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
+            ></StocksEditMemo>
+          ) : null}
         </div>
       </div>
-      {/* <ReactApexChart options={options} type="line" height={350} /> 
+      {/* <ReactApexChart options={options} type="line" height={350} />
       <ReactApexChart options={options} series={series} type="treemap" height={350} /> */}
     </Layout>
   );

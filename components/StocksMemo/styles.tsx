@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import Calendar from 'react-calendar';
 
 import arrow from '@images/sp_ico5.png';
+import link from '@images/link.png';
 const breakpoints = [576, 768, 992, 1200];
 const mq = breakpoints.map((bp) => `@media (min-width: ${bp}px)`);
 
@@ -304,15 +305,12 @@ export const MemoContainer = styled.div<MemoContainerProps>`
 `;
 
 export const Table = styled.table`
-  /* background: white; */
   width: 100%;
   height: 100%;
   border-spacing: 0px;
   border-collapse: collapse;
   font-size: 15px;
   word-break: break-all;
-  /* border-radius: 8px;
-  box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
 `;
 export const Td = styled.td`
   padding: 10px;
@@ -331,6 +329,7 @@ export const Tr = styled.tr`
 
 export const Th = styled.th`
   border: 1px solid #dadada;
+  font-weight: normal;
   > span {
     color: dodgerblue;
   }
@@ -379,4 +378,33 @@ BtnGroup.defaultProps = {
 
 export const Form = styled.form`
   padding: 20px;
+`;
+
+export const StockInfo = styled.span`
+  position: relative;
+  > span {
+    position: absolute;
+    background-color: #333;
+    width: 400px;
+    color: #fff;
+    top: -40px;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: 0.5s;
+
+    visibility: hidden;
+  }
+
+  &:hover > span {
+    visibility: visible;
+    opacity: 1;
+  }
+`;
+
+export const Icon = styled.div`
+  margin-left: 5px;
+  display: inline;
 `;

@@ -1,18 +1,7 @@
 import React, { MouseEventHandler, ReactNode, SetStateAction, useEffect } from 'react';
 import StockItem from './StockItem';
 import { StockListContainer } from './styles';
-interface Istock {
-  id: number;
-  name: string;
-  current_price: string;
-  previous_close: string;
-  days_range: string;
-  title: string;
-  desc: string;
-  reason: string;
-  createdAt: Date;
-  stockCode: string;
-}
+import { Istock } from '@typings/stock';
 
 interface StocksListProps {
   stocks: Istock[];

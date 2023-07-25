@@ -14,6 +14,7 @@ export const StockListContainer = styled.div`
 `;
 
 export const StockItemContainer = styled.li`
+  margin-bottom: 5px;
   &:hover {
     cursor: pointer;
     text-decoration: underline;
