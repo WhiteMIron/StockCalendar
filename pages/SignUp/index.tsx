@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Header, SingUpContainer, Success, Error } from './styles';
 import { FillButton, Form, Input, Label, SignUpContainer } from '@pages/Login/styles';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,7 @@ import useInput from '@hooks/useInput';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
+import { isEmpty } from '@utils/common';
 
 const SignUp = () => {
   const { data, error, revalidate } = useSWR('/api/users', fetcher);
@@ -13,6 +14,7 @@ const SignUp = () => {
   const [password, , setPassword] = useInput('');
   const [passwordCheck, , setPasswordCheck] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
+
   const [signUpError, setSignUpError] = useState('');
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
@@ -35,8 +37,8 @@ const SignUp = () => {
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      if (!mismatchError) {
-        console.log('서버로 회원가입하기');
+
+      if (!mismatchError && email && password && passwordCheck) {
         setSignUpError('');
         setSignUpSuccess(false);
         axios
@@ -53,9 +55,17 @@ const SignUp = () => {
             setSignUpError(error.response.data);
           })
           .finally(() => {});
+      } else {
+        if (!email) {
+          setSignUpError('아이디를 입력해주세요.');
+        } else if (email && !password) {
+          setSignUpError('비밀번호를 입력해주세요.');
+        } else {
+          setSignUpError('비밀번호가 일치하지 않습니다.');
+        }
       }
     },
-    [email, password, passwordCheck, mismatchError],
+    [email, password, mismatchError],
   );
 
   if (data === undefined) {
@@ -87,9 +97,10 @@ const SignUp = () => {
               name="password-check"
               value={passwordCheck}
               onChange={onChangePasswordCheck}
-            />{' '}
+            />
           </div>
-          {mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
+
+          {!signUpError && mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
           {signUpError && <Error>{signUpError}</Error>}
           {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
         </Label>

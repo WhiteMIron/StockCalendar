@@ -12,9 +12,6 @@ import {
   SignUpContainer,
   Error,
 } from './styles';
-// import { Link, Redirect, useNavigate } from 'react-router-dom';
-// import { Link, useNavigate } from 'react-router-dom';
-
 import useSWR from 'swr';
 import useInput from '@hooks/useInput';
 import fetcher from '@utils/fetcher';

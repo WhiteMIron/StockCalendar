@@ -27,7 +27,6 @@ type StockTitleProps = {
 };
 export const CalendarContainer = styled.div`
   margin-right: 20px;
-  /* width: 100%; */
   display: flex;
   flex-direction: column;
 `;
@@ -35,14 +34,14 @@ export const CalendarContainer = styled.div`
 export const CalendarBox = styled.div`
   height: 100%;
   .react-calendar {
-    padding: 10px;
+    /* padding: 10px; */
     background-color: #fff;
     color: #222;
     border-radius: 8px;
     border: none;
     box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
     font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.125em;
+    /* line-height: 1.125em; */
   }
   .react-calendar__navigation__label > span {
     color: #f87171;
@@ -51,6 +50,7 @@ export const CalendarBox = styled.div`
   .react-calendar__viewContainer {
   }
   .react-calendar__tile {
+    height: 60px;
   }
   .react-calendar__month-view__weekdays {
     font-size: 14px;

@@ -1,5 +1,3 @@
-// import { MemoContainer } from '@pages/Test/styles';
-
 import { css } from '@emotion/react';
 import {
   Button,
@@ -15,9 +13,8 @@ import {
   Th,
   Tr,
 } from './styles';
-import React, { SetStateAction } from 'react';
+import React, { SetStateAction, useEffect } from 'react';
 import { Istock } from '@typings/stock';
-import { stockItem } from '@mockup/stockItem';
 import link from '@images/link.png';
 interface StocksReadMemoProps {
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
@@ -25,6 +22,7 @@ interface StocksReadMemoProps {
   setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
   selectedItem: Istock | null;
 }
+
 const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedItem }: StocksReadMemoProps) => {
   let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
 
@@ -96,6 +94,10 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
               <Th>종목코드</Th>
               <Td>{selectedItem!!.stock_code}</Td>
             </Tr>
+            <Tr>
+              <Th>카테고리</Th>
+              <Td>{selectedItem!!.Category.name}</Td>
+            </Tr>
 
             <Tr>
               <Th>종가</Th>
@@ -112,23 +114,21 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
             <Tr>
               <Th>이슈</Th>
               <Td>
-                <p>
-                  MSCI는 미국 투자은행 모건스탠리의 자회사 모건스탠리캐피털인터내셔널이 발표하는 지수다. 국제금융 펀드의
-                  투자 기준이 되는 주요 지표다. 매년 2·5·8·11월마다 분야별 구성 종목의 편·출입을 발표한다. 이달 발표한
-                  글로벌 스몰캡 분야에는 루닛을 포함한 31개 국내 기업이 새로 편입됐다.
-                </p>
+                <p>{selectedItem?.issue} </p>
               </Td>
             </Tr>
             <Tr>
               <Th rowSpan={2}>뉴스</Th>
               <Td>
-                <a>https://www.hankyung.com/it/article/202305167019i</a>
+                <a href={selectedItem!!.news[0]} target="_blank">
+                  {selectedItem!!.news[0]}
+                </a>
               </Td>
             </Tr>
             <Tr>
               <Td>
-                <a href="https://www.hankyung.com/it/article/202305167019i" target="_blank">
-                  https://www.hankyung.com/it/article/202305167019i
+                <a href={selectedItem!!.news[1]} target="_blank">
+                  {selectedItem!!.news[1]}
                 </a>
               </Td>
             </Tr>

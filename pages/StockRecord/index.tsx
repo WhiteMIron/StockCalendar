@@ -52,13 +52,15 @@ const StockRecord = () => {
 
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
-  const [mark, setMark] = useState(['2023-04-27']);
+  const [mark, setMark] = useState([]);
+  const [serachMark, setSearchMark] = useState([]);
   const [selected, setIsSelected] = useState(false);
 
   const [isRecord, setIsRecord] = useState(false);
   const [isEditRecord, setIsEditRecord] = useState(false);
 
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
+  const [resetRecordState, setResetRecordState] = useState(false);
 
   const {
     data: userData,
@@ -76,8 +78,11 @@ const StockRecord = () => {
     setIsEditRecord(false);
   };
   const onClickAddBtn = () => {
-    setIsRecord(true);
+    if (isRecord && !resetRecordState) {
+      setResetRecordState(true);
+    }
     setSelectedItem(null);
+    setIsRecord(true);
     setIsSelected(false);
     setIsEditRecord(false);
   };
@@ -92,15 +97,16 @@ const StockRecord = () => {
   }, []);
 
   const onStock = (stock: Istock) => {
+    let stockTmp = stock;
+
+    if (!Array.isArray(stockTmp.news)) {
+      stockTmp.news = JSON.parse(stockTmp.news);
+    }
+    setSelectedItem(stockTmp);
+
     setIsSelected(true);
-    setSelectedItem(stock);
     setIsRecord(false);
     setIsEditRecord(false);
-  };
-
-  const isToDay = (target1: Date | null | [Date | null, Date | null]) => {
-    // console.log(moment(target1?.toString()).isSame(moment()));
-    return true;
   };
 
   const series = [
@@ -216,6 +222,7 @@ const StockRecord = () => {
                   onClick={() => {
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);
+                      // setMark([]);
                     }
                   }}
                   onBlur={() => {
@@ -253,11 +260,9 @@ const StockRecord = () => {
           </CalendarContainer>
 
           <StocksList stocks={stocks} onStock={onStock}>
-            {isToDay(dateValue) ? (
-              <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
-                +추가
-              </Button>
-            ) : null}
+            <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
+              +추가
+            </Button>
           </StocksList>
 
           {selected ? (
@@ -268,8 +273,11 @@ const StockRecord = () => {
               setIsEditRecord={setIsEditRecord}
             ></StocksReadMemo>
           ) : null}
+
           {isRecord ? (
             <StocksMemo
+              setResetRecordState={setResetRecordState}
+              resetRecordState={resetRecordState}
               setIsEditRecord={setIsEditRecord}
               isEditRecord={isEditRecord}
               stocks={stocks}
@@ -302,9 +310,3 @@ const StockRecord = () => {
 };
 
 export default StockRecord;
-
-// {
-/* <div style={{ textAlign: 'center' }} className="text-gray-500 mt-4">
-        {moment(value).format('YYYY년 MM월 DD일')}
-      </div> */
-// }

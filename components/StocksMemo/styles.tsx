@@ -319,8 +319,6 @@ export const Td = styled.td`
     color: dodgerblue;
   }
   > p {
-    padding-top: 10px;
-    padding-bottom: 10px;
   }
 `;
 export const Tr = styled.tr`

@@ -32,11 +32,6 @@ const StocksEditMemo = ({
   setIsEditRecord,
   setIsSelected,
 }: itemProps) => {
-  useEffect(() => {
-    console.log(selectedItem);
-    return;
-  }, [selectedItem]);
-
   const [stockState, onStockState] = useState<boolean | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [stockName, setStockName] = useInput(selectedItem?.name);

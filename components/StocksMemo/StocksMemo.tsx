@@ -19,10 +19,13 @@ interface itemProps {
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
   setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
+  setResetRecordState: React.Dispatch<SetStateAction<boolean>>;
   isEditRecord: boolean;
+  resetRecordState: boolean;
 }
 
 const StocksMemo = ({
+  resetRecordState,
   stocks,
   setStocks,
   setIsRecord,
@@ -31,26 +34,38 @@ const StocksMemo = ({
   isEditRecord,
   setIsEditRecord,
   setIsSelected,
+  setResetRecordState,
 }: itemProps) => {
-  useEffect(() => {
-    console.log(selectedItem);
-    return;
-  }, [selectedItem]);
-
   const [stockState, onStockState] = useState<boolean | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [stockName, setStockName] = useInput(selectedItem?.name);
-  const [stockCode, onStockCode] = useInput(selectedItem?.stock_code);
-  const [stockCategory, setCategory] = useInput(selectedItem?.Category.name);
-  const [stockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
-  const [stockDaysRange, setStockDaysRange] = useInput(selectedItem?.days_range);
-  const [stockDiffPrice, setDiffPrice] = useInput(selectedItem?.diff_price);
-  const [stockIssue, setStockIssue] = useInput('');
-  const [stockFirstNews, setFirstNews] = useInput('');
-  const [stockSecondNews, setSecondNews] = useInput('');
+  const [stockName, onStockName, setStockName] = useInput(selectedItem?.name);
+
+  const [stockCode, onStockCode, setStockCode] = useInput(selectedItem?.stock_code);
+  const [stockCategory, onCategory, setCategory] = useInput(selectedItem?.Category.name);
+  const [stockCurrentPrice, onStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
+  const [stockDiffPrice, onDiffPrice, setDiffPrice] = useInput(selectedItem?.diff_price);
+  const [stockDaysRange, onStockDaysRange, setStockDaysRange] = useInput(selectedItem?.days_range);
+  const [stockIssue, onStockIssue, setStockIssue] = useInput('');
+  const [stockFirstNews, onFirstNews, setFirstNews] = useInput('');
+  const [stockSecondNews, onSecondNews, setSecondNews] = useInput('');
+
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
+
+  useEffect(() => {
+    if (resetRecordState) {
+      setStockCode('');
+      setCategory('');
+      setDiffPrice('');
+      setStockDaysRange('');
+      setStockIssue('');
+      setFirstNews('');
+      setSecondNews('');
+      setStockCurrentPrice('');
+      setResetRecordState(false);
+    }
+  }, [resetRecordState]);
 
   const cmpToday = (date: string) => {
     let result = moment(moment().format('YYYY-MM-DD')).isSame(moment(date.replaceAll('/', '-')));
@@ -61,11 +76,16 @@ const StocksMemo = ({
     (e) => {
       setModalOpen(false);
       e.preventDefault();
+      let newsArr = [];
+      newsArr.push(stockFirstNews);
+      newsArr.push(stockSecondNews);
+
       axios
         .post('/api/stock', {
           code: stockCode,
           categoryName: stockCategory,
           date: selectedDate,
+          news: JSON.stringify(newsArr),
           // isInterest: stockState,
         })
         .then((response) => {
@@ -78,7 +98,7 @@ const StocksMemo = ({
         })
         .finally(() => {});
     },
-    [stockCode, stockCategory],
+    [stockCode, stockCategory, stockFirstNews, stockSecondNews],
   );
 
   return (
@@ -91,7 +111,7 @@ const StocksMemo = ({
               <Input
                 type="email"
                 marginBottom="10px"
-                value={stockCode}
+                value={stockCode || ''}
                 onChange={onStockCode}
                 onBlur={() => {}}
               ></Input>
@@ -111,26 +131,21 @@ const StocksMemo = ({
                 <Input
                   type="email"
                   marginBottom="10px"
-                  value={stockCode}
+                  value={stockCode || ''}
                   onChange={onStockCode}
                   onBlur={() => {}}
                 ></Input>
               </Label>
             </StockNameGroup>
-            <StockNameGroup>
-              <Label>
-                <span>종목명</span>
-                <Input type="email" marginBottom="10px" value={stockName} onChange={setStockName}></Input>
-              </Label>
-            </StockNameGroup>
+
             <StockNameGroup>
               <Label>
                 <span>종가</span>
                 <Input
                   type="email"
                   marginBottom="10px"
-                  value={stockCurrentPrice}
-                  onChange={setStockCurrentPrice}
+                  value={stockCurrentPrice || ''}
+                  onChange={onStockCurrentPrice}
                   onBlur={() => {}}
                 ></Input>
               </Label>
@@ -141,8 +156,8 @@ const StocksMemo = ({
                 <Input
                   type="email"
                   marginBottom="10px"
-                  value={stockDiffPrice}
-                  onChange={setDiffPrice}
+                  value={stockDiffPrice || ''}
+                  onChange={onDiffPrice}
                   onBlur={() => {}}
                 ></Input>
               </Label>
@@ -153,8 +168,8 @@ const StocksMemo = ({
                 <Input
                   type="email"
                   marginBottom="10px"
-                  value={stockDaysRange}
-                  onChange={setStockDaysRange}
+                  value={stockDaysRange || ''}
+                  onChange={onStockDaysRange}
                   onBlur={() => {}}
                 ></Input>
               </Label>
@@ -165,7 +180,7 @@ const StocksMemo = ({
         <StockPriceGroup>
           <Label>
             카테고리
-            <Input marginBottom="10px" value={stockCategory} onChange={setCategory}></Input>
+            <Input marginBottom="10px" value={stockCategory || ''} onChange={onCategory}></Input>
           </Label>
         </StockPriceGroup>
         <ChangeInfoGroup>
@@ -223,8 +238,8 @@ const StocksMemo = ({
         <Label>
           <span>이슈</span>
           <textarea
-            value={stockIssue}
-            onChange={setStockIssue}
+            value={stockIssue || ''}
+            onChange={onStockIssue}
             style={{
               width: '100%',
               height: '300px',
@@ -234,12 +249,13 @@ const StocksMemo = ({
             }}
           ></textarea>
         </Label>
+
         <NewsGroup>
           <Label>
             <span>뉴스</span>
-            <Input marginBottom="10px" value={stockFirstNews} onChange={setFirstNews}></Input>
-            <Input marginBottom="10px" value={stockSecondNews} onChange={setSecondNews}></Input>
+            <Input marginBottom="10px" value={stockFirstNews || ''} onChange={onFirstNews}></Input>
           </Label>
+          <Input marginBottom="10px" value={stockSecondNews || ''} onChange={onSecondNews}></Input>
         </NewsGroup>
         <BtnGroup>
           <Button
