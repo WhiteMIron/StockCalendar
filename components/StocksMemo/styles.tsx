@@ -167,13 +167,9 @@ export const Input = styled.input<inputProps>`
   margin-bottom: ${(props) => props.marginBottom};
   border: 1px solid #dadada;
   border-radius: 4px;
-  /* border: none; */
-  /* box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1); */
   padding: 5px;
   transition: border 80ms ease-out, box-shadow 80ms ease-out;
   &:focus {
-    /* --saf-0: rgba(var(--sk_highlight, 18, 100, 163), 1);
-    box-shadow: 0 0 0 1px var(--saf-0), 0 0 0 5px #67dbad; */
     border: 1px solid #25d790;
   }
 `;
@@ -405,4 +401,23 @@ export const StockInfo = styled.span`
 export const Icon = styled.div`
   margin-left: 5px;
   display: inline;
+`;
+
+export const Error = styled.div`
+  color: #e01e5a;
+  margin: 8px 0 16px;
+  font-weight: bold;
+`;
+
+export const IssueGroup = styled.div``;
+
+export const TextArea = styled.textarea`
+  width: 100%;
+  height: 300px;
+  border: 1px solid #dadada;
+  resize: none;
+  margin-bottom: 10px;
+  &:focus {
+    border: 1px solid #25d790;
+  }
 `;

@@ -319,6 +319,8 @@ export const Content = styled.div`
 `;
 export const StockNameGroup = styled.div``;
 
+export const StockInfoGroup = styled.div``;
+
 export const StockPriceGroup = styled.div``;
 // export const MemoContainer = styled.div<MemoContainerProps>`
 //   width: 30%;

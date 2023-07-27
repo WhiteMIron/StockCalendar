@@ -1,19 +1,6 @@
 import { css } from '@emotion/react';
-import {
-  Button,
-  DownAmount,
-  DownButton,
-  DownPrice,
-  Icon,
-  MemoContainer,
-  StockInfo,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Tr,
-} from './styles';
-import React, { SetStateAction, useEffect } from 'react';
+import { Button, DownAmount, DownPrice, Icon, MemoContainer, StockInfo, Table, Tbody, Td, Th, Tr } from './styles';
+import React, { SetStateAction } from 'react';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
 interface StocksReadMemoProps {
@@ -55,7 +42,7 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
                 >
                   <a href={financeAddress + selectedItem?.stock_code} target="_blank">
                     <StockInfo>
-                      {selectedItem!!.name}
+                      {selectedItem!!.name} {selectedItem!!.interest}
                       <Icon>
                         <img src={link} width="13px" height="13px"></img>
                       </Icon>

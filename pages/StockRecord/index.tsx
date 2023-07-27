@@ -38,14 +38,10 @@ import { Navigate, useNavigate } from 'react-router';
 import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
-import { StockListContainer } from '@components/StockList/styles';
-import StockItem from '@components/StockList/StockItem';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
 type ValuePiece = Date | null;
 
 const StockRecord = () => {
-  const [value, onChangeValue] = useState(new Date());
-  // const [dateValue, onChangeDateValue] = useState(new Date());
   const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
 
   const navigate = useNavigate();
@@ -102,6 +98,7 @@ const StockRecord = () => {
     if (!Array.isArray(stockTmp.news)) {
       stockTmp.news = JSON.parse(stockTmp.news);
     }
+
     setSelectedItem(stockTmp);
 
     setIsSelected(true);
