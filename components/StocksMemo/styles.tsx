@@ -41,7 +41,7 @@ export const CalendarContainer = styled.div`
     box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.125em;
-    /* margin-right: 10px; */
+    border: 2px rgba(0, 0, 0, 0.2) solid;
   }
   .react-calendar__navigation__label > span {
     color: #f87171;
@@ -291,8 +291,9 @@ export const MemoContainer = styled.div<MemoContainerProps>`
   /* padding: 10px 0; */
   width: 60%;
   border-radius: 8px;
-  box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
+  /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
   overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
   ${(props) =>
     props.active === true &&
@@ -300,6 +301,7 @@ export const MemoContainer = styled.div<MemoContainerProps>`
       background: pink;
     `}
   background: white;
+  border: 1px rgba(0, 0, 0, 0.2) solid;
 `;
 
 export const Table = styled.table`
@@ -309,6 +311,13 @@ export const Table = styled.table`
   border-collapse: collapse;
   font-size: 15px;
   word-break: break-all;
+  & tr:nth-last-child(2) > th {
+    border-bottom: none;
+  }
+  & tr:nth-child(1) > td {
+    border-top: none;
+    border-right: none;
+  }
 `;
 export const Td = styled.td`
   padding: 10px;
@@ -318,6 +327,13 @@ export const Td = styled.td`
   }
   > p {
   }
+  &:nth-child(1) {
+    border-bottom: none;
+    border-right: none;
+  }
+  &:nth-child(2) {
+    border-right: none;
+  }
 `;
 export const Tr = styled.tr`
   height: 50px;
@@ -325,6 +341,9 @@ export const Tr = styled.tr`
 
 export const Th = styled.th`
   border: 1px solid #dadada;
+  border-top: none;
+  border-left: none;
+  border-right: none;
   font-weight: normal;
   > span {
     color: dodgerblue;

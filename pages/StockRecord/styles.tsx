@@ -34,14 +34,14 @@ export const CalendarContainer = styled.div`
 export const CalendarBox = styled.div`
   height: 100%;
   .react-calendar {
-    /* padding: 10px; */
+    padding: 10px;
     background-color: #fff;
     color: #222;
     border-radius: 8px;
     border: none;
-    box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
     font-family: Arial, Helvetica, sans-serif;
-    /* line-height: 1.125em; */
+    border: 1px rgba(0, 0, 0, 0.2) solid;
+    /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
   }
   .react-calendar__navigation__label > span {
     color: #f87171;
@@ -193,7 +193,7 @@ export const SearchContainer = styled.div`
   pointer-events: none;
   width: 100%;
   height: 100%;
-  border: 1px solid #25d790;
+  border: 1px solid #60d6bf;
 `;
 
 export const SearchForm = styled.div`
@@ -205,7 +205,7 @@ export const SearchBox = styled.div`
   padding: 8px 15px;
   background: #fff;
   width: 100%;
-  border: 1px solid #dfe1e5;
+  border: 1px rgba(0, 0, 0, 0.2) solid;
   border-radius: 24px;
   position: relative;
   margin-bottom: 15px;
@@ -357,7 +357,8 @@ export const StockTitle = styled.span<StockTitleProps>`
 `;
 
 export const DateInfo = styled.div`
-  border-bottom: 2px solid #60d6bf;
+  /* border-bottom: 2px solid #60d6bf; */
+  border-bottom: 2px solid #76baff;
   padding: 8px;
 `;
 

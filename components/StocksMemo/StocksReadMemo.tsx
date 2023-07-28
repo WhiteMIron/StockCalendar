@@ -33,10 +33,10 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
           </colgroup>
           <Tbody>
             <Tr>
-              <Icon>
+              {/* <Icon>
                 {' '}
                 <img src={crwon} width="13px" height="13px"></img>
-              </Icon>
+              </Icon> */}
               <Th>종목명(종목코드)</Th>
               <Td>
                 <div

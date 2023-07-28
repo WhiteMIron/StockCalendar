@@ -155,7 +155,6 @@ const StockRecord = () => {
             width: '100%',
             padding: '20px 20px 40px 20px',
             borderBottomRightRadius: '8px',
-            // height: 'fit-content',
             minHeight: '100%',
           }}
         >
