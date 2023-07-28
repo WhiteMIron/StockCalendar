@@ -5,6 +5,13 @@ import { NavLink } from 'react-router-dom';
 const SideNav = () => {
   return (
     <NavContainer>
+      <h1
+        style={{
+          paddingLeft: '10px',
+        }}
+      >
+        메뉴
+      </h1>
       <NavContents>
         <NavLink to="/stockrecord">
           {' '}

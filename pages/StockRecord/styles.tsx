@@ -26,7 +26,7 @@ type StockTitleProps = {
   new?: boolean;
 };
 export const CalendarContainer = styled.div`
-  margin-right: 20px;
+  margin-right: 30px;
   display: flex;
   flex-direction: column;
 `;

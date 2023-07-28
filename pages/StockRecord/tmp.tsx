@@ -41,6 +41,7 @@ import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
+import { start } from 'repl';
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
@@ -119,6 +120,71 @@ const StockRecord = () => {
     startDate = startDateArr.join('-');
   };
 
+  const series = [
+    {
+      name: 'Desktops',
+      data: [
+        {
+          x: 'ABC',
+          y: 10,
+        },
+        {
+          x: 'DEF',
+          y: 60,
+        },
+        {
+          x: 'XYZ',
+          y: 41,
+        },
+      ],
+    },
+    {
+      name: 'Mobile',
+      data: [
+        {
+          x: 'ABCD',
+          y: 10,
+        },
+        {
+          x: 'DEFG',
+          y: 20,
+        },
+        {
+          x: 'WXYZ',
+          y: 51,
+        },
+        {
+          x: 'PQR',
+          y: 30,
+        },
+        {
+          x: 'MNO',
+          y: 20,
+        },
+        {
+          x: 'CDE',
+          y: 30,
+        },
+      ],
+    },
+  ];
+  const options: ApexOptions = {
+    legend: {
+      show: false,
+    },
+    chart: {
+      height: 350,
+      type: 'treemap',
+      toolbar: {
+        show: false,
+      },
+    },
+    title: {
+      text: '',
+      align: 'center',
+    },
+  };
+
   if (!userData) {
     navigate('/login');
   }
@@ -155,7 +221,7 @@ const StockRecord = () => {
             width: '100%',
             padding: '20px 20px 40px 20px',
             borderBottomRightRadius: '8px',
-            // height: 'fit-content',
+            height: 'fit-content',
             minHeight: '100%',
           }}
         >
@@ -252,6 +318,8 @@ const StockRecord = () => {
           ) : null}
         </div>
       </div>
+      {/* <ReactApexChart options={options} type="line" height={350} />
+      <ReactApexChart options={options} series={series} type="treemap" height={350} /> */}
     </Layout>
   );
 };

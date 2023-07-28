@@ -6,8 +6,8 @@ const Header = (props: { user: IUser | undefined | false }) => {
   return (
     <div
       style={{
-        height: '5%',
-        boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
+        // height: '5%',
+        // boxShadow: '0 0 5px 0 rgba(0,0,0,0.1), 0 0 168px 13px rgba(7, 0, 0, 0.1)',
         background: '#60d6bf',
         display: 'flex',
         justifyContent: 'center',

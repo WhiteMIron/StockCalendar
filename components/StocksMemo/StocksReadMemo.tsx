@@ -3,6 +3,7 @@ import { Button, DownAmount, DownPrice, Icon, MemoContainer, StockInfo, Table, T
 import React, { SetStateAction } from 'react';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
+import crwon from '@images/crown.png';
 import { isEmpty } from '@utils/common';
 interface StocksReadMemoProps {
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
@@ -32,6 +33,10 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
           </colgroup>
           <Tbody>
             <Tr>
+              <Icon>
+                {' '}
+                <img src={crwon} width="13px" height="13px"></img>
+              </Icon>
               <Th>종목명(종목코드)</Th>
               <Td>
                 <div

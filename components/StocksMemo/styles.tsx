@@ -292,6 +292,8 @@ export const MemoContainer = styled.div<MemoContainerProps>`
   width: 60%;
   border-radius: 8px;
   box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   ${(props) =>
     props.active === true &&
     css`
@@ -415,7 +417,7 @@ export const IssueGroup = styled.div``;
 
 export const TextArea = styled.textarea`
   width: 100%;
-  height: 300px;
+  height: 250px;
   border: 1px solid #dadada;
   resize: none;
   margin-bottom: 10px;
