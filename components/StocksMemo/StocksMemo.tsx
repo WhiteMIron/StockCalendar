@@ -13,6 +13,7 @@ import {
   StockInfo,
   Error,
   TextArea,
+  DateInfo,
 } from './styles';
 import {
   ChangeInfoGroup,
@@ -135,10 +136,11 @@ const StocksMemo = ({
   return (
     <MemoContainer>
       <Form>
+        <DateInfo>2023년 7월 28일</DateInfo>
         {cmpToday(selectedDate) ? (
           <StockInfoGroup>
             <Label>
-              <StockInfo>종목코드1</StockInfo>
+              <StockInfo>종목코드</StockInfo>
               <Input
                 type="email"
                 marginBottom="10px"
@@ -165,8 +167,8 @@ const StocksMemo = ({
                   종목코드
                   <Icon>
                     <img src={info} width="13px" height="13px"></img>
+                    <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
                   </Icon>
-                  <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
                 </StockInfo>
                 <Input
                   type="email"

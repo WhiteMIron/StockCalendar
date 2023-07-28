@@ -39,7 +39,7 @@ import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
-type ValuePiece = Date | null;
+import { start } from 'repl';
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
@@ -57,7 +57,6 @@ const StockRecord = () => {
 
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
   const [resetRecordState, setResetRecordState] = useState(false);
-
   const {
     data: userData,
     error,
@@ -104,6 +103,19 @@ const StockRecord = () => {
     setIsSelected(true);
     setIsRecord(false);
     setIsEditRecord(false);
+  };
+
+  const onActiveStartDateChange = () => {
+    const navigation__label = document.querySelector('.react-calendar__navigation__label > span') as HTMLElement;
+    let startDate = navigation__label.innerText;
+
+    startDate = startDate.replaceAll('월', '/');
+    let startDateArr = [];
+    startDateArr = startDate.split('년 ');
+    if (startDateArr[1].length < 2) {
+      startDateArr[1] = startDateArr[1].padStart(2, '0');
+    }
+    startDate = startDateArr.join('-');
   };
 
   const series = [
@@ -198,7 +210,7 @@ const StockRecord = () => {
   }, [dateValue]);
 
   return (
-    <Layout>
+    <Layout user={userData}>
       <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
         <div
           style={{
@@ -235,6 +247,7 @@ const StockRecord = () => {
             </SearchForm>
             <CalendarBox>
               <Calendar
+                onActiveStartDateChange={onActiveStartDateChange}
                 onClickDay={onClickDay}
                 onChange={onChangeDateValue}
                 value={dateValue}

@@ -130,7 +130,7 @@ export const CalendarBox = styled.div`
       background-color: #4e8dd4;
       color: white;
       border-radius: 50%;
-      padding: 12px;
+      padding: 10px;
     }
   }
 
@@ -140,7 +140,6 @@ export const CalendarBox = styled.div`
 `;
 
 export const recordContainer = styled.div`
-  /* min-width: 1000px; */
   width: 100%;
   height: 100%;
   display: flex;
@@ -198,9 +197,7 @@ export const SearchContainer = styled.div`
 `;
 
 export const SearchForm = styled.div`
-  /* position: relative; */
   display: flex;
-  /* justify-content: end; */
 `;
 
 export const SearchBox = styled.div`
@@ -212,7 +209,6 @@ export const SearchBox = styled.div`
   border-radius: 24px;
   position: relative;
   margin-bottom: 15px;
-  /* border: 1px solid #25d790; */
 `;
 
 export const SearchImg = styled.img`
@@ -256,7 +252,7 @@ export const Button = styled.button<ButtonProps>`
 `;
 
 export const AddButton = styled(Button)`
-  background: #60d6bf; /* fallback for old browsers */
+  background: #60d6bf;
   &:hover {
     filter: brightness(110%);
   }

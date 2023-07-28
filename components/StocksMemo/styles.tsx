@@ -376,6 +376,32 @@ export const Form = styled.form`
 
 export const StockInfo = styled.span`
   position: relative;
+  /* > span {
+    position: absolute;
+    background-color: #333;
+    width: 400px;
+    color: #fff;
+    top: -40px;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: 0.5s;
+
+    visibility: hidden;
+  }
+
+  &:hover > span {
+    visibility: visible;
+    opacity: 1;
+  } */
+`;
+
+export const Icon = styled.div`
+  margin-left: 5px;
+  display: inline;
+  position: relative;
   > span {
     position: absolute;
     background-color: #333;
@@ -398,11 +424,6 @@ export const StockInfo = styled.span`
   }
 `;
 
-export const Icon = styled.div`
-  margin-left: 5px;
-  display: inline;
-`;
-
 export const Error = styled.div`
   color: #e01e5a;
   margin: 8px 0 16px;
@@ -420,4 +441,9 @@ export const TextArea = styled.textarea`
   &:focus {
     border: 1px solid #25d790;
   }
+`;
+
+export const DateInfo = styled.div`
+  text-align: center;
+  margin-bottom: 5px;
 `;

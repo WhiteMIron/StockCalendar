@@ -1,6 +1,8 @@
+import { IUser } from '@typings/db';
+import fetcher from '@utils/fetcher';
 import React from 'react';
-
-const Header = () => {
+import Clock from 'react-live-clock';
+const Header = (props: { user: IUser | undefined | false }) => {
   return (
     <div
       style={{
@@ -14,7 +16,10 @@ const Header = () => {
       }}
     >
       <div style={{ padding: '0 20px 0 0', width: '100%', textAlign: 'right' }}>
-        <h1 style={{ color: '#fff' }}>5월 9일 22:58 test@naver.com</h1>
+        <h1 style={{ color: '#fff' }}>
+          {<Clock format={'M월 DD일 HH:mm:ss'} ticking={true} timezone={'Asia/Seoul'} />}{' '}
+          {props.user ? props.user.email : null}
+        </h1>
       </div>
     </div>
   );

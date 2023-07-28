@@ -1,8 +1,6 @@
 export interface IUser {
   id: number;
-  nickname: string;
   email: string;
-  Workspaces: IWorkspace[];
 }
 
 export interface IUserWithOnline extends IUser {
