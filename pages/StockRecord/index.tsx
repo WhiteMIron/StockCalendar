@@ -23,6 +23,8 @@ import {
   SearchInput,
   StockTitle,
   UpButton,
+  DateInfo,
+  DateInfoGroup,
 } from './styles';
 import StocksMemo from '@components/StocksMemo/StocksMemo';
 import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
@@ -273,6 +275,9 @@ const StockRecord = () => {
             <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
               +추가
             </Button>
+            <DateInfoGroup>
+              {dateValue ? <DateInfo>{moment(new Date(dateValue?.toString())).format('YYYY/MM/DD')}</DateInfo> : null}
+            </DateInfoGroup>
           </StocksList>
 
           {selected ? (

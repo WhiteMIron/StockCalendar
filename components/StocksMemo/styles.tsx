@@ -375,33 +375,14 @@ export const Form = styled.form`
 `;
 
 export const StockInfo = styled.span`
-  position: relative;
-  /* > span {
-    position: absolute;
-    background-color: #333;
-    width: 400px;
-    color: #fff;
-    top: -40px;
-    text-align: center;
-    padding: 5px;
-    border-radius: 5px;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: 0.5s;
-
-    visibility: hidden;
-  }
-
-  &:hover > span {
-    visibility: visible;
-    opacity: 1;
-  } */
+  /* position: relative; */
 `;
 
 export const Icon = styled.div`
   margin-left: 5px;
   display: inline;
   position: relative;
+
   > span {
     position: absolute;
     background-color: #333;

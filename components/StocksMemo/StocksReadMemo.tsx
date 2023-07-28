@@ -3,6 +3,7 @@ import { Button, DownAmount, DownPrice, Icon, MemoContainer, StockInfo, Table, T
 import React, { SetStateAction } from 'react';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
+import { isEmpty } from '@utils/common';
 interface StocksReadMemoProps {
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setIsSelected: React.Dispatch<SetStateAction<boolean>>;
@@ -31,34 +32,45 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
           </colgroup>
           <Tbody>
             <Tr>
-              <Th>종목명</Th>
+              <Th>종목명(종목코드)</Th>
               <Td>
                 <div
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
                     position: 'relative',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <a href={financeAddress + selectedItem?.stock_code} target="_blank">
-                    <StockInfo>
-                      {selectedItem!!.name} {selectedItem!!.interest}
-                      <Icon>
-                        <img src={link} width="13px" height="13px"></img>
-                      </Icon>
-                      <span>네이버증권으로 이동합니다.</span>
-                    </StockInfo>
-                  </a>{' '}
+                  <div
+                    style={{
+                      flexShrink: 0,
+                    }}
+                  >
+                    <a href={financeAddress + selectedItem?.stock_code} target="_blank">
+                      <StockInfo>
+                        {selectedItem!!.name}
+                        {'('}
+                        {selectedItem!!.stock_code}
+                        {')'}
+
+                        <Icon>
+                          <img src={link} width="13px" height="13px"></img>
+                          <span>네이버증권으로 이동합니다.</span>
+                        </Icon>
+                      </StockInfo>
+                    </a>{' '}
+                  </div>
                   <div
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
-                      position: 'absolute',
-                      right: '10',
+                      flexShrink: 0,
                     }}
                   >
                     <Button
-                      marginRight="10px"
+                      marginRight="5px"
                       bgColor="#76baff"
                       padding="0 10px"
                       onClick={() => {
@@ -78,10 +90,6 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
               </Td>
             </Tr>
             <Tr>
-              <Th>종목코드</Th>
-              <Td>{selectedItem!!.stock_code}</Td>
-            </Tr>
-            <Tr>
               <Th>카테고리</Th>
               <Td>{selectedItem!!.Category.name}</Td>
             </Tr>
@@ -97,28 +105,34 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
                 </DownAmount>
               </Td>
             </Tr>
+            {selectedItem!!.issue ? (
+              <Tr>
+                <Th>이슈</Th>
+                <Td>
+                  <p>{selectedItem?.issue} </p>
+                </Td>
+              </Tr>
+            ) : null}
 
-            <Tr>
-              <Th>이슈</Th>
-              <Td>
-                <p>{selectedItem?.issue} </p>
-              </Td>
-            </Tr>
-            <Tr>
-              <Th rowSpan={2}>뉴스</Th>
-              <Td>
-                <a href={selectedItem!!.news[0]} target="_blank">
-                  {selectedItem!!.news[0]}
-                </a>
-              </Td>
-            </Tr>
-            <Tr>
-              <Td>
-                <a href={selectedItem!!.news[1]} target="_blank">
-                  {selectedItem!!.news[1]}
-                </a>
-              </Td>
-            </Tr>
+            {!isEmpty(selectedItem!!.news) ? (
+              <>
+                <Tr>
+                  <Th rowSpan={2}>뉴스</Th>
+                  <Td>
+                    <a href={selectedItem!!.news[0]} target="_blank">
+                      {selectedItem!!.news[0]}
+                    </a>
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td>
+                    <a href={selectedItem!!.news[1]} target="_blank">
+                      {selectedItem!!.news[1]}
+                    </a>
+                  </Td>
+                </Tr>
+              </>
+            ) : null}
           </Tbody>
         </Table>
       </div>

@@ -13,6 +13,7 @@ const Header = (props: { user: IUser | undefined | false }) => {
         justifyContent: 'center',
         alignContent: 'center',
         minHeight: '80px',
+        minWidth: '1400px',
       }}
     >
       <div style={{ padding: '0 20px 0 0', width: '100%', textAlign: 'right' }}>

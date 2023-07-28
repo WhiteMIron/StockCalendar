@@ -355,3 +355,12 @@ export const StockTitle = styled.span<StockTitleProps>`
       }
     `}
 `;
+
+export const DateInfo = styled.div`
+  border-bottom: 2px solid #60d6bf;
+  padding: 8px;
+`;
+
+export const DateInfoGroup = styled.div`
+  padding: 0 25%;
+`;

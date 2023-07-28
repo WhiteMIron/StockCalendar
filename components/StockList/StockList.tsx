@@ -14,7 +14,7 @@ const StockList = ({ children, stocks, onStock }: StocksListProps) => {
   return (
     <StockListContainer>
       {children}
-      <ul>
+      <ul style={{ marginTop: '5px' }}>
         {stocks.map((stock: Istock) => (
           <StockItem
             stock={stock}

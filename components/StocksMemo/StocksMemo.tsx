@@ -118,9 +118,11 @@ const StocksMemo = ({
           date: selectedDate,
           news: JSON.stringify(newsArr),
           isInterest: isInterest,
+          issue: stockIssue,
         })
         .then((response) => {
           console.log(response.data);
+          console.log(response.data.category);
           setIsRecord(false);
           setStocks([...stocks, response.data]);
         })
@@ -136,7 +138,6 @@ const StocksMemo = ({
   return (
     <MemoContainer>
       <Form>
-        <DateInfo>2023년 7월 28일</DateInfo>
         {cmpToday(selectedDate) ? (
           <StockInfoGroup>
             <Label>
@@ -267,8 +268,6 @@ const StocksMemo = ({
                 type="button"
                 marginRight="10px"
                 onClick={() => {
-                  // setIsInterest(true);
-
                   setIsInterest(() => true);
                 }}
               >
@@ -279,7 +278,6 @@ const StocksMemo = ({
                 type="button"
                 marginRight="10px"
                 onClick={() => {
-                  // setIsInterest(true);
                   setIsInterest(() => true);
                 }}
                 opacity="0.5"
