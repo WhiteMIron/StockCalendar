@@ -1,5 +1,6 @@
 import React, { SetStateAction, useCallback, useEffect, useState, ChangeEvent } from 'react';
 
+import styled from '@emotion/styled';
 import {
   Button,
   DownButton,
@@ -9,20 +10,12 @@ import {
   MemoContainer,
   BtnGroup,
   Form,
-  Icon,
   StockInfo,
   Error,
   TextArea,
   DateInfo,
 } from './styles';
-import {
-  ChangeInfoGroup,
-  Content,
-  NewsGroup,
-  StockInfoGroup,
-  StockNameGroup,
-  StockPriceGroup,
-} from '@pages/StockRecord/styles';
+import { ChangeInfoGroup, Content, NewsGroup, StockInfoGroup } from '@pages/StockRecord/styles';
 import ModalPortal from '@components/Modal/ModalPotal';
 import Modal from '@components/Modal/Modal';
 import { CSSTransition } from 'react-transition-group';
@@ -164,13 +157,7 @@ const StocksMemo = ({
           <>
             <StockInfoGroup>
               <Label>
-                <StockInfo>
-                  종목코드
-                  <Icon>
-                    <img src={info} width="13px" height="13px"></img>
-                    <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
-                  </Icon>
-                </StockInfo>
+                <StockInfo>종목코드</StockInfo>
                 <Input
                   type="email"
                   marginBottom="10px"
@@ -192,7 +179,13 @@ const StocksMemo = ({
 
             <StockInfoGroup>
               <Label>
-                <span>종가</span>
+                <StockInfo>
+                  <span>종가</span>
+                  <Icon>
+                    <img src={info} width="13px" height="13px"></img>
+                    <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
+                  </Icon>
+                </StockInfo>
                 <Input
                   type="email"
                   marginBottom="10px"
@@ -422,4 +415,31 @@ const StocksMemo = ({
   );
 };
 
+const Icon = styled.div`
+  margin-left: 5px;
+  display: inline;
+  position: relative;
+
+  > span {
+    position: absolute;
+    background-color: #333;
+    width: 400px;
+    color: #fff;
+    top: -40px;
+    left: 150px;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: 0.5s;
+
+    visibility: hidden;
+  }
+
+  &:hover > span {
+    visibility: visible;
+    opacity: 1;
+  }
+`;
 export default StocksMemo;

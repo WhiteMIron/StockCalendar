@@ -395,8 +395,10 @@ export const Form = styled.form`
   padding: 20px;
 `;
 
-export const StockInfo = styled.span`
-  /* position: relative; */
+export const StockInfo = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
 `;
 
 export const Icon = styled.div`
@@ -425,6 +427,32 @@ export const Icon = styled.div`
     opacity: 1;
   }
 `;
+// export const Icon = styled.div`
+//   margin-left: 5px;
+//   display: inline;
+//   position: relative;
+
+//   > span {
+//     position: absolute;
+//     background-color: #333;
+//     width: 400px;
+//     color: #fff;
+//     top: -40px;
+//     text-align: center;
+//     padding: 5px;
+//     border-radius: 5px;
+//     transform: translateX(-50%);
+//     opacity: 0;
+//     transition: 0.5s;
+
+//     visibility: hidden;
+//   }
+
+//   &:hover > span {
+//     visibility: visible;
+//     opacity: 1;
+//   }
+// `;
 
 export const Error = styled.div`
   color: #e01e5a;
@@ -448,4 +476,20 @@ export const TextArea = styled.textarea`
 export const DateInfo = styled.div`
   text-align: center;
   margin-bottom: 5px;
+`;
+
+export const TodayMemoContainer = styled.div`
+  /* padding: 10px 0; */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
+  /* overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain; */
+
+  background: white;
+  border: 1px rgba(0, 0, 0, 0.2) solid;
 `;

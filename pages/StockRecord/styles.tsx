@@ -26,15 +26,16 @@ type StockTitleProps = {
   new?: boolean;
 };
 export const CalendarContainer = styled.div`
-  margin-right: 30px;
+  max-width: 350px;
+  margin-right: 20px;
   display: flex;
   flex-direction: column;
 `;
 
 export const CalendarBox = styled.div`
-  height: 100%;
+  margin-bottom: 20px;
   .react-calendar {
-    padding: 10px;
+    padding: 0 10px;
     background-color: #fff;
     color: #222;
     border-radius: 8px;
@@ -50,7 +51,9 @@ export const CalendarBox = styled.div`
   .react-calendar__viewContainer {
   }
   .react-calendar__tile {
-    height: 60px;
+    /* height: 60px; */
+
+    height: 50px;
   }
   .react-calendar__month-view__weekdays {
     font-size: 14px;

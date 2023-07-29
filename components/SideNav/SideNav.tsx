@@ -19,13 +19,16 @@ const SideNav = () => {
           <NavTitle>
             {' '}
             <Icon>
-              <img src={star} width="auto" height="24px"></img>
+              {/* <img src={star} width="auto" height="24px"></img> */}
               종목 기록
             </Icon>{' '}
           </NavTitle>
         </NavLink>
-        <NavTitle>🎯 관심 종목</NavTitle>
-        <NavTitle>🏷️ 카테고리</NavTitle>
+        <NavTitle> 관심 종목</NavTitle>
+        {/* <NavTitle> 카테고리</NavTitle> */}
+
+        {/* <NavTitle>🎯 관심 종목</NavTitle>
+        <NavTitle>🏷️ 카테고리</NavTitle> */}
 
         {/* <NavTitle>📈 기록 분석</NavTitle> */}
         {/* <NavTitle>😊 마이페이지</NavTitle> */}

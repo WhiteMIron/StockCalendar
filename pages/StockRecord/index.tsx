@@ -41,6 +41,8 @@ import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
+import { MemoContainer } from '@components/StocksMemo/styles';
+import StocksTodayMemo from '@components/StocksMemo/StocksTodayMemo';
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
@@ -153,9 +155,10 @@ const StockRecord = () => {
             display: 'flex',
             alignContent: 'center',
             width: '100%',
-            padding: '20px 20px 40px 20px',
+            padding: '20px 20px ',
+
+            // padding: '20px 20px 40px 20px',
             borderBottomRightRadius: '8px',
-            minHeight: '100%',
           }}
         >
           <CalendarContainer>
@@ -202,8 +205,8 @@ const StockRecord = () => {
                 }}
               />
             </CalendarBox>
+            <StocksTodayMemo />
           </CalendarContainer>
-
           <StocksList stocks={stocks} onStock={onStock}>
             <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
               +추가
