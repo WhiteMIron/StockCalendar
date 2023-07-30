@@ -115,7 +115,6 @@ const StocksMemo = ({
         })
         .then((response) => {
           console.log(response.data);
-          console.log(response.data.category);
           setIsRecord(false);
           setStocks([...stocks, response.data]);
         })
@@ -306,7 +305,14 @@ const StocksMemo = ({
         <Label>
           <StockInfoGroup>
             <span>이슈</span>
-            <TextArea value={stockIssue || ''} onChange={onStockIssue}></TextArea>
+            <TextArea
+              value={stockIssue || ''}
+              onChange={onStockIssue}
+              style={{
+                wordBreak: 'keep-all',
+                textAlign: 'justify',
+              }}
+            ></TextArea>
           </StockInfoGroup>
         </Label>
 

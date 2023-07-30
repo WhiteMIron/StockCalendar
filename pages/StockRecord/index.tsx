@@ -205,14 +205,15 @@ const StockRecord = () => {
                 }}
               />
             </CalendarBox>
-            <StocksTodayMemo />
+            <StocksTodayMemo selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')} />
           </CalendarContainer>
           <StocksList stocks={stocks} onStock={onStock}>
             <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
               +추가
             </Button>
             <DateInfoGroup>
-              {dateValue ? <DateInfo>{moment(new Date(dateValue?.toString())).format('YYYY/MM/DD')}</DateInfo> : null}
+              {/* {dateValue ? <DateInfo>{moment(new Date(dateValue?.toString())).format('YYYY/MM/DD')}</DateInfo> : null} */}
+              {dateValue ? <DateInfo>{moment(dateValue?.toString()).format('YYYY/MM/DD')}</DateInfo> : null}
             </DateInfoGroup>
           </StocksList>
 

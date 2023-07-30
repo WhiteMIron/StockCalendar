@@ -10,12 +10,14 @@ const mq = breakpoints.map((bp) => `@media (min-width: ${bp}px)`);
 type ButtonProps = {
   color?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf';
   bgColor?: '#fff' | 'red' | 'dodgerblue' | '#00BB9D' | '#8e8e8e' | '#60d6bf' | '#76baff';
+  marginLeft?: string;
   marginRight?: string;
   marginBottom?: string;
   opacity?: string;
   width?: string;
   isBorder?: boolean;
   padding?: string;
+  height?: string;
 };
 type inputProps = {
   minWidth?: string;
@@ -53,12 +55,10 @@ export const CalendarContainer = styled.div`
   .react-calendar__tile {
     min-width: 80px;
     height: 100px;
-    /* height: 200px; */
   }
 
   .react-calendar__tile.react-calendar__tile--now.react-calendar__tile--hasActive.react-calendar__year-view__months__month.react-calendar__month-view__weekdays__weekday {
     font-size: 16px;
-    /* color: rgb(15, 70, 15); */
     color: pink;
   }
   abbr[title] {
@@ -177,7 +177,6 @@ export const Input = styled.input<inputProps>`
 export const fillButton = styled.button<ButtonProps>``;
 
 export const Button = styled.button<ButtonProps>`
-  /* border: none; */
   ${(props) =>
     props.isBorder === true
       ? css`
@@ -186,18 +185,22 @@ export const Button = styled.button<ButtonProps>`
       : css`
           border: none;
         `}
-  width: ${(props) => props.width};
   flex-shrink: 1;
+
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+
   opacity: ${(props) => props.opacity};
   color: ${(props) => props.color};
 
   border-radius: 8px;
   font-size: 15px;
-  height: 35px;
-
   background: ${(props) => props.bgColor};
+
+  margin-left: ${(props) => props.marginLeft};
   margin-right: ${(props) => props.marginRight};
   margin-bottom: ${(props) => props.marginBottom};
+
   transition: all 0.5s ease-in-out;
   padding: ${(props) => props.padding};
   &:hover {
@@ -229,6 +232,7 @@ export const Button = styled.button<ButtonProps>`
 Button.defaultProps = {
   color: '#fff',
   isBorder: false,
+  height: '35px',
 };
 
 export const AddButton = styled(Button)`
