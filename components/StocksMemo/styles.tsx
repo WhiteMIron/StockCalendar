@@ -30,6 +30,11 @@ type MemoContainerProps = {
 
 type ButtonGroupProps = {
   justifyContent?: string;
+  padding?: string;
+};
+
+type TextAreaProps = {
+  height?: string;
 };
 
 export const CalendarContainer = styled.div`
@@ -292,18 +297,15 @@ export const StockItem = styled.li`
 `;
 
 export const MemoContainer = styled.div<MemoContainerProps>`
-  /* padding: 10px 0; */
+  display: flex;
+  flex-direction: column;
   width: 60%;
   border-radius: 8px;
   /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
-  overflow-y: auto;
+  /* overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior: contain;
-  ${(props) =>
-    props.active === true &&
-    css`
-      background: pink;
-    `}
+  overscroll-behavior: contain; */
+
   background: white;
   border: 1px rgba(0, 0, 0, 0.2) solid;
 `;
@@ -389,6 +391,7 @@ export const BtnGroup = styled.div<ButtonGroupProps>`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
   width: 100%;
+  padding: ${(props) => props.padding};
 `;
 
 BtnGroup.defaultProps = {
@@ -396,7 +399,7 @@ BtnGroup.defaultProps = {
 };
 
 export const Form = styled.form`
-  padding: 20px;
+  padding: 20px 20px 0;
 `;
 
 export const StockInfo = styled.div`
@@ -466,9 +469,9 @@ export const Error = styled.div`
 
 export const IssueGroup = styled.div``;
 
-export const TextArea = styled.textarea`
+export const TextArea = styled.textarea<TextAreaProps>`
   width: 100%;
-  height: 250px;
+  height: ${(props) => props.height};
   border: 1px solid #dadada;
   resize: none;
   margin-bottom: 10px;
@@ -476,6 +479,9 @@ export const TextArea = styled.textarea`
     border: 1px solid #25d790;
   }
 `;
+TextArea.defaultProps = {
+  height: '250px',
+};
 
 export const DateInfo = styled.div`
   text-align: center;
