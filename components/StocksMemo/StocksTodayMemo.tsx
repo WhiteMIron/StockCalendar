@@ -4,11 +4,14 @@ import edit from '@images/edit.png';
 import { Button } from './styles';
 import useInput from '@hooks/useInput';
 import axios from 'axios';
+import moment from 'moment';
+import { DateValue } from '@typings/date';
 
 interface StocksTodayMemoProps {
+  dateValue: DateValue;
   selectedDate: string;
 }
-const StocksTodayMemo = ({ selectedDate }: StocksTodayMemoProps) => {
+const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [summary, onSummary, setSummary] = useInput('');
   const summaryTextBox = useRef<HTMLTextAreaElement>(null);
@@ -17,6 +20,7 @@ const StocksTodayMemo = ({ selectedDate }: StocksTodayMemoProps) => {
     if (summaryTextBox.current) {
       summaryTextBox.current.focus();
     }
+    return;
   }, [isEdit]);
 
   useEffect(() => {
@@ -34,6 +38,7 @@ const StocksTodayMemo = ({ selectedDate }: StocksTodayMemoProps) => {
         console.log(error.response);
       })
       .finally(() => {});
+    return;
   }, [selectedDate]);
 
   const onSubmit = () => {
@@ -55,7 +60,7 @@ const StocksTodayMemo = ({ selectedDate }: StocksTodayMemoProps) => {
   return (
     <Container>
       <TitleBox>
-        <strong>오늘의 증시 요약</strong>
+        <strong>{moment(dateValue?.toString()).format('M/DD')} 증시 요약</strong>
         {!isEdit ? (
           <>
             <button
@@ -126,7 +131,6 @@ const TextArea = styled.textarea`
   overflow-y: auto;
   border-radius: 8px;
   resize: none;
-  /* border: 1px solid #dadada; */
   &:focus {
     border: 1px solid #25d790;
   }

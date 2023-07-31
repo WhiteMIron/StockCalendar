@@ -43,9 +43,10 @@ import { Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
 import { MemoContainer } from '@components/StocksMemo/styles';
 import StocksTodayMemo from '@components/StocksMemo/StocksTodayMemo';
+import { DateValue } from '@typings/date';
 
 const StockRecord = () => {
-  const [dateValue, onChangeDateValue] = useState<Date | null | [Date | null, Date | null]>(new Date());
+  const [dateValue, onChangeDateValue] = useState<DateValue>(new Date());
 
   const navigate = useNavigate();
 
@@ -205,14 +206,13 @@ const StockRecord = () => {
                 }}
               />
             </CalendarBox>
-            <StocksTodayMemo selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')} />
+            <StocksTodayMemo dateValue={dateValue} selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')} />
           </CalendarContainer>
           <StocksList stocks={stocks} onStock={onStock}>
             <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
               +추가
             </Button>
             <DateInfoGroup>
-              {/* {dateValue ? <DateInfo>{moment(new Date(dateValue?.toString())).format('YYYY/MM/DD')}</DateInfo> : null} */}
               {dateValue ? <DateInfo>{moment(dateValue?.toString()).format('YYYY/MM/DD')}</DateInfo> : null}
             </DateInfoGroup>
           </StocksList>
