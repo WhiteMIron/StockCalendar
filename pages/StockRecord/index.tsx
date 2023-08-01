@@ -25,6 +25,7 @@ import {
   UpButton,
   DateInfo,
   DateInfoGroup,
+  SearchItem,
 } from './styles';
 import StocksMemo from '@components/StocksMemo/StocksMemo';
 import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
@@ -41,17 +42,24 @@ import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
-import { MemoContainer } from '@components/StocksMemo/styles';
 import StocksTodayMemo from '@components/StocksMemo/StocksTodayMemo';
 import { DateValue } from '@typings/date';
+import { abort } from 'process';
+import useInput from '@hooks/useInput';
+
+interface test {
+  register_date: string;
+}
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<DateValue>(new Date());
-
   const navigate = useNavigate();
 
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
+  const [searchResult, setSearchResult] = useState<test[]>([]);
+  const [searchWord, onChangeSearchWord] = useInput('');
+
   const [mark, setMark] = useState([]);
   const [serachMark, setSearchMark] = useState([]);
   const [selected, setIsSelected] = useState(false);
@@ -60,6 +68,7 @@ const StockRecord = () => {
   const [isEditRecord, setIsEditRecord] = useState(false);
 
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
+  const [isSearched, setIsSearched] = useState(false);
   const [resetRecordState, setResetRecordState] = useState(false);
   const {
     data: userData,
@@ -124,6 +133,7 @@ const StockRecord = () => {
 
   if (!userData) {
     navigate('/login');
+    // return <Navigate to="/login"></Navigate>;
   }
 
   useEffect(() => {
@@ -148,6 +158,28 @@ const StockRecord = () => {
     return;
   }, [dateValue]);
 
+  useEffect(() => {
+    if (isClickSearchInput) {
+      axios
+        .get('/api/word-search', { params: { word: searchWord } })
+        .then((response) => {
+          if (response.data) {
+            setIsSearched(() => {
+              return true;
+            });
+            setSearchResult(response.data);
+          } else {
+            setIsSearched(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+        })
+        .finally(() => {});
+    }
+
+    return;
+  }, [searchWord]);
   return (
     <Layout user={userData}>
       <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
@@ -156,33 +188,64 @@ const StockRecord = () => {
             display: 'flex',
             alignContent: 'center',
             width: '100%',
-            padding: '20px 20px ',
-
-            // padding: '20px 20px 40px 20px',
+            padding: '20px',
             borderBottomRightRadius: '8px',
           }}
         >
           <CalendarContainer>
             <SearchForm>
-              <SearchBox>
+              <SearchBox className={isSearched === true ? 'active' : ''}>
                 <SearchInput
-                  placeholder="종목명을 입력해주세요."
+                  // placeholder="종목명을 입력해주세요."
                   onClick={() => {
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);
                       // setMark([]);
                     }
                   }}
+                  onChange={onChangeSearchWord}
                   onBlur={() => {
                     setIsClickSearchInput(!isClickSearchInput);
+                    setIsSearched(false);
                   }}
                 ></SearchInput>
                 <SearchImg
                   src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
                   alt="검색"
                 ></SearchImg>
-                {isClickSearchInput === true ? <SearchContainer></SearchContainer> : <></>}
+                {isClickSearchInput ? <SearchContainer className={isSearched ? 'searched' : ''} /> : <></>}
               </SearchBox>
+
+              {isSearched ? (
+                <div
+                  style={{
+                    position: 'absolute',
+                    border: '1px rgba(0, 0, 0, 0.2) solid',
+                    width: '100%',
+                    zIndex: '1',
+                    left: '0',
+                    bottom: '-200px',
+                    backgroundColor: '#fff',
+                    borderTop: 'none',
+                    borderBottomLeftRadius: '8px',
+                    borderBottomRightRadius: '8px',
+                    overflow: 'auto',
+                    height: '200px',
+                  }}
+                >
+                  <ul
+                    style={{
+                      margin: '0',
+                    }}
+                  >
+                    {searchResult.map((search) => (
+                      <SearchItem>{search.register_date}</SearchItem>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <></>
+              )}
             </SearchForm>
             <CalendarBox>
               <Calendar
@@ -219,6 +282,8 @@ const StockRecord = () => {
 
           {selected ? (
             <StocksReadMemo
+              stocks={stocks}
+              setStocks={setStocks}
               selectedItem={selectedItem}
               setIsSelected={setIsSelected}
               setIsRecord={setIsRecord}
@@ -238,6 +303,7 @@ const StockRecord = () => {
               setIsRecord={setIsRecord}
               selectedItem={selectedItem}
               selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
+              setIsSelectedItem={setSelectedItem}
             ></StocksMemo>
           ) : null}
 
@@ -251,6 +317,7 @@ const StockRecord = () => {
               setIsRecord={setIsRecord}
               selectedItem={selectedItem}
               selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
+              setIsSelectedItem={setSelectedItem}
             ></StocksEditMemo>
           ) : null}
         </div>

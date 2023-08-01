@@ -32,6 +32,8 @@ interface itemProps {
   setIsSelected: React.Dispatch<SetStateAction<boolean>>;
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
+  setIsSelectedItem: React.Dispatch<SetStateAction<Istock | null>>;
+
   setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
   setResetRecordState: React.Dispatch<SetStateAction<boolean>>;
   isEditRecord: boolean;
@@ -49,6 +51,7 @@ const StocksMemo = ({
   setIsEditRecord,
   setIsSelected,
   setResetRecordState,
+  setIsSelectedItem,
 }: itemProps) => {
   const [isInterest, setIsInterest] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -114,9 +117,9 @@ const StocksMemo = ({
           issue: stockIssue,
         })
         .then((response) => {
-          console.log(response.data);
           setIsRecord(false);
           setStocks([...stocks, response.data]);
+          setIsSelectedItem(response.data);
         })
         .catch((error) => {
           alert(error.response.data);
@@ -124,12 +127,12 @@ const StocksMemo = ({
         })
         .finally(() => {});
     },
-    [stockCode, stockCategory, stockFirstNews, stockSecondNews, isInterest],
+    [stockCode, stockCategory, stockFirstNews, stockSecondNews, isInterest, stockIssue],
   );
 
   return (
     <MemoContainer>
-      <div
+      <FormContainer
         style={{
           overflowY: 'auto',
           overflowX: 'hidden',
@@ -240,7 +243,7 @@ const StocksMemo = ({
 
           <StockInfoGroup>
             <Label>
-              카테고리
+              <span> 카테고리</span>
               <Input
                 marginBottom="10px"
                 value={stockCategory || ''}
@@ -344,58 +347,8 @@ const StocksMemo = ({
             </Label>
             <Input marginBottom="10px" value={stockSecondNews || ''} onChange={onSecondNews}></Input>
           </NewsGroup>
-
-          <ModalPortal onClose={handleModal}>
-            <CSSTransition
-              in={modalOpen}
-              mountOnEnter
-              unmountOnExit
-              timeout={{ enter: 300, exit: 100 }}
-              classNames="backdrop"
-            >
-              <BackDrop onClose={() => setModalOpen(false)} />
-            </CSSTransition>
-
-            <CSSTransition
-              in={modalOpen}
-              mountOnEnter
-              unmountOnExit
-              timeout={{ enter: 300, exit: 100 }}
-              classNames="modal"
-            >
-              <Modal title={'입력한 내용으로 저장하시겠습니까?'}>
-                <BtnGroup justifyContent="center">
-                  <Button
-                    type="button"
-                    width="25%"
-                    onClick={() => {
-                      setModalOpen(false);
-                    }}
-                    bgColor="#8e8e8e"
-                    marginRight="10px"
-                    marginBottom="20px"
-                  >
-                    취소
-                  </Button>
-
-                  <Button
-                    type="button"
-                    width="25%"
-                    onClick={(e) => {
-                      onSubmit(e);
-                      setModalOpen(false);
-                    }}
-                    bgColor="#00BB9D"
-                  >
-                    저장
-                  </Button>
-                </BtnGroup>
-              </Modal>
-            </CSSTransition>
-          </ModalPortal>
         </Form>
-      </div>
-
+      </FormContainer>
       <BtnGroup padding="20px">
         <Button
           type="button"
@@ -441,9 +394,59 @@ const StocksMemo = ({
           저장
         </Button>
       </BtnGroup>
+
+      <ModalPortal onClose={handleModal}>
+        <CSSTransition
+          in={modalOpen}
+          mountOnEnter
+          unmountOnExit
+          timeout={{ enter: 300, exit: 100 }}
+          classNames="backdrop"
+        >
+          <BackDrop onClose={() => setModalOpen(false)} />
+        </CSSTransition>
+
+        <CSSTransition in={modalOpen} mountOnEnter unmountOnExit timeout={{ enter: 300, exit: 100 }} classNames="modal">
+          <Modal title={'입력한 내용으로 저장하시겠습니까?'}>
+            <BtnGroup justifyContent="center">
+              <Button
+                type="button"
+                width="25%"
+                onClick={() => {
+                  setModalOpen(false);
+                }}
+                bgColor="#8e8e8e"
+                marginRight="10px"
+                marginBottom="20px"
+              >
+                취소
+              </Button>
+
+              <Button
+                type="button"
+                width="25%"
+                onClick={(e) => {
+                  onSubmit(e);
+                  setModalOpen(false);
+                }}
+                bgColor="#00BB9D"
+              >
+                저장
+              </Button>
+            </BtnGroup>
+          </Modal>
+        </CSSTransition>
+      </ModalPortal>
     </MemoContainer>
   );
 };
+
+const FormContainer = styled.div`
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  height: 100%;
+`;
 
 const Icon = styled.div`
   margin-left: 5px;

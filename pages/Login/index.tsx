@@ -23,7 +23,6 @@ const Login = () => {
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
-  const navigate = useNavigate();
 
   const onSubmit = useCallback(
     (e) => {

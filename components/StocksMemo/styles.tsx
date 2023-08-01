@@ -24,10 +24,6 @@ type inputProps = {
   marginBottom?: string;
 };
 
-type MemoContainerProps = {
-  active?: boolean;
-};
-
 type ButtonGroupProps = {
   justifyContent?: string;
   padding?: string;
@@ -214,15 +210,10 @@ export const Button = styled.button<ButtonProps>`
     ${(props) =>
       props.isBorder === true
         ? css`
-            /* background: ${props.color};
-            color: ${props.bgColor};
-            transition: background-color color 300ms ease-in-out; */
-            /* transition: box-shadow 150ms ease-in-out; */
             box-shadow: 0 0 0 1px ${props.color} inset;
             transition: all 0.5s ease-in-out;
           `
         : css`
-            /* transition: opacity 300ms ease-in-out; */
             filter: brightness(110%);
             transition: all 0.5s ease-in-out;
           `}
@@ -241,7 +232,7 @@ Button.defaultProps = {
 };
 
 export const AddButton = styled(Button)`
-  background: #60d6bf; /* fallback for old browsers */
+  background: #60d6bf;
   &:hover {
     filter: brightness(110%);
   }
@@ -296,15 +287,19 @@ export const StockItem = styled.li`
   }
 `;
 
-export const MemoContainer = styled.div<MemoContainerProps>`
+export const ReadMemoContainer = styled.div`
+  width: 60%;
+  border-radius: 8px;
+  background: white;
+  border: 1px rgba(0, 0, 0, 0.2) solid;
+`;
+
+export const MemoContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 60%;
   border-radius: 8px;
   /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
-  /* overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain; */
 
   background: white;
   border: 1px rgba(0, 0, 0, 0.2) solid;
@@ -317,10 +312,11 @@ export const Table = styled.table`
   border-collapse: collapse;
   font-size: 15px;
   word-break: break-all;
-  & tr:nth-last-child(2) > th {
+
+  & tr:nth-last-of-type(2) > th {
     border-bottom: none;
   }
-  & tr:nth-child(1) > td {
+  & tr:nth-of-type(1) > td {
     border-top: none;
     border-right: none;
   }
@@ -333,11 +329,12 @@ export const Td = styled.td`
   }
   > p {
   }
-  &:nth-child(1) {
+
+  &:nth-of-type(1) {
     border-bottom: none;
     border-right: none;
   }
-  &:nth-child(2) {
+  &:nth-of-type(2) {
     border-right: none;
   }
 `;
@@ -489,16 +486,12 @@ export const DateInfo = styled.div`
 `;
 
 export const TodayMemoContainer = styled.div`
-  /* padding: 10px 0; */
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
   border-radius: 8px;
   /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
-  /* overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain; */
 
   background: white;
   border: 1px rgba(0, 0, 0, 0.2) solid;

@@ -1,22 +1,73 @@
 import { css } from '@emotion/react';
-import { Button, DownAmount, DownPrice, Icon, MemoContainer, StockInfo, Table, Tbody, Td, Th, Tr } from './styles';
-import React, { SetStateAction } from 'react';
+import {
+  BtnGroup,
+  Button,
+  DownAmount,
+  DownPrice,
+  Icon,
+  ReadMemoContainer,
+  StockInfo,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Tr,
+} from './styles';
+import React, { SetStateAction, useState } from 'react';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
 import crwon from '@images/crown.png';
 import { isEmpty } from '@utils/common';
+import styled from '@emotion/styled';
+import ModalPortal from '@components/Modal/ModalPotal';
+import { CSSTransition } from 'react-transition-group';
+import BackDrop from '@components/Modal/BackDrop';
+import Modal from '@components/Modal/Modal';
+import axios from 'axios';
 interface StocksReadMemoProps {
+  stocks: Istock[];
+  setStocks: React.Dispatch<SetStateAction<Istock[]>>;
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setIsSelected: React.Dispatch<SetStateAction<boolean>>;
   setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
   selectedItem: Istock | null;
 }
 
-const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedItem }: StocksReadMemoProps) => {
+const StocksReadMemo = ({
+  stocks,
+  setStocks,
+  setIsRecord,
+  setIsSelected,
+  setIsEditRecord,
+  selectedItem,
+}: StocksReadMemoProps) => {
   let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleModal = () => {
+    setModalOpen(!modalOpen);
+  };
+
+  const onSubmit = () => {
+    setModalOpen(false);
+    axios
+      .delete(`/api/stock/${selectedItem?.id}`)
+      .then((response) => {
+        setStocks(stocks.filter((stock) => stock.id !== selectedItem?.id));
+        alert('삭제되었습니다.');
+
+        setIsEditRecord(false);
+        setIsSelected(false);
+      })
+      .catch((error) => {
+        alert(error.response.data);
+        console.log(error.response);
+      })
+      .finally(() => {});
+  };
+
   return (
-    <MemoContainer>
+    <ReadMemoContainer>
       <div>
         <Table>
           <colgroup>
@@ -86,8 +137,13 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
                     >
                       수정
                     </Button>
-                    <Button bgColor="#8e8e8e" padding="0 10px">
-                      {' '}
+                    <Button
+                      bgColor="#8e8e8e"
+                      padding="0 10px"
+                      onClick={() => {
+                        handleModal();
+                      }}
+                    >
                       삭제
                     </Button>
                   </div>
@@ -114,7 +170,16 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
               <Tr>
                 <Th>이슈</Th>
                 <Td>
-                  <p>{selectedItem?.issue} </p>
+                  <TextBox>
+                    {selectedItem?.issue.split('\n').map((line) => {
+                      return (
+                        <span key="1">
+                          {line}
+                          <br />
+                        </span>
+                      );
+                    })}
+                  </TextBox>
                 </Td>
               </Tr>
             ) : null}
@@ -141,8 +206,60 @@ const StocksReadMemo = ({ setIsRecord, setIsSelected, setIsEditRecord, selectedI
           </Tbody>
         </Table>
       </div>
-    </MemoContainer>
+      <ModalPortal onClose={handleModal}>
+        <CSSTransition
+          in={modalOpen}
+          mountOnEnter
+          unmountOnExit
+          timeout={{ enter: 300, exit: 100 }}
+          classNames="backdrop"
+        >
+          <BackDrop onClose={() => setModalOpen(false)} />
+        </CSSTransition>
+
+        <CSSTransition in={modalOpen} mountOnEnter unmountOnExit timeout={{ enter: 300, exit: 100 }} classNames="modal">
+          <Modal title={'삭제하시겠습니까?'}>
+            <BtnGroup justifyContent="center">
+              <Button
+                type="button"
+                width="25%"
+                onClick={() => {
+                  setModalOpen(false);
+                }}
+                bgColor="#8e8e8e"
+                marginRight="10px"
+                marginBottom="20px"
+              >
+                취소
+              </Button>
+
+              <Button
+                type="button"
+                width="25%"
+                onClick={(e) => {
+                  onSubmit();
+                  setModalOpen(false);
+                }}
+                bgColor="#00BB9D"
+              >
+                삭제
+              </Button>
+            </BtnGroup>
+          </Modal>
+        </CSSTransition>
+      </ModalPortal>
+    </ReadMemoContainer>
   );
 };
 
+const TextBox = styled.div`
+  word-break: break-all;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: white;
+  overflow-y: auto;
+`;
 export default StocksReadMemo;

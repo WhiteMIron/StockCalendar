@@ -25,6 +25,7 @@ type inputProps = {
 type StockTitleProps = {
   new?: boolean;
 };
+
 export const CalendarContainer = styled.div`
   max-width: 350px;
   margin-right: 20px;
@@ -33,6 +34,7 @@ export const CalendarContainer = styled.div`
 `;
 
 export const CalendarBox = styled.div`
+  margin-top: 15px;
   margin-bottom: 20px;
   .react-calendar {
     padding: 0 10px;
@@ -197,9 +199,15 @@ export const SearchContainer = styled.div`
   width: 100%;
   height: 100%;
   border: 1px solid #60d6bf;
+  &.searched {
+    border: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 `;
 
 export const SearchForm = styled.div`
+  position: relative;
   display: flex;
 `;
 
@@ -210,8 +218,12 @@ export const SearchBox = styled.div`
   width: 100%;
   border: 1px rgba(0, 0, 0, 0.2) solid;
   border-radius: 24px;
-  position: relative;
-  margin-bottom: 15px;
+
+  &.active {
+    /* border: 1px solid #60d6bf; */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 `;
 
 export const SearchImg = styled.img`
@@ -227,6 +239,7 @@ export const SearchImg = styled.img`
 `;
 
 export const SearchInput = styled.input`
+  place-content: '종목명';
   border: none;
   padding: 5px;
   width: 95%;
@@ -321,17 +334,6 @@ export const StockNameGroup = styled.div``;
 export const StockInfoGroup = styled.div``;
 
 export const StockPriceGroup = styled.div``;
-// export const MemoContainer = styled.div<MemoContainerProps>`
-//   width: 30%;
-//   border-radius: 8px;
-//   box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
-//   background: #f5f6fa;
-//   ${(props) =>
-//     props.active === true &&
-//     css`
-//       background: pink;
-//     `}
-// `;
 
 export const NewStockAlert = styled.img`
   content: url(${newStockAlert});
@@ -367,4 +369,13 @@ export const DateInfo = styled.div`
 
 export const DateInfoGroup = styled.div`
   padding: 0 25%;
+`;
+
+export const SearchItem = styled.li`
+  padding: 5px 10px;
+
+  &:hover {
+    cursor: pointer;
+    background: #76baff;
+  }
 `;
