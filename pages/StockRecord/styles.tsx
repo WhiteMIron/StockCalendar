@@ -26,6 +26,10 @@ type StockTitleProps = {
   new?: boolean;
 };
 
+type SearchItemProps = {
+  isFocus: boolean;
+};
+
 export const CalendarContainer = styled.div`
   max-width: 350px;
   margin-right: 20px;
@@ -371,7 +375,14 @@ export const DateInfoGroup = styled.div`
   padding: 0 25%;
 `;
 
-export const SearchItem = styled.li`
+export const SearchItem = styled.li<SearchItemProps>`
+  ${(props) =>
+    props.isFocus === true &&
+    css`
+      cursor: pointer;
+      background: #76baff;
+    `}
+
   padding: 5px 10px;
 
   &:hover {

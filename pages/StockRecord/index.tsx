@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
@@ -40,16 +40,12 @@ import fetcher from '@utils/fetcher';
 import { Navigate, useNavigate } from 'react-router';
 import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
-import { Istock } from '@typings/stock';
+import { ISearch, Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
 import StocksTodayMemo from '@components/StocksMemo/StocksTodayMemo';
 import { DateValue } from '@typings/date';
 import { abort } from 'process';
 import useInput from '@hooks/useInput';
-
-interface test {
-  register_date: string;
-}
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<DateValue>(new Date());
@@ -57,11 +53,12 @@ const StockRecord = () => {
 
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
-  const [searchResult, setSearchResult] = useState<test[]>([]);
-  const [searchWord, onChangeSearchWord] = useInput('');
+  const [searchCandidateResult, setSearchCandidateResult] = useState<ISearch[]>([]);
+  const [searchWord, onChangeSearchWord, setSearchWord] = useInput('');
 
   const [mark, setMark] = useState([]);
-  const [serachMark, setSearchMark] = useState([]);
+  const [searchMark, setSearchMark] = useState<ISearch[]>([]);
+
   const [selected, setIsSelected] = useState(false);
 
   const [isRecord, setIsRecord] = useState(false);
@@ -70,6 +67,10 @@ const StockRecord = () => {
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
   const [isSearched, setIsSearched] = useState(false);
   const [resetRecordState, setResetRecordState] = useState(false);
+  const [focusIdx, setFocusIdx] = useState(-1);
+
+  const autoRef = useRef<HTMLLIElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const {
     data: userData,
     error,
@@ -130,7 +131,31 @@ const StockRecord = () => {
     }
     startDate = startDateArr.join('-');
   };
+  const onClickSearchItem = (name: String) => {
+    const searchResult = searchCandidateResult.filter((searchItem: ISearch) => {
+      return searchItem.name === name;
+    });
+    setSearchMark(searchResult);
+  };
 
+  const changeIdxNum = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      setFocusIdx((prev) => (prev + 1) % searchCandidateResult.length);
+      setSearchWord(searchCandidateResult[(focusIdx + 1) % searchCandidateResult.length]?.name);
+    }
+    if (e.key === 'ArrowUp') {
+      setFocusIdx((prev) => (prev - 1 + searchCandidateResult.length) % searchCandidateResult.length);
+      setSearchWord(
+        searchCandidateResult[(focusIdx - 1 + searchCandidateResult.length) % searchCandidateResult.length]?.name,
+      );
+    }
+    if (e.key === 'Escape') {
+      setFocusIdx(-1);
+    }
+    if (e.key === 'Enter') {
+      setSearchWord(searchCandidateResult[focusIdx]?.name);
+    }
+  };
   if (!userData) {
     navigate('/login');
     // return <Navigate to="/login"></Navigate>;
@@ -167,7 +192,12 @@ const StockRecord = () => {
             setIsSearched(() => {
               return true;
             });
-            setSearchResult(response.data);
+            let searchCandidateResult = response.data;
+            const nameUnique = searchCandidateResult.filter((searchItem: ISearch, idx: number, arr: ISearch[]) => {
+              return arr.findIndex((item) => item.name === searchItem.name) === idx;
+            });
+
+            setSearchCandidateResult(nameUnique);
           } else {
             setIsSearched(false);
           }
@@ -177,7 +207,6 @@ const StockRecord = () => {
         })
         .finally(() => {});
     }
-
     return;
   }, [searchWord]);
   return (
@@ -196,7 +225,10 @@ const StockRecord = () => {
             <SearchForm>
               <SearchBox className={isSearched === true ? 'active' : ''}>
                 <SearchInput
-                  // placeholder="종목명을 입력해주세요."
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="종목명을 입력해주세요."
+                  onKeyDown={changeIdxNum}
                   onClick={() => {
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);
@@ -208,6 +240,7 @@ const StockRecord = () => {
                     setIsClickSearchInput(!isClickSearchInput);
                     setIsSearched(false);
                   }}
+                  value={searchWord}
                 ></SearchInput>
                 <SearchImg
                   src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
@@ -238,8 +271,16 @@ const StockRecord = () => {
                       margin: '0',
                     }}
                   >
-                    {searchResult.map((search) => (
-                      <SearchItem>{search.register_date}</SearchItem>
+                    {searchCandidateResult.map((search, idx: number) => (
+                      <SearchItem
+                        key={search.name}
+                        onClick={() => {
+                          onClickSearchItem(search.name);
+                        }}
+                        isFocus={focusIdx === idx}
+                      >
+                        {search.name}
+                      </SearchItem>
                     ))}
                   </ul>
                 </div>

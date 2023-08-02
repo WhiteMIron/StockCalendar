@@ -19,3 +19,8 @@ export interface Istock {
   news: string;
   interest: boolean;
 }
+
+export interface ISearch {
+  name: string;
+  register_date: string;
+}
