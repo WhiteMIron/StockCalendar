@@ -28,6 +28,7 @@ type StockTitleProps = {
 
 type SearchItemProps = {
   isFocus: boolean;
+  isMovingKey: boolean;
 };
 
 export const CalendarContainer = styled.div`
@@ -224,7 +225,6 @@ export const SearchBox = styled.div`
   border-radius: 24px;
 
   &.active {
-    /* border: 1px solid #60d6bf; */
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
@@ -376,17 +376,15 @@ export const DateInfoGroup = styled.div`
 `;
 
 export const SearchItem = styled.li<SearchItemProps>`
-  ${(props) =>
-    props.isFocus === true &&
-    css`
-      cursor: pointer;
-      background: #76baff;
-    `}
-
+  background-color: ${(props) => props.isFocus && '#76baff'};
   padding: 5px 10px;
 
-  &:hover {
-    cursor: pointer;
-    background: #76baff;
-  }
+  ${(props) =>
+    props.isMovingKey === false &&
+    css`
+      &:hover {
+        cursor: pointer;
+        background: #76baff;
+      }
+    `}
 `;

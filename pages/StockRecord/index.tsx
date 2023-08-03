@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
@@ -44,8 +44,9 @@ import { ISearch, Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
 import StocksTodayMemo from '@components/StocksMemo/StocksTodayMemo';
 import { DateValue } from '@typings/date';
-import { abort } from 'process';
 import useInput from '@hooks/useInput';
+import { isEmpty } from '@utils/common';
+import uuid from 'react-uuid';
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<DateValue>(new Date());
@@ -53,10 +54,12 @@ const StockRecord = () => {
 
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
-  const [searchCandidateResult, setSearchCandidateResult] = useState<ISearch[]>([]);
-  const [searchWord, onChangeSearchWord, setSearchWord] = useInput('');
+  const [searchCandidateUniqueResult, setSearchCandidateUniqueResult] = useState<ISearch[]>([]);
+  const [searchCandidateDupResult, setSearchCandidateDupResult] = useState<ISearch[]>([]);
+  // const [searchWord, onChangeSearchWord, setSearchWord] = useInput('');
+  const [searchWord, setSearchWord] = useState('');
 
-  const [mark, setMark] = useState([]);
+  const [mark, setMark] = useState<ISearch[]>([]);
   const [searchMark, setSearchMark] = useState<ISearch[]>([]);
 
   const [selected, setIsSelected] = useState(false);
@@ -65,12 +68,17 @@ const StockRecord = () => {
   const [isEditRecord, setIsEditRecord] = useState(false);
 
   const [isClickSearchInput, setIsClickSearchInput] = useState(false);
+  const [isClickSearched, setIsClickSearched] = useState(false);
   const [isSearched, setIsSearched] = useState(false);
+
   const [resetRecordState, setResetRecordState] = useState(false);
   const [focusIdx, setFocusIdx] = useState(-1);
+  const [isMovingKey, setIsMovingKey] = useState(false);
 
-  const autoRef = useRef<HTMLLIElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const test = useRef<HTMLLIElement>(null);
+
   const {
     data: userData,
     error,
@@ -131,31 +139,64 @@ const StockRecord = () => {
     }
     startDate = startDateArr.join('-');
   };
-  const onClickSearchItem = (name: String) => {
-    const searchResult = searchCandidateResult.filter((searchItem: ISearch) => {
-      return searchItem.name === name;
+  const onClickSearchItem = (e: React.MouseEvent<HTMLLIElement>) => {
+    const searchResult = searchCandidateUniqueResult.filter((searchItem: ISearch) => {
+      return searchItem.name === e.currentTarget.dataset.name;
     });
+    if (e.currentTarget.dataset.name) {
+      setSearchWord(e.currentTarget.dataset.name);
+    }
     setSearchMark(searchResult);
   };
 
-  const changeIdxNum = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') {
-      setFocusIdx((prev) => (prev + 1) % searchCandidateResult.length);
-      setSearchWord(searchCandidateResult[(focusIdx + 1) % searchCandidateResult.length]?.name);
-    }
-    if (e.key === 'ArrowUp') {
-      setFocusIdx((prev) => (prev - 1 + searchCandidateResult.length) % searchCandidateResult.length);
-      setSearchWord(
-        searchCandidateResult[(focusIdx - 1 + searchCandidateResult.length) % searchCandidateResult.length]?.name,
-      );
-    }
-    if (e.key === 'Escape') {
-      setFocusIdx(-1);
-    }
-    if (e.key === 'Enter') {
-      setSearchWord(searchCandidateResult[focusIdx]?.name);
-    }
+  const onChangeSearchWord = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchWord(e.target.value);
   };
+  const mousedown = (index: number) => {
+    setFocusIdx(index);
+    setIsMovingKey(false);
+  };
+
+  const changeIdxNum = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'ArrowDown') {
+        setIsMovingKey(true);
+        setFocusIdx((prev) => prev + 1);
+        setSearchWord(
+          searchCandidateUniqueResult[focusIdx < searchCandidateUniqueResult.length - 1 ? focusIdx + 1 : focusIdx]
+            ?.name,
+        );
+      }
+      if (e.key === 'ArrowUp') {
+        setIsMovingKey(true);
+        setFocusIdx((prev) => (prev > 0 ? prev - 1 : 0));
+        setSearchWord(searchCandidateUniqueResult[focusIdx > 0 ? focusIdx - 1 : 0]?.name);
+      }
+      if (e.key === 'Escape') {
+        setFocusIdx(-1);
+      }
+      if (e.key === 'Enter') {
+        setIsClickSearched(true);
+        setIsSearched(false);
+        setMark(() => {
+          return searchCandidateDupResult.filter(
+            (search) => search.name === searchCandidateUniqueResult[focusIdx].name,
+          );
+        });
+      }
+    },
+    [
+      focusIdx,
+      setIsMovingKey,
+      setFocusIdx,
+      setSearchWord,
+      setIsClickSearched,
+      setIsSearched,
+      setMark,
+      searchCandidateUniqueResult,
+      searchCandidateDupResult,
+    ],
+  );
   if (!userData) {
     navigate('/login');
     // return <Navigate to="/login"></Navigate>;
@@ -184,20 +225,21 @@ const StockRecord = () => {
   }, [dateValue]);
 
   useEffect(() => {
-    if (isClickSearchInput) {
+    if (focusIdx === -1) {
       axios
         .get('/api/word-search', { params: { word: searchWord } })
         .then((response) => {
-          if (response.data) {
+          if (!isEmpty(response.data)) {
             setIsSearched(() => {
               return true;
             });
+            setSearchCandidateDupResult(response.data);
             let searchCandidateResult = response.data;
             const nameUnique = searchCandidateResult.filter((searchItem: ISearch, idx: number, arr: ISearch[]) => {
               return arr.findIndex((item) => item.name === searchItem.name) === idx;
             });
-
-            setSearchCandidateResult(nameUnique);
+            setFocusIdx(-1);
+            setSearchCandidateUniqueResult(nameUnique);
           } else {
             setIsSearched(false);
           }
@@ -209,6 +251,7 @@ const StockRecord = () => {
     }
     return;
   }, [searchWord]);
+
   return (
     <Layout user={userData}>
       <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
@@ -232,8 +275,10 @@ const StockRecord = () => {
                   onClick={() => {
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);
-                      // setMark([]);
                     }
+                  }}
+                  onFocus={() => {
+                    setFocusIdx(-1);
                   }}
                   onChange={onChangeSearchWord}
                   onBlur={() => {
@@ -245,8 +290,15 @@ const StockRecord = () => {
                 <SearchImg
                   src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
                   alt="검색"
+                  onClick={() => {
+                    alert('c');
+                  }}
                 ></SearchImg>
-                {isClickSearchInput ? <SearchContainer className={isSearched ? 'searched' : ''} /> : <></>}
+                {isClickSearchInput && !isSearched ? (
+                  <SearchContainer className={isClickSearched ? 'searched' : ''} />
+                ) : (
+                  <></>
+                )}
               </SearchBox>
 
               {isSearched ? (
@@ -271,13 +323,14 @@ const StockRecord = () => {
                       margin: '0',
                     }}
                   >
-                    {searchCandidateResult.map((search, idx: number) => (
+                    {searchCandidateUniqueResult.map((search, idx: number) => (
                       <SearchItem
-                        key={search.name}
-                        onClick={() => {
-                          onClickSearchItem(search.name);
-                        }}
+                        key={uuid()}
+                        data-name={search.name}
+                        onMouseDown={onClickSearchItem}
                         isFocus={focusIdx === idx}
+                        onMouseMove={() => mousedown(idx)}
+                        isMovingKey={isMovingKey}
                       >
                         {search.name}
                       </SearchItem>
@@ -299,8 +352,9 @@ const StockRecord = () => {
                 formatDay={(locale, date) => moment(date).format('DD')}
                 tileContent={({ date, view }) => {
                   let html = [];
-                  if (mark.find((x) => x === moment(date).format('YYYY-MM-DD'))) {
-                    html.push(<Dot />);
+
+                  if (mark.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
+                    html.push(<Dot key={uuid()} />);
                   }
                   return (
                     <>
