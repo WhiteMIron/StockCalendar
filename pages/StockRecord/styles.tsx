@@ -214,6 +214,7 @@ export const SearchContainer = styled.div`
 export const SearchForm = styled.div`
   position: relative;
   display: flex;
+  flex-direction: column;
 `;
 
 export const SearchBox = styled.div`
@@ -377,8 +378,8 @@ export const DateInfoGroup = styled.div`
 
 export const SearchItem = styled.li<SearchItemProps>`
   background-color: ${(props) => props.isFocus && '#76baff'};
-  padding: 5px 10px;
-
+  padding: 5px 0 5px 25px;
+  position: relative;
   ${(props) =>
     props.isMovingKey === false &&
     css`
@@ -387,4 +388,17 @@ export const SearchItem = styled.li<SearchItemProps>`
         background: #76baff;
       }
     `}
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    background-image: url('https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png');
+    top: 8px;
+    left: 6px;
+    width: 20px;
+    height: 20px;
+    -webkit-background-size: 13px 13px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+  }
 `;

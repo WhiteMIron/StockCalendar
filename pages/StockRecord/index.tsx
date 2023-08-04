@@ -60,7 +60,7 @@ const StockRecord = () => {
   const [searchWord, setSearchWord] = useState('');
 
   const [mark, setMark] = useState<ISearch[]>([]);
-  const [searchMark, setSearchMark] = useState<ISearch[]>([]);
+  const [searchMark, setSearchMark] = useState<ISearch[] | null>([]);
 
   const [selected, setIsSelected] = useState(false);
 
@@ -140,17 +140,43 @@ const StockRecord = () => {
     startDate = startDateArr.join('-');
   };
   const onClickSearchItem = (e: React.MouseEvent<HTMLLIElement>) => {
-    const searchResult = searchCandidateUniqueResult.filter((searchItem: ISearch) => {
-      return searchItem.name === e.currentTarget.dataset.name;
-    });
+    setIsClickSearched(true);
+
     if (e.currentTarget.dataset.name) {
       setSearchWord(e.currentTarget.dataset.name);
     }
-    setSearchMark(searchResult);
+
+    axios
+      .get('/api/word-search', { params: { word: searchWord } })
+      .then((response) => {
+        if (!isEmpty(response.data)) {
+          setIsSearched(() => {
+            return true;
+          });
+
+          setSearchMark(() => {
+            return response.data;
+          });
+        } else {
+          setIsSearched(false);
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => {
+        setIsClickSearched(true);
+        setIsSearched(false);
+      });
   };
 
   const onChangeSearchWord = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsClickSearched(false);
     setSearchWord(e.target.value);
+
+    if (isMovingKey) {
+      setIsMovingKey(false);
+    }
   };
   const mousedown = (index: number) => {
     setFocusIdx(index);
@@ -160,6 +186,9 @@ const StockRecord = () => {
   const changeIdxNum = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'ArrowDown') {
+        if (!isSearched && !isEmpty(searchCandidateDupResult)) {
+          setIsSearched(true);
+        }
         setIsMovingKey(true);
         setFocusIdx((prev) => prev + 1);
         setSearchWord(
@@ -168,6 +197,10 @@ const StockRecord = () => {
         );
       }
       if (e.key === 'ArrowUp') {
+        if (!isSearched && !isEmpty(searchCandidateDupResult)) {
+          setIsSearched(true);
+        }
+
         setIsMovingKey(true);
         setFocusIdx((prev) => (prev > 0 ? prev - 1 : 0));
         setSearchWord(searchCandidateUniqueResult[focusIdx > 0 ? focusIdx - 1 : 0]?.name);
@@ -176,13 +209,30 @@ const StockRecord = () => {
         setFocusIdx(-1);
       }
       if (e.key === 'Enter') {
-        setIsClickSearched(true);
-        setIsSearched(false);
-        setMark(() => {
-          return searchCandidateDupResult.filter(
-            (search) => search.name === searchCandidateUniqueResult[focusIdx].name,
-          );
-        });
+        axios
+          .get('/api/word-search', { params: { word: searchWord } })
+          .then((response) => {
+            let searchResult = response.data;
+            if (!isEmpty(response.data)) {
+              setIsSearched(() => {
+                return true;
+              });
+              setSearchMark(() => {
+                return searchResult.filter((searchItem: ISearch) => {
+                  return searchItem.name === searchWord;
+                });
+              });
+            } else {
+              setIsSearched(false);
+            }
+          })
+          .catch((error) => {
+            console.log(error.response);
+          })
+          .finally(() => {
+            setIsClickSearched(true);
+            setIsSearched(false);
+          });
       }
     },
     [
@@ -192,7 +242,8 @@ const StockRecord = () => {
       setSearchWord,
       setIsClickSearched,
       setIsSearched,
-      setMark,
+      setSearchMark,
+
       searchCandidateUniqueResult,
       searchCandidateDupResult,
     ],
@@ -225,30 +276,37 @@ const StockRecord = () => {
   }, [dateValue]);
 
   useEffect(() => {
-    if (focusIdx === -1) {
-      axios
-        .get('/api/word-search', { params: { word: searchWord } })
-        .then((response) => {
-          if (!isEmpty(response.data)) {
-            setIsSearched(() => {
-              return true;
-            });
-            setSearchCandidateDupResult(response.data);
-            let searchCandidateResult = response.data;
-            const nameUnique = searchCandidateResult.filter((searchItem: ISearch, idx: number, arr: ISearch[]) => {
-              return arr.findIndex((item) => item.name === searchItem.name) === idx;
-            });
-            setFocusIdx(-1);
-            setSearchCandidateUniqueResult(nameUnique);
-          } else {
-            setIsSearched(false);
-          }
-        })
-        .catch((error) => {
-          console.log(error.response);
-        })
-        .finally(() => {});
+    if (!isEmpty(searchWord)) {
+      if (!isClickSearched && !isMovingKey) {
+        axios
+          .get('/api/word-search', { params: { word: searchWord } })
+          .then((response) => {
+            if (!isEmpty(response.data)) {
+              setSearchCandidateDupResult(response.data);
+              setIsSearched(() => {
+                return true;
+              });
+              let searchCandidateResult = response.data;
+              const nameUnique = searchCandidateResult.filter((searchItem: ISearch, idx: number, arr: ISearch[]) => {
+                return arr.findIndex((item) => item.name === searchItem.name) === idx;
+              });
+              setFocusIdx(-1);
+              setSearchCandidateUniqueResult(nameUnique);
+            } else {
+              setIsSearched(false);
+            }
+          })
+          .catch((error) => {
+            console.log(error.response);
+          })
+          .finally(() => {});
+      }
+    } else {
+      setSearchCandidateDupResult([]);
+      setSearchCandidateUniqueResult([]);
+      setIsSearched(false);
     }
+
     return;
   }, [searchWord]);
 
@@ -273,8 +331,17 @@ const StockRecord = () => {
                   placeholder="종목명을 입력해주세요."
                   onKeyDown={changeIdxNum}
                   onClick={() => {
+                    setIsClickSearched(false);
+                    setSearchMark(null);
+
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);
+                    }
+
+                    if (!isEmpty(searchCandidateDupResult)) {
+                      setIsSearched(true);
+                    } else {
+                      setIsSearched(false);
                     }
                   }}
                   onFocus={() => {
@@ -283,7 +350,7 @@ const StockRecord = () => {
                   onChange={onChangeSearchWord}
                   onBlur={() => {
                     setIsClickSearchInput(!isClickSearchInput);
-                    setIsSearched(false);
+                    setIsSearched(() => false);
                   }}
                   value={searchWord}
                 ></SearchInput>
@@ -291,16 +358,38 @@ const StockRecord = () => {
                   src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
                   alt="검색"
                   onClick={() => {
-                    alert('c');
+                    axios
+                      .get('/api/word-search', { params: { word: searchWord } })
+                      .then((response) => {
+                        let searchResult = response.data;
+                        if (!isEmpty(searchResult)) {
+                          setIsSearched(() => {
+                            return true;
+                          });
+                          setSearchMark(() => {
+                            return searchResult.filter((searchItem: ISearch) => {
+                              return searchItem.name === searchWord;
+                            });
+                          });
+                        } else {
+                          setIsSearched(false);
+                        }
+                      })
+                      .catch((error) => {
+                        console.log(error.response);
+                      })
+                      .finally(() => {
+                        setIsClickSearched(true);
+                        setIsSearched(false);
+                      });
                   }}
                 ></SearchImg>
                 {isClickSearchInput && !isSearched ? (
-                  <SearchContainer className={isClickSearched ? 'searched' : ''} />
+                  <SearchContainer className={isEmpty(searchWord) ? '' : 'searched'} />
                 ) : (
                   <></>
                 )}
               </SearchBox>
-
               {isSearched ? (
                 <div
                   style={{
@@ -340,6 +429,13 @@ const StockRecord = () => {
               ) : (
                 <></>
               )}
+              {!isEmpty(searchMark) && isClickSearched ? (
+                <div style={{ marginTop: '10px', textAlign: 'center' }}>검색 건수 : {searchMark?.length}건</div>
+              ) : isClickSearched ? (
+                <div style={{ marginTop: '10px', textAlign: 'center' }}>검색 결과가 없습니다.</div>
+              ) : (
+                <></>
+              )}
             </SearchForm>
             <CalendarBox>
               <Calendar
@@ -352,8 +448,7 @@ const StockRecord = () => {
                 formatDay={(locale, date) => moment(date).format('DD')}
                 tileContent={({ date, view }) => {
                   let html = [];
-
-                  if (mark.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
+                  if (searchMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
                     html.push(<Dot key={uuid()} />);
                   }
                   return (
