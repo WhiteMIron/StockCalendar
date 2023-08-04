@@ -75,10 +75,6 @@ const StockRecord = () => {
   const [focusIdx, setFocusIdx] = useState(-1);
   const [isMovingKey, setIsMovingKey] = useState(false);
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const test = useRef<HTMLLIElement>(null);
-
   const {
     data: userData,
     error,
@@ -254,6 +250,7 @@ const StockRecord = () => {
   }
 
   useEffect(() => {
+    let abortController = new AbortController();
     let dateTmp;
     if (dateValue) {
       dateTmp = new Date(dateValue?.toString());
@@ -272,10 +269,14 @@ const StockRecord = () => {
           setIsRecord(false);
         });
     }
-    return;
+    return () => {
+      abortController.abort();
+    };
   }, [dateValue]);
 
   useEffect(() => {
+    let abortController = new AbortController();
+
     if (!isEmpty(searchWord)) {
       if (!isClickSearched && !isMovingKey) {
         axios
@@ -306,8 +307,9 @@ const StockRecord = () => {
       setSearchCandidateUniqueResult([]);
       setIsSearched(false);
     }
-
-    return;
+    return () => {
+      abortController.abort();
+    };
   }, [searchWord]);
 
   return (
@@ -326,8 +328,6 @@ const StockRecord = () => {
             <SearchForm>
               <SearchBox className={isSearched === true ? 'active' : ''}>
                 <SearchInput
-                  ref={searchInputRef}
-                  type="text"
                   placeholder="종목명을 입력해주세요."
                   onKeyDown={changeIdxNum}
                   onClick={() => {
