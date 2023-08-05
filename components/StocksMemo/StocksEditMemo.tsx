@@ -9,7 +9,6 @@ import {
   MemoContainer,
   BtnGroup,
   Form,
-  Icon,
   StockInfo,
   TextArea,
 } from './styles';
@@ -24,6 +23,7 @@ import { Istock } from '@typings/stock';
 import moment from 'moment';
 import info from '@images/info.png';
 import styled from '@emotion/styled';
+import { cmpToday } from '@utils/common';
 interface itemProps {
   stocks: Istock[];
   selectedItem: Istock | null;
@@ -60,11 +60,6 @@ const StocksEditMemo = ({
   const [stockSecondNews, setSecondNews] = useInput(selectedItem!!.news[1]);
   const handleModal = () => {
     setModalOpen(!modalOpen);
-  };
-
-  const cmpToday = (date: string) => {
-    let result = moment(moment().format('YYYY-MM-DD')).isSame(moment(date.replaceAll('/', '-')));
-    return result;
   };
 
   const onSubmit = useCallback(
@@ -117,41 +112,48 @@ const StocksEditMemo = ({
         <Form>
           {cmpToday(selectedDate) ? (
             <StockNameGroup>
-              <Label>
-                <StockInfo>종목코드</StockInfo>
-                <Input
-                  type="email"
-                  marginBottom="10px"
-                  value={stockCode}
-                  onChange={onStockCode}
-                  onBlur={() => {}}
-                ></Input>
-              </Label>
+              {/* <Label> */}
+              <StockInfo>종목코드</StockInfo>
+              <Input
+                type="email"
+                marginBottom="10px"
+                value={stockCode}
+                onChange={onStockCode}
+                onBlur={() => {}}
+              ></Input>
+              {/* </Label> */}
             </StockNameGroup>
           ) : (
             <>
+              <StockNameGroup>
+                <StockInfo>
+                  <span>종목명</span>
+                </StockInfo>
+                <div style={{ marginBottom: '10px' }}>{stockName}</div>
+
+                {/* <Label>
+                  <span>종목명</span>
+                  <Input type="email" marginBottom="10px" value={stockName} onChange={setStockName}></Input>
+                </Label> */}
+              </StockNameGroup>
+
               <StockNameGroup>
                 <Label>
                   <StockInfo>
                     종목코드
                     <Icon>
                       <img src={info} width="13px" height="13px"></img>
+                      <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
                     </Icon>
-                    <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
                   </StockInfo>
-                  <Input
+                  {/* <Input
                     type="email"
                     marginBottom="10px"
                     value={stockCode}
                     onChange={onStockCode}
                     onBlur={() => {}}
-                  ></Input>
-                </Label>
-              </StockNameGroup>
-              <StockNameGroup>
-                <Label>
-                  <span>종목명</span>
-                  <Input type="email" marginBottom="10px" value={stockName} onChange={setStockName}></Input>
+                  ></Input> */}
+                  <div style={{ marginBottom: '10px' }}>{stockCode}</div>
                 </Label>
               </StockNameGroup>
               <StockNameGroup>
@@ -354,5 +356,32 @@ const FormContainer = styled.div`
   overflow-x: hidden;
   overscroll-behavior: contain;
   height: 100%;
+`;
+
+const Icon = styled.div`
+  margin-left: 5px;
+  display: inline;
+  position: relative;
+
+  > span {
+    position: absolute;
+    background-color: #333;
+    width: 400px;
+    color: #fff;
+    top: -40px;
+    left: 150px;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: 0.5s;
+
+    visibility: hidden;
+  }
+  &:hover > span {
+    visibility: visible;
+    opacity: 1;
+  }
 `;
 export default StocksEditMemo;

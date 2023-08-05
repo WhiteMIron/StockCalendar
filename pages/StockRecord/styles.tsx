@@ -60,7 +60,7 @@ export const CalendarBox = styled.div`
   .react-calendar__tile {
     /* height: 60px; */
 
-    height: 50px;
+    height: 55px;
   }
   .react-calendar__month-view__weekdays {
     font-size: 14px;
@@ -147,6 +147,13 @@ export const CalendarBox = styled.div`
   .react-calendar__month-view__days__day--weekend {
     color: red;
   }
+
+  .react-calendar__tile.react-calendar__tile--active.react-calendar__tile--range.react-calendar__tile--rangeStart.react-calendar__tile--rangeEnd.react-calendar__tile--rangeBothEnds.react-calendar__month-view__days__day {
+    position: relative;
+  }
+  .react-calendar__tile.react-calendar__month-view__days__day {
+    position: relative;
+  }
 `;
 
 export const recordContainer = styled.div`
@@ -169,13 +176,23 @@ export const Label = styled.label`
     /* font-weight: 700; */
   }
 `;
-export const Dot = styled.div`
-  height: 8px;
-  width: 8px;
-  background-color: #f87171;
+export const SearchDot = styled.div`
+  height: 6px;
+  width: 6px;
+  background-color: #ffff76;
   border-radius: 50%;
-  display: flex;
-  margin-left: 1px;
+  display: inline;
+  position: absolute;
+  left: 27;
+`;
+
+export const DataDot = styled.div`
+  height: 6px;
+  width: 6px;
+  background-color: #71f8ae;
+  border-radius: 50%;
+  position: absolute;
+  left: 18;
 `;
 
 export const Input = styled.input<inputProps>`
@@ -199,7 +216,7 @@ export const SearchContainer = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 24px;
+  border-radius: 20px;
   pointer-events: none;
   width: 100%;
   height: 100%;
@@ -336,7 +353,9 @@ export const Content = styled.div`
 `;
 export const StockNameGroup = styled.div``;
 
-export const StockInfoGroup = styled.div``;
+export const StockInfoGroup = styled.div`
+  margin-bottom: 8px;
+`;
 
 export const StockPriceGroup = styled.div``;
 

@@ -6,7 +6,7 @@ import useInput from '@hooks/useInput';
 import axios from 'axios';
 import moment from 'moment';
 import { DateValue } from '@typings/date';
-
+import uuid from 'react-uuid';
 interface StocksTodayMemoProps {
   dateValue: DateValue;
   selectedDate: string;
@@ -89,7 +89,7 @@ const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
         <TextBox>
           {summary.split('\n').map((line) => {
             return (
-              <span key="1">
+              <span key={uuid()}>
                 {line}
                 <br />
               </span>

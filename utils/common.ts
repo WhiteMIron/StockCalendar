@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const isEmpty = function <T>(value: T) {
   if (
     value == '' ||
@@ -9,4 +11,9 @@ export const isEmpty = function <T>(value: T) {
   } else {
     return false;
   }
+};
+
+export const cmpToday = (date: string) => {
+  let result = moment(moment().format('YYYY-MM-DD')).isSame(moment(date.replaceAll('/', '-')));
+  return result;
 };

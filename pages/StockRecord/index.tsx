@@ -9,7 +9,7 @@ import {
   Button,
   CalendarBox,
   CalendarContainer,
-  Dot,
+  SearchDot,
   DownButton,
   Input,
   Label,
@@ -26,6 +26,7 @@ import {
   DateInfo,
   DateInfoGroup,
   SearchItem,
+  DataDot,
 } from './styles';
 import StocksMemo from '@components/StocksMemo/StocksMemo';
 import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
@@ -47,6 +48,7 @@ import { DateValue } from '@typings/date';
 import useInput from '@hooks/useInput';
 import { isEmpty } from '@utils/common';
 import uuid from 'react-uuid';
+import { start } from 'repl';
 
 const StockRecord = () => {
   const [dateValue, onChangeDateValue] = useState<DateValue>(new Date());
@@ -56,10 +58,9 @@ const StockRecord = () => {
   const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
   const [searchCandidateUniqueResult, setSearchCandidateUniqueResult] = useState<ISearch[]>([]);
   const [searchCandidateDupResult, setSearchCandidateDupResult] = useState<ISearch[]>([]);
-  // const [searchWord, onChangeSearchWord, setSearchWord] = useInput('');
   const [searchWord, setSearchWord] = useState('');
 
-  const [mark, setMark] = useState<ISearch[]>([]);
+  const [dataMark, setDataMark] = useState<ISearch[] | null>([]);
   const [searchMark, setSearchMark] = useState<ISearch[] | null>([]);
 
   const [selected, setIsSelected] = useState(false);
@@ -74,6 +75,8 @@ const StockRecord = () => {
   const [resetRecordState, setResetRecordState] = useState(false);
   const [focusIdx, setFocusIdx] = useState(-1);
   const [isMovingKey, setIsMovingKey] = useState(false);
+
+  const [startDate, setStartDate] = useState(moment(dateValue?.toString()).format('YYYY/MM'));
 
   const {
     data: userData,
@@ -125,15 +128,17 @@ const StockRecord = () => {
 
   const onActiveStartDateChange = () => {
     const navigation__label = document.querySelector('.react-calendar__navigation__label > span') as HTMLElement;
-    let startDate = navigation__label.innerText;
 
-    startDate = startDate.replaceAll('월', '/');
+    let startDate = navigation__label.innerText;
+    startDate = startDate.replaceAll('월', '');
+
     let startDateArr = [];
     startDateArr = startDate.split('년 ');
-    if (startDateArr[1].length < 2) {
+    if (startDateArr[1]?.length < 2) {
       startDateArr[1] = startDateArr[1].padStart(2, '0');
     }
-    startDate = startDateArr.join('-');
+    startDate = startDateArr.join('/');
+    setStartDate(startDate);
   };
   const onClickSearchItem = (e: React.MouseEvent<HTMLLIElement>) => {
     setIsClickSearched(true);
@@ -186,7 +191,9 @@ const StockRecord = () => {
           setIsSearched(true);
         }
         setIsMovingKey(true);
-        setFocusIdx((prev) => prev + 1);
+        setFocusIdx((prev) => {
+          return prev < searchCandidateUniqueResult.length - 1 ? prev + 1 : -1;
+        });
         setSearchWord(
           searchCandidateUniqueResult[focusIdx < searchCandidateUniqueResult.length - 1 ? focusIdx + 1 : focusIdx]
             ?.name,
@@ -198,7 +205,7 @@ const StockRecord = () => {
         }
 
         setIsMovingKey(true);
-        setFocusIdx((prev) => (prev > 0 ? prev - 1 : 0));
+        setFocusIdx((prev) => (prev > 0 ? prev - 1 : prev + 1));
         setSearchWord(searchCandidateUniqueResult[focusIdx > 0 ? focusIdx - 1 : 0]?.name);
       }
       if (e.key === 'Escape') {
@@ -220,6 +227,9 @@ const StockRecord = () => {
               });
             } else {
               setIsSearched(false);
+              setSearchMark([]);
+              setSearchCandidateDupResult(() => []);
+              setSearchCandidateUniqueResult(() => []);
             }
           })
           .catch((error) => {
@@ -232,16 +242,16 @@ const StockRecord = () => {
       }
     },
     [
-      focusIdx,
       setIsMovingKey,
       setFocusIdx,
       setSearchWord,
       setIsClickSearched,
       setIsSearched,
       setSearchMark,
-
       searchCandidateUniqueResult,
       searchCandidateDupResult,
+      searchWord,
+      focusIdx,
     ],
   );
   if (!userData) {
@@ -275,42 +285,80 @@ const StockRecord = () => {
   }, [dateValue]);
 
   useEffect(() => {
-    let abortController = new AbortController();
-
-    if (!isEmpty(searchWord)) {
-      if (!isClickSearched && !isMovingKey) {
-        axios
-          .get('/api/word-search', { params: { word: searchWord } })
-          .then((response) => {
-            if (!isEmpty(response.data)) {
-              setSearchCandidateDupResult(response.data);
-              setIsSearched(() => {
-                return true;
-              });
-              let searchCandidateResult = response.data;
-              const nameUnique = searchCandidateResult.filter((searchItem: ISearch, idx: number, arr: ISearch[]) => {
-                return arr.findIndex((item) => item.name === searchItem.name) === idx;
-              });
-              setFocusIdx(-1);
-              setSearchCandidateUniqueResult(nameUnique);
-            } else {
-              setIsSearched(false);
-            }
-          })
-          .catch((error) => {
-            console.log(error.response);
-          })
-          .finally(() => {});
-      }
-    } else {
-      setSearchCandidateDupResult([]);
-      setSearchCandidateUniqueResult([]);
-      setIsSearched(false);
-    }
-    return () => {
-      abortController.abort();
+    const fetchData = async () => {
+      await axios
+        .get('/api/word-search', { params: { word: searchWord } })
+        .then((response) => {
+          if (!isEmpty(response.data)) {
+            setSearchCandidateDupResult(response.data);
+            setIsSearched(() => {
+              return true;
+            });
+            let searchCandidateResult = response.data;
+            const nameUnique = searchCandidateResult.filter((searchItem: ISearch, idx: number, arr: ISearch[]) => {
+              return arr.findIndex((item) => item.name === searchItem.name) === idx;
+            });
+            setFocusIdx(-1);
+            setSearchCandidateUniqueResult(nameUnique);
+          } else {
+            setIsSearched(false);
+            setSearchCandidateDupResult(() => []);
+            setSearchCandidateUniqueResult(() => []);
+            setSearchMark([]);
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+        })
+        .finally(() => {});
     };
+
+    if (!isClickSearched && !isMovingKey) {
+      fetchData();
+    }
+    return () => {};
   }, [searchWord]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await axios
+        .get('/api/record-all-search', { params: { startDate: startDate } })
+        .then((response) => {
+          setDataMark(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response);
+        })
+        .finally(() => {});
+    };
+
+    fetchData();
+    return () => {};
+  }, [startDate, stocks]);
+
+  useEffect(() => {
+    console.log('searchMark:', searchMark, ' ', 'isClickSearched:', isClickSearched);
+    if (!isEmpty(searchMark)) {
+      axios
+        .get('/api/word-search', { params: { word: searchWord } })
+        .then((response) => {
+          let searchResult = response.data;
+          if (!isEmpty(response.data)) {
+            setSearchMark(() => {
+              return searchResult.filter((searchItem: ISearch) => {
+                return searchItem.name === searchWord;
+              });
+            });
+          } else {
+            setSearchMark([]);
+          }
+        })
+        .catch((error) => {
+          console.log(error.response);
+        })
+        .finally(() => {});
+    }
+  }, [stocks]);
 
   return (
     <Layout user={userData}>
@@ -351,6 +399,7 @@ const StockRecord = () => {
                   onBlur={() => {
                     setIsClickSearchInput(!isClickSearchInput);
                     setIsSearched(() => false);
+                    setIsClickSearched(false);
                   }}
                   value={searchWord}
                 ></SearchInput>
@@ -372,7 +421,9 @@ const StockRecord = () => {
                             });
                           });
                         } else {
-                          setIsSearched(false);
+                          setSearchCandidateDupResult(() => []);
+                          setSearchCandidateUniqueResult(() => []);
+                          setSearchMark([]);
                         }
                       })
                       .catch((error) => {
@@ -448,12 +499,25 @@ const StockRecord = () => {
                 formatDay={(locale, date) => moment(date).format('DD')}
                 tileContent={({ date, view }) => {
                   let html = [];
+                  if (dataMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
+                    html.push(<DataDot key={uuid()} />);
+                  }
+
                   if (searchMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
-                    html.push(<Dot key={uuid()} />);
+                    html.push(<SearchDot key={uuid()} />);
                   }
                   return (
                     <>
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{html}</div>
+                      <div
+                        style={{
+                          marginTop: '5px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
+                        {html}
+                      </div>
                     </>
                   );
                 }}

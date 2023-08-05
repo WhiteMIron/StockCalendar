@@ -27,6 +27,13 @@ type inputProps = {
 type ButtonGroupProps = {
   justifyContent?: string;
   padding?: string;
+  marginBottom?: string;
+};
+
+type SelectButtonProps = {
+  marginRight?: string;
+  background?: string;
+  opacity?: string;
 };
 
 type TextAreaProps = {
@@ -146,11 +153,10 @@ export const Label = styled.label`
   & > span {
     display: block;
     text-align: left;
-    padding-bottom: 8px;
+    /* padding-bottom: 8px; */
     font-size: 15px;
     cursor: pointer;
     line-height: 1.46666667;
-    /* font-weight: 700; */
   }
 `;
 export const Dot = styled.div`
@@ -241,6 +247,11 @@ export const AddButton = styled(Button)`
     outline-color: #67dbad;
     outline-width: 1px;
   }
+`;
+
+export const SelectButton = styled(Button)`
+  width: 100px;
+  transition: all 0.1s ease-in-out;
 `;
 
 export const UpButton = styled(Button)`
@@ -389,6 +400,7 @@ export const BtnGroup = styled.div<ButtonGroupProps>`
   justify-content: ${(props) => props.justifyContent};
   width: 100%;
   padding: ${(props) => props.padding};
+  margin-bottom: ${(props) => props.marginBottom};
 `;
 
 BtnGroup.defaultProps = {
@@ -403,6 +415,13 @@ export const StockInfo = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 8px;
+  & > span {
+    display: block;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+    line-height: 1.46666667;
+  }
 `;
 
 export const Icon = styled.div`

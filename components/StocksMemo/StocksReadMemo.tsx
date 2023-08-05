@@ -24,6 +24,7 @@ import { CSSTransition } from 'react-transition-group';
 import BackDrop from '@components/Modal/BackDrop';
 import Modal from '@components/Modal/Modal';
 import axios from 'axios';
+import uuid from 'react-uuid';
 interface StocksReadMemoProps {
   stocks: Istock[];
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
@@ -173,7 +174,7 @@ const StocksReadMemo = ({
                   <TextBox>
                     {selectedItem?.issue.split('\n').map((line) => {
                       return (
-                        <span key="1">
+                        <span key={uuid()}>
                           {line}
                           <br />
                         </span>
