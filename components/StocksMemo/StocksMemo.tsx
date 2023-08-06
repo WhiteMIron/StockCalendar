@@ -473,7 +473,6 @@ const StocksMemo = ({
                 </SelectButton>
               )}
             </BtnGroup>{' '}
-            {/* {checks.isInterest && isInterest == null ? <Error>관심종목 여부를 선택해주세요.</Error> : <></>} */}
             {checks.isInterest && isInterest == null ? <Error>관심종목 여부를 선택해주세요.</Error> : <></>}
           </ChangeInfoGroup>
 
