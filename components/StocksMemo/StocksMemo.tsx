@@ -58,7 +58,6 @@ const StocksMemo = ({
   setIsSelectedItem,
 }: itemProps) => {
   const [isInterest, setIsInterest] = useState<boolean | null>(null);
-  const [priceStatus, setPriceStatus] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [stockName, onStockName, setStockName] = useInput(selectedItem?.name);
 
@@ -66,8 +65,9 @@ const StocksMemo = ({
 
   const [stockCategory, onCategory, setCategory] = useInput(selectedItem?.Category.name);
   const [stockCurrentPrice, onStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
-  const [stockDiffPrice, onDiffPrice, setDiffPrice] = useInput(selectedItem?.diff_price);
-  const [stockDaysRange, onStockDaysRange, setStockDaysRange] = useInput(selectedItem?.days_range);
+
+  const [stockPreviousClose, onPreviousClose, setPreviousClose] = useInput(selectedItem?.previous_close);
+
   const [stockIssue, onStockIssue, setStockIssue] = useInput('');
   const [stockFirstNews, onFirstNews, setFirstNews] = useInput('');
   const [stockSecondNews, onSecondNews, setSecondNews] = useInput('');
@@ -75,16 +75,12 @@ const StocksMemo = ({
   const [checks, setChecks] = useState<ObjType>({
     code: false,
     category: false,
-
-    priceStatus: false,
     currentPrice: false,
-    diffPrice: false,
-    daysRange: false,
+    previousClose: false,
     isInterest: false,
   });
 
   const numRegex = /^[0-9]+$/;
-  const percentRegex = /^([0-9]{1}\d{0,2}[.]\d{2,2})?$/;
 
   const handleModal = () => {
     setModalOpen(!modalOpen);
@@ -94,15 +90,13 @@ const StocksMemo = ({
     if (resetRecordState) {
       setStockCode('');
       setCategory('');
-      setDiffPrice('');
-      setStockDaysRange('');
+      setPreviousClose('');
+
       setStockIssue('');
       setFirstNews('');
       setSecondNews('');
       setStockCurrentPrice('');
       setResetRecordState(false);
-      setPriceStatus('');
-      setStockDaysRange('');
 
       setChecks({
         ...checks,
@@ -110,9 +104,8 @@ const StocksMemo = ({
         category: false,
         currentPrice: false,
         diffPrice: false,
-        daysRange: false,
-        priceStatus: false,
         isInterest: false,
+        previousClose: false,
       });
     }
     return;
@@ -129,24 +122,23 @@ const StocksMemo = ({
       let params;
       if (cmpToday(selectedDate)) {
         params = {
+          date: selectedDate,
           code: stockCode,
           categoryName: stockCategory,
-          date: selectedDate,
           news: JSON.stringify(newsArr),
           isInterest: isInterest,
           issue: stockIssue,
         };
       } else {
         params = {
+          date: selectedDate,
           code: stockCode,
           categoryName: stockCategory,
-          date: selectedDate,
+          currentPrice: stockCurrentPrice,
+          previousClose: stockPreviousClose,
           news: JSON.stringify(newsArr),
           isInterest: isInterest,
           issue: stockIssue,
-          diffPrice: stockDiffPrice,
-          currentPrice: stockCurrentPrice,
-          daysRange: stockDaysRange,
         };
       }
       axios
@@ -175,7 +167,7 @@ const StocksMemo = ({
           height: '100%',
         }}
       >
-        <Form>
+        <Form autoComplete="off">
           {cmpToday(selectedDate) ? (
             <StockInfoGroup>
               <Label>
@@ -235,10 +227,13 @@ const StocksMemo = ({
                 <Label htmlFor="currentPrice">
                   <StockInfo>
                     <span>종가</span>
-                    <Icon>
+                    <GuideIcon>
                       <img src={info} width="13px" height="13px"></img>
-                      <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
-                    </Icon>
+                      <GuideText width="400px" left="160" top="-60">
+                        오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.
+                        <br /> ,(구분자)는 제거됩니다.
+                      </GuideText>
+                    </GuideIcon>
                   </StockInfo>
                   <Input
                     id="currentPrice"
@@ -250,6 +245,7 @@ const StocksMemo = ({
                       if (!checks.currentPrice) {
                         setChecks({ ...checks, currentPrice: !checks.currentPrice });
                       }
+                      setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
                     }}
                   ></Input>
                 </Label>{' '}
@@ -262,133 +258,34 @@ const StocksMemo = ({
                 )}{' '}
               </StockInfoGroup>
               <StockInfoGroup>
-                <Label htmlFor="priceStatus">
-                  <span style={{ marginBottom: '8px' }}>전일대비 (ex: 8500) </span>{' '}
-                  <BtnGroup justifyContent="start" marginBottom="10px">
-                    {priceStatus === 'up' ? (
-                      <SelectButton
-                        type="button"
-                        marginRight="10px"
-                        bgColor="red"
-                        onClick={() => {
-                          setPriceStatus(() => 'up');
-                        }}
-                      >
-                        +
-                      </SelectButton>
-                    ) : (
-                      <SelectButton
-                        type="button"
-                        marginRight="10px"
-                        bgColor="red"
-                        onClick={() => {
-                          setPriceStatus(() => 'up');
-                        }}
-                        opacity="0.5"
-                      >
-                        +
-                      </SelectButton>
-                    )}
-                    {priceStatus === 'down' ? (
-                      <SelectButton
-                        type="button"
-                        marginRight="10px"
-                        bgColor="dodgerblue"
-                        onClick={() => {
-                          setPriceStatus(() => 'down');
-                        }}
-                      >
-                        -
-                      </SelectButton>
-                    ) : (
-                      <SelectButton
-                        type="button"
-                        marginRight="10px"
-                        bgColor="dodgerblue"
-                        onClick={() => {
-                          setPriceStatus(() => 'down');
-                        }}
-                        opacity="0.5"
-                      >
-                        -
-                      </SelectButton>
-                    )}
-                  </BtnGroup>
+                <Label htmlFor="">
+                  <StockInfo>
+                    <span>전일종가</span>
+                    <GuideIcon>
+                      <img src={info} width="13px" height="13px"></img>
+                      <GuideText width="200px" left="31">
+                        ,(구분자)는 제거됩니다.
+                      </GuideText>
+                    </GuideIcon>
+                  </StockInfo>
                   <Input
                     id="priceStatus"
                     type="text"
                     marginBottom="10px"
-                    value={stockDiffPrice || ''}
-                    onChange={onDiffPrice}
+                    value={stockPreviousClose || ''}
+                    onChange={onPreviousClose}
                     onBlur={() => {
-                      if (!checks.diffPrice) {
-                        if (!stockDiffPrice) {
-                          setChecks((prev) => {
-                            return {
-                              ...prev,
-                              ['diffPrice']: true,
-                            };
-                          });
-                        } else {
-                          setChecks((prev) => {
-                            return {
-                              ...prev,
-                              ['diffPrice']: false,
-                            };
-                          });
-                        }
-                        if (!checks.priceStatus) {
-                          if (!isEmpty(priceStatus)) {
-                            setChecks((prev) => {
-                              return {
-                                ...prev,
-                                ['priceStatus']: true,
-                              };
-                            });
-                          } else {
-                            setChecks((prev) => {
-                              return {
-                                ...prev,
-                                ['priceStatus']: true,
-                              };
-                            });
-                          }
-                        }
+                      if (!checks.previousClose) {
+                        setChecks({ ...checks, previousClose: !checks.previousClose });
                       }
+                      setPreviousClose((prev) => prev?.replaceAll(',', ''));
                     }}
                   ></Input>
                 </Label>{' '}
-                {checks.priceStatus && !priceStatus ? <Error>+/-를 선택해주세요.</Error> : <></>}
-                {checks.diffPrice && !stockDiffPrice ? (
-                  <Error>전일대비를 입력해주세요.</Error>
-                ) : checks.diffPrice && !numRegex.test(stockDiffPrice || '') ? (
+                {checks.previousClose && !stockPreviousClose ? (
+                  <Error>전일종가를 입력해주세요.</Error>
+                ) : checks.previousClose && !numRegex.test(stockPreviousClose || '') ? (
                   <Error>숫자만 입력해주세요.</Error>
-                ) : (
-                  <></>
-                )}{' '}
-              </StockInfoGroup>
-              <StockInfoGroup>
-                <Label>
-                  <StockInfo>
-                    <span>등락률 (ex: 3.18, 0.00) </span>
-                  </StockInfo>
-
-                  <Input
-                    type="text"
-                    marginBottom="10px"
-                    value={stockDaysRange || ''}
-                    onChange={onStockDaysRange}
-                    onBlur={() => {
-                      if (!checks.daysRange) {
-                        setChecks({ ...checks, daysRange: !checks.daysRange });
-                      }
-                    }}
-                  ></Input>
-                </Label>{' '}
-                {checks.daysRange && !stockDaysRange ? (
-                  <Error>등락률을 입력해주세요.</Error>
-                ) : checks.daysRange && !percentRegex.test(stockDaysRange || '') ? (
-                  <Error>형식에 맞춰서 입력해주세요.</Error>
                 ) : (
                   <></>
                 )}{' '}
@@ -603,31 +500,43 @@ const FormContainer = styled.div`
   height: 100%;
 `;
 
-const Icon = styled.div`
+const GuideIcon = styled.div`
   margin-left: 5px;
   display: inline;
   position: relative;
 
-  > span {
+  > div {
     position: absolute;
     background-color: #333;
-    width: 400px;
     color: #fff;
-    top: -40px;
-    left: 150px;
     text-align: center;
     padding: 5px;
     border-radius: 5px;
     transform: translateX(-50%);
     opacity: 0;
     transition: 0.5s;
-
     visibility: hidden;
   }
 
-  &:hover > span {
+  &:hover > div {
     visibility: visible;
     opacity: 1;
   }
 `;
+
+type GuideTextProps = {
+  width?: string;
+  top?: string;
+  left?: string;
+};
+
+const GuideText = styled.div<GuideTextProps>`
+  width: ${(props) => props.width};
+  left: ${(props) => props.left};
+  top: ${(props) => props.top};
+`;
+
+GuideText.defaultProps = {
+  top: '-40px',
+};
 export default StocksMemo;

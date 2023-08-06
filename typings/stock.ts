@@ -6,8 +6,8 @@ export interface Istock {
   id: number;
   name: string;
   current_price: string;
-  // previous_close: string;
-  days_range: string;
+  previous_close: string;
+  diff_percent: string;
   title: string;
   desc: string;
   reason: string;

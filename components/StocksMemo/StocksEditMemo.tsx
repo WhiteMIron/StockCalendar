@@ -12,7 +12,7 @@ import {
   StockInfo,
   TextArea,
 } from './styles';
-import { ChangeInfoGroup, Content, NewsGroup, StockNameGroup, StockPriceGroup } from '@pages/StockRecord/styles';
+import { ChangeInfoGroup, Content, NewsGroup, StockInfoGroup, StockPriceGroup } from '@pages/StockRecord/styles';
 import ModalPortal from '@components/Modal/ModalPotal';
 import Modal from '@components/Modal/Modal';
 import { CSSTransition } from 'react-transition-group';
@@ -36,6 +36,10 @@ interface itemProps {
   isEditRecord: boolean;
 }
 
+interface ObjType {
+  [key: string]: boolean;
+}
+
 const StocksEditMemo = ({
   stocks,
   setStocks,
@@ -49,15 +53,22 @@ const StocksEditMemo = ({
 }: itemProps) => {
   const [isInterest, setIsInterest] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [stockName, setStockName] = useInput(selectedItem?.name);
+  const [stockName] = useInput(selectedItem?.name);
   const [stockCode, onStockCode] = useInput(selectedItem?.stock_code);
   const [stockCategory, setCategory] = useInput(selectedItem?.Category.name);
   const [stockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
-  const [stockDaysRange, setStockDaysRange] = useInput(selectedItem?.days_range);
-  const [stockDiffPrice, setDiffPrice] = useInput(selectedItem?.diff_price);
+  const [stockPreviousClose, setPreviousClose] = useInput(selectedItem?.previous_close);
+
   const [stockIssue, setStockIssue] = useInput(selectedItem?.issue);
   const [stockFirstNews, setFirstNews] = useInput(selectedItem!!.news[0]);
   const [stockSecondNews, setSecondNews] = useInput(selectedItem!!.news[1]);
+
+  const [checks, setChecks] = useState<ObjType>({
+    category: false,
+    currentPrice: false,
+    previousClose: false,
+  });
+
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
@@ -67,18 +78,33 @@ const StocksEditMemo = ({
       setModalOpen(false);
       e.preventDefault();
 
+      let params;
       let newsArr = [];
       newsArr.push(stockFirstNews);
       newsArr.push(stockSecondNews);
 
-      axios
-        .put('/api/stock', {
+      if (cmpToday(selectedDate)) {
+        params = {
           id: selectedItem?.id,
           categoryName: stockCategory,
           news: JSON.stringify(newsArr),
           isInterest: isInterest,
           issue: stockIssue,
-        })
+        };
+      } else {
+        params = {
+          id: selectedItem?.id,
+          categoryName: stockCategory,
+          news: JSON.stringify(newsArr),
+          isInterest: isInterest,
+          issue: stockIssue,
+          currentPrice: stockCurrentPrice,
+          diffPrice: stockPreviousClose,
+        };
+      }
+
+      axios
+        .put('/api/stock', params)
         .then((response) => {
           setStocks(
             stocks.map((stock) => {
@@ -103,7 +129,16 @@ const StocksEditMemo = ({
         })
         .finally(() => {});
     },
-    [stockCode, stockCategory, stockFirstNews, stockSecondNews, isInterest, stockIssue],
+    [
+      stockCode,
+      stockCategory,
+      stockFirstNews,
+      stockSecondNews,
+      isInterest,
+      stockIssue,
+      stockCurrentPrice,
+      stockPreviousClose,
+    ],
   );
 
   return (
@@ -111,33 +146,13 @@ const StocksEditMemo = ({
       <FormContainer>
         <Form>
           {cmpToday(selectedDate) ? (
-            <StockNameGroup>
-              {/* <Label> */}
-              <StockInfo>종목코드</StockInfo>
-              <Input
-                type="email"
-                marginBottom="10px"
-                value={stockCode}
-                onChange={onStockCode}
-                onBlur={() => {}}
-              ></Input>
-              {/* </Label> */}
-            </StockNameGroup>
-          ) : (
             <>
-              <StockNameGroup>
-                <StockInfo>
-                  <span>종목명</span>
-                </StockInfo>
-                <div style={{ marginBottom: '10px' }}>{stockName}</div>
+              <StockInfoGroup>
+                <StockInfo>종목명</StockInfo>
+                <div style={{ marginBottom: '10px', padding: '5px' }}>{stockName}</div>
+              </StockInfoGroup>
 
-                {/* <Label>
-                  <span>종목명</span>
-                  <Input type="email" marginBottom="10px" value={stockName} onChange={setStockName}></Input>
-                </Label> */}
-              </StockNameGroup>
-
-              <StockNameGroup>
+              <StockInfoGroup>
                 <Label>
                   <StockInfo>
                     종목코드
@@ -146,61 +161,68 @@ const StocksEditMemo = ({
                       <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
                     </Icon>
                   </StockInfo>
-                  {/* <Input
-                    type="email"
-                    marginBottom="10px"
-                    value={stockCode}
-                    onChange={onStockCode}
-                    onBlur={() => {}}
-                  ></Input> */}
-                  <div style={{ marginBottom: '10px' }}>{stockCode}</div>
+                  <div style={{ marginBottom: '10px', padding: '5px' }}>{stockCode}</div>
                 </Label>
-              </StockNameGroup>
-              <StockNameGroup>
+              </StockInfoGroup>
+            </>
+          ) : (
+            <>
+              <StockInfoGroup>
+                <StockInfo>종목명</StockInfo>
+                <div style={{ marginBottom: '10px', padding: '5px' }}>{stockName}</div>
+              </StockInfoGroup>
+
+              <StockInfoGroup>
                 <Label>
-                  <span>종가</span>
+                  <StockInfo>
+                    종목코드
+                    <Icon>
+                      <img src={info} width="13px" height="13px"></img>
+                      <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
+                    </Icon>
+                  </StockInfo>
+                  <div style={{ marginBottom: '10px', padding: '5px' }}>{stockCode}</div>
+                </Label>
+              </StockInfoGroup>
+              <StockInfoGroup>
+                <Label>
+                  <StockInfo>
+                    <span>종가</span>
+                  </StockInfo>
                   <Input
-                    type="email"
+                    type="text"
                     marginBottom="10px"
                     value={stockCurrentPrice}
                     onChange={setStockCurrentPrice}
                     onBlur={() => {}}
                   ></Input>
                 </Label>
-              </StockNameGroup>
-              <StockNameGroup>
+              </StockInfoGroup>
+              <StockInfoGroup>
                 <Label>
-                  <span>전일대비 (ex: 8,500) </span>
+                  <StockInfo>
+                    <span>전일종가 </span>
+                  </StockInfo>
                   <Input
-                    type="email"
+                    type="text"
                     marginBottom="10px"
-                    value={stockDiffPrice}
-                    onChange={setDiffPrice}
+                    value={stockPreviousClose}
+                    onChange={setPreviousClose}
                     onBlur={() => {}}
                   ></Input>
                 </Label>
-              </StockNameGroup>
-              <StockNameGroup>
-                <Label>
-                  <span>등락률 (ex: +3.18%, -3.18%) </span>
-                  <Input
-                    type="email"
-                    marginBottom="10px"
-                    value={stockDaysRange}
-                    onChange={setStockDaysRange}
-                    onBlur={() => {}}
-                  ></Input>
-                </Label>
-              </StockNameGroup>
+              </StockInfoGroup>
             </>
           )}
 
-          <StockPriceGroup>
+          <StockInfoGroup>
             <Label>
-              카테고리
+              <StockInfo>
+                <span>카테고리</span>
+              </StockInfo>
               <Input marginBottom="10px" value={stockCategory} onChange={setCategory}></Input>
             </Label>
-          </StockPriceGroup>
+          </StockInfoGroup>
           <ChangeInfoGroup>
             <Content>
               <span>관심종목</span>
@@ -254,7 +276,9 @@ const StocksEditMemo = ({
             </Content>
           </ChangeInfoGroup>
           <Label>
-            <span>이슈</span>
+            <StockInfo>
+              <span>이슈</span>
+            </StockInfo>
             <TextArea
               value={stockIssue}
               onChange={setStockIssue}
@@ -267,7 +291,9 @@ const StocksEditMemo = ({
           </Label>
           <NewsGroup>
             <Label>
-              <span>뉴스</span>
+              <StockInfo>
+                <span>뉴스</span>
+              </StockInfo>
               <Input marginBottom="10px" value={stockFirstNews} onChange={setFirstNews}></Input>
               <Input marginBottom="10px" value={stockSecondNews} onChange={setSecondNews}></Input>
             </Label>
@@ -384,4 +410,6 @@ const Icon = styled.div`
     opacity: 1;
   }
 `;
+
+const DataInfo = styled.div``;
 export default StocksEditMemo;

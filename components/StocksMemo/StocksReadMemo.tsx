@@ -2,16 +2,19 @@ import { css } from '@emotion/react';
 import {
   BtnGroup,
   Button,
-  DownAmount,
+  DiffAmount,
   DownPrice,
   Icon,
+  PriceBox,
   ReadMemoContainer,
+  SamePrice,
   StockInfo,
   Table,
   Tbody,
   Td,
   Th,
   Tr,
+  UpPrice,
 } from './styles';
 import React, { SetStateAction, useState } from 'react';
 import { Istock } from '@typings/stock';
@@ -152,20 +155,41 @@ const StocksReadMemo = ({
               </Td>
             </Tr>
             <Tr>
-              <Th>카테고리</Th>
-              <Td>{selectedItem!!.Category.name}</Td>
-            </Tr>
-
-            <Tr>
               <Th>종가</Th>
               <Td>
-                <DownPrice>
-                  <strong>{selectedItem!!.current_price}</strong>
-                </DownPrice>
-                <DownAmount>
-                  {selectedItem?.diff_price} ({selectedItem!!.days_range})
-                </DownAmount>
+                {selectedItem!!.current_price > selectedItem!!.previous_close ? (
+                  <PriceBox color="#f93345">
+                    <UpPrice>
+                      <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
+                    </UpPrice>
+                    <DiffAmount>
+                      {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
+                    </DiffAmount>
+                  </PriceBox>
+                ) : selectedItem!!.current_price < selectedItem!!.previous_close ? (
+                  <PriceBox color="#1e8df9">
+                    <DownPrice>
+                      <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
+                    </DownPrice>
+                    <DiffAmount>
+                      {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
+                    </DiffAmount>
+                  </PriceBox>
+                ) : (
+                  <PriceBox color="#424242">
+                    <SamePrice>
+                      <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
+                    </SamePrice>
+                    <DiffAmount>
+                      {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
+                    </DiffAmount>
+                  </PriceBox>
+                )}
               </Td>
+            </Tr>{' '}
+            <Tr>
+              <Th>카테고리</Th>
+              <Td>{selectedItem!!.Category.name}</Td>
             </Tr>
             {selectedItem!!.issue ? (
               <Tr>
@@ -184,7 +208,6 @@ const StocksReadMemo = ({
                 </Td>
               </Tr>
             ) : null}
-
             {!isEmpty(selectedItem!!.news) ? (
               <>
                 <Tr>
@@ -256,10 +279,10 @@ const StocksReadMemo = ({
 const TextBox = styled.div`
   word-break: break-all;
   display: flex;
+  justify-content: center;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
   background: white;
   overflow-y: auto;
 `;

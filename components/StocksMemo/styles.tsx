@@ -335,11 +335,6 @@ export const Table = styled.table`
 export const Td = styled.td`
   padding: 10px;
   border: 1px solid #dadada;
-  > span {
-    color: dodgerblue;
-  }
-  > p {
-  }
 
   &:nth-of-type(1) {
     border-bottom: none;
@@ -374,6 +369,48 @@ export const TableBox = styled.div`
   box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
 `;
 
+type PriceBox = {
+  color?: string;
+};
+
+export const PriceBox = styled.div<PriceBox>`
+  color: ${(props) => props.color};
+`;
+
+export const SamePrice = styled.span`
+  position: relative;
+  margin-right: 22px;
+  font-size: 16px;
+  &::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 7;
+    right: -22;
+    background-image: url(${arrow});
+    width: 22px;
+    height: 19px;
+    background-position: -265px 0;
+  }
+`;
+
+export const UpPrice = styled.span`
+  position: relative;
+  margin-right: 22px;
+  font-size: 16px;
+  &::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 7;
+    right: -22;
+    background-image: url(${arrow});
+    width: 17px;
+    height: 19px;
+    background-position: -200px 0;
+  }
+`;
+
 export const DownPrice = styled.span`
   position: relative;
   margin-right: 22px;
@@ -382,7 +419,7 @@ export const DownPrice = styled.span`
     display: block;
     content: '';
     position: absolute;
-    top: 10;
+    top: 9;
     right: -22;
     background-image: url(${arrow});
     width: 22px;
@@ -391,7 +428,7 @@ export const DownPrice = styled.span`
   }
 `;
 
-export const DownAmount = styled.span`
+export const DiffAmount = styled.span`
   font-size: 15px;
 `;
 
