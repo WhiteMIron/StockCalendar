@@ -17,7 +17,7 @@ export interface Istock {
   Category: Icategory;
   issue: string;
   news: string;
-  interest: boolean;
+  isInterest: boolean;
 }
 
 export interface ISearch {

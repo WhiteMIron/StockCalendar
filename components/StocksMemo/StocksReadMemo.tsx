@@ -19,7 +19,7 @@ import {
 import React, { SetStateAction, useState } from 'react';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
-import crwon from '@images/crown.png';
+import crown from '@images/crown.png';
 import { isEmpty } from '@utils/common';
 import styled from '@emotion/styled';
 import ModalPortal from '@components/Modal/ModalPotal';
@@ -72,164 +72,170 @@ const StocksReadMemo = ({
 
   return (
     <ReadMemoContainer>
-      <div>
-        <Table>
-          <colgroup>
-            <col
-              css={css`
-                width: 30%;
-              `}
-            ></col>
-            <col
-              css={css`
-                width: 70%;
-              `}
-            ></col>
-          </colgroup>
-          <Tbody>
-            <Tr>
-              {/* <Icon>
-                {' '}
-                <img src={crwon} width="13px" height="13px"></img>
-              </Icon> */}
-              <Th>종목명(종목코드)</Th>
-              <Td>
+      <Table>
+        <colgroup>
+          <col
+            css={css`
+              width: 30%;
+            `}
+          ></col>
+          <col
+            css={css`
+              width: 70%;
+            `}
+          ></col>
+        </colgroup>
+        <Tbody>
+          <Tr>
+            <Th>종목명(종목코드)</Th>
+            <Td>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  position: 'relative',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div
+                  style={{
+                    flexShrink: 0,
+                  }}
+                >
+                  <a href={financeAddress + selectedItem?.stock_code} target="_blank">
+                    <StockInfo>
+                      {selectedItem!!.isInterest ? (
+                        <Icon>
+                          <img src={crown} width="13px" height="13px"></img>
+                        </Icon>
+                      ) : (
+                        <></>
+                      )}
+                      {selectedItem!!.name}
+                      {'('}
+                      {selectedItem!!.stock_code}
+                      {')'}
+                      <Icon>
+                        <img src={link} width="13px" height="13px"></img>
+                        <span>네이버증권으로 이동합니다.</span>
+                      </Icon>
+                    </StockInfo>
+                  </a>{' '}
+                </div>
                 <div
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    position: 'relative',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    flexShrink: 0,
                   }}
                 >
-                  <div
-                    style={{
-                      flexShrink: 0,
+                  <Button
+                    marginRight="5px"
+                    bgColor="#00BB9D"
+                    padding="0 10px"
+                    onClick={() => {
+                      setIsSelected(false);
+                      setIsRecord(false);
+                      setIsEditRecord(true);
                     }}
                   >
-                    <a href={financeAddress + selectedItem?.stock_code} target="_blank">
-                      <StockInfo>
-                        {selectedItem!!.name}
-                        {'('}
-                        {selectedItem!!.stock_code}
-                        {')'}
-
-                        <Icon>
-                          <img src={link} width="13px" height="13px"></img>
-                          <span>네이버증권으로 이동합니다.</span>
-                        </Icon>
-                      </StockInfo>
-                    </a>{' '}
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      flexShrink: 0,
+                    수정
+                  </Button>
+                  <Button
+                    bgColor="#8e8e8e"
+                    padding="0 10px"
+                    onClick={() => {
+                      handleModal();
                     }}
                   >
-                    <Button
-                      marginRight="5px"
-                      bgColor="#76baff"
-                      padding="0 10px"
-                      onClick={() => {
-                        setIsSelected(false);
-                        setIsRecord(false);
-                        setIsEditRecord(true);
-                      }}
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      bgColor="#8e8e8e"
-                      padding="0 10px"
-                      onClick={() => {
-                        handleModal();
-                      }}
-                    >
-                      삭제
-                    </Button>
-                  </div>
+                    삭제
+                  </Button>
                 </div>
-              </Td>
-            </Tr>
+              </div>
+            </Td>
+          </Tr>
+          <Tr>
+            <Th>종가</Th>
+            <Td>
+              {selectedItem!!.current_price > selectedItem!!.previous_close ? (
+                <PriceBox color="#f93345">
+                  <UpPrice>
+                    <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
+                  </UpPrice>
+                  <DiffAmount>
+                    {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
+                  </DiffAmount>
+                </PriceBox>
+              ) : selectedItem!!.current_price < selectedItem!!.previous_close ? (
+                <PriceBox color="#1e8df9">
+                  <DownPrice>
+                    <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
+                  </DownPrice>
+                  <DiffAmount>
+                    {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
+                  </DiffAmount>
+                </PriceBox>
+              ) : (
+                <PriceBox color="#424242">
+                  <SamePrice>
+                    <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
+                  </SamePrice>
+                  <DiffAmount>
+                    {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
+                  </DiffAmount>
+                </PriceBox>
+              )}
+            </Td>
+          </Tr>
+          <Tr>
+            <Th>카테고리</Th>
+            <Td>{selectedItem!!.Category.name}</Td>
+          </Tr>
+          {!isEmpty(selectedItem!!.issue) ? (
             <Tr>
-              <Th>종가</Th>
+              <Th>이슈</Th>
               <Td>
-                {selectedItem!!.current_price > selectedItem!!.previous_close ? (
-                  <PriceBox color="#f93345">
-                    <UpPrice>
-                      <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
-                    </UpPrice>
-                    <DiffAmount>
-                      {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
-                    </DiffAmount>
-                  </PriceBox>
-                ) : selectedItem!!.current_price < selectedItem!!.previous_close ? (
-                  <PriceBox color="#1e8df9">
-                    <DownPrice>
-                      <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
-                    </DownPrice>
-                    <DiffAmount>
-                      {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
-                    </DiffAmount>
-                  </PriceBox>
-                ) : (
-                  <PriceBox color="#424242">
-                    <SamePrice>
-                      <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
-                    </SamePrice>
-                    <DiffAmount>
-                      {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
-                    </DiffAmount>
-                  </PriceBox>
-                )}
+                <TextBox>
+                  {selectedItem?.issue.split('\n').map((line) => {
+                    return (
+                      <span key={uuid()}>
+                        {line}
+                        <br />
+                      </span>
+                    );
+                  })}
+                </TextBox>
               </Td>
-            </Tr>{' '}
-            <Tr>
-              <Th>카테고리</Th>
-              <Td>{selectedItem!!.Category.name}</Td>
             </Tr>
-            {selectedItem!!.issue ? (
+          ) : null}
+          {!isEmpty(selectedItem!!.news) ? (
+            !isEmpty(selectedItem!!.news[0]) ? (
               <Tr>
-                <Th>이슈</Th>
+                <Th rowSpan={2}>뉴스</Th>
                 <Td>
-                  <TextBox>
-                    {selectedItem?.issue.split('\n').map((line) => {
-                      return (
-                        <span key={uuid()}>
-                          {line}
-                          <br />
-                        </span>
-                      );
-                    })}
-                  </TextBox>
+                  <a href={selectedItem!!.news[0]} target="_blank">
+                    {selectedItem!!.news[0]}
+                  </a>
                 </Td>
               </Tr>
-            ) : null}
-            {!isEmpty(selectedItem!!.news) ? (
-              <>
-                <Tr>
-                  <Th rowSpan={2}>뉴스</Th>
-                  <Td>
-                    <a href={selectedItem!!.news[0]} target="_blank">
-                      {selectedItem!!.news[0]}
-                    </a>
-                  </Td>
-                </Tr>
-                <Tr>
-                  <Td>
-                    <a href={selectedItem!!.news[1]} target="_blank">
-                      {selectedItem!!.news[1]}
-                    </a>
-                  </Td>
-                </Tr>
-              </>
-            ) : null}
-          </Tbody>
-        </Table>
-      </div>
+            ) : null
+          ) : null}
+          {!isEmpty(selectedItem!!.news) ? (
+            !isEmpty(selectedItem!!.news[1]) ? (
+              <Tr>
+                {!isEmpty(selectedItem!!.news[0]) ? null : <Th rowSpan={2}>뉴스</Th>}
+                <Td>
+                  <a href={selectedItem!!.news[1]} target="_blank">
+                    {selectedItem!!.news[1]}
+                  </a>
+                </Td>
+              </Tr>
+            ) : null
+          ) : null}
+        </Tbody>
+      </Table>
+
       <ModalPortal onClose={handleModal}>
         <CSSTransition
           in={modalOpen}

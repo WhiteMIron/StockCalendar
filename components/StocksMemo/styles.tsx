@@ -300,9 +300,7 @@ export const StockItem = styled.li`
 
 export const ReadMemoContainer = styled.div`
   width: 60%;
-  border-radius: 8px;
   background: white;
-  border: 1px rgba(0, 0, 0, 0.2) solid;
 `;
 
 export const MemoContainer = styled.div`
@@ -323,26 +321,13 @@ export const Table = styled.table`
   border-collapse: collapse;
   font-size: 15px;
   word-break: break-all;
-
-  & tr:nth-last-of-type(2) > th {
-    border-bottom: none;
-  }
-  & tr:nth-of-type(1) > td {
-    border-top: none;
-    border-right: none;
-  }
+  border-style: hidden;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #dadada;
 `;
 export const Td = styled.td`
   padding: 10px;
   border: 1px solid #dadada;
-
-  &:nth-of-type(1) {
-    border-bottom: none;
-    border-right: none;
-  }
-  &:nth-of-type(2) {
-    border-right: none;
-  }
 `;
 export const Tr = styled.tr`
   height: 50px;
@@ -350,9 +335,6 @@ export const Tr = styled.tr`
 
 export const Th = styled.th`
   border: 1px solid #dadada;
-  border-top: none;
-  border-left: none;
-  border-right: none;
   font-weight: normal;
   > span {
     color: dodgerblue;
@@ -462,6 +444,7 @@ export const StockInfo = styled.div`
 `;
 
 export const Icon = styled.div`
+  margin-right: 3px;
   margin-left: 5px;
   display: inline;
   position: relative;
@@ -487,32 +470,6 @@ export const Icon = styled.div`
     opacity: 1;
   }
 `;
-// export const Icon = styled.div`
-//   margin-left: 5px;
-//   display: inline;
-//   position: relative;
-
-//   > span {
-//     position: absolute;
-//     background-color: #333;
-//     width: 400px;
-//     color: #fff;
-//     top: -40px;
-//     text-align: center;
-//     padding: 5px;
-//     border-radius: 5px;
-//     transform: translateX(-50%);
-//     opacity: 0;
-//     transition: 0.5s;
-
-//     visibility: hidden;
-//   }
-
-//   &:hover > span {
-//     visibility: visible;
-//     opacity: 1;
-//   }
-// `;
 
 export const Error = styled.div`
   color: #e01e5a;

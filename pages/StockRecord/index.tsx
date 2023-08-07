@@ -115,12 +115,12 @@ const StockRecord = () => {
   const onStock = (stock: Istock) => {
     let stockTmp = stock;
 
+    console.log(stock)
     if (!Array.isArray(stockTmp.news)) {
       stockTmp.news = JSON.parse(stockTmp.news);
     }
 
     setSelectedItem(stockTmp);
-
     setIsSelected(true);
     setIsRecord(false);
     setIsEditRecord(false);

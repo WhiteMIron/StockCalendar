@@ -59,10 +59,8 @@ const StocksMemo = ({
 }: itemProps) => {
   const [isInterest, setIsInterest] = useState<boolean | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [stockName, onStockName, setStockName] = useInput(selectedItem?.name);
 
   const [stockCode, onStockCode, setStockCode] = useInput(selectedItem?.stock_code);
-
   const [stockCategory, onCategory, setCategory] = useInput(selectedItem?.Category.name);
   const [stockCurrentPrice, onStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
 
@@ -117,8 +115,13 @@ const StocksMemo = ({
       e.preventDefault();
 
       let newsArr = [];
-      newsArr.push(stockFirstNews);
-      newsArr.push(stockSecondNews);
+
+      if (!isEmpty(stockFirstNews)) {
+        newsArr.push(stockFirstNews);
+      }
+      if (!isEmpty(stockSecondNews)) {
+        newsArr.push(stockSecondNews);
+      }
       let params;
       if (cmpToday(selectedDate)) {
         params = {

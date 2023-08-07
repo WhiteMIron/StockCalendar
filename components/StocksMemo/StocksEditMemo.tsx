@@ -11,6 +11,7 @@ import {
   Form,
   StockInfo,
   TextArea,
+  Error,
 } from './styles';
 import { ChangeInfoGroup, Content, NewsGroup, StockInfoGroup, StockPriceGroup } from '@pages/StockRecord/styles';
 import ModalPortal from '@components/Modal/ModalPotal';
@@ -51,18 +52,19 @@ const StocksEditMemo = ({
   setIsSelected,
   setIsSelectedItem,
 }: itemProps) => {
-  const [isInterest, setIsInterest] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isInterest, setIsInterest] = useState(Boolean(selectedItem?.isInterest));
   const [stockName] = useInput(selectedItem?.name);
-  const [stockCode, onStockCode] = useInput(selectedItem?.stock_code);
-  const [stockCategory, setCategory] = useInput(selectedItem?.Category.name);
-  const [stockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
-  const [stockPreviousClose, setPreviousClose] = useInput(selectedItem?.previous_close);
+  const [stockCode] = useInput(selectedItem?.stock_code);
+  const [stockCategory, onChangeCategory] = useInput(selectedItem?.Category.name);
+  const [stockCurrentPrice, onChangeStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
+  const [stockPreviousClose, onChangePreviousClose] = useInput(selectedItem?.previous_close);
 
-  const [stockIssue, setStockIssue] = useInput(selectedItem?.issue);
-  const [stockFirstNews, setFirstNews] = useInput(selectedItem!!.news[0]);
-  const [stockSecondNews, setSecondNews] = useInput(selectedItem!!.news[1]);
+  const [stockIssue, onChangeStockIssue] = useInput(selectedItem?.issue);
+  const [stockFirstNews, onChangeFirstNews] = useInput(selectedItem!!.news[0]);
+  const [stockSecondNews, onChangeSecondNews] = useInput(selectedItem!!.news[1]);
 
+  const numRegex = /^[0-9]+$/;
   const [checks, setChecks] = useState<ObjType>({
     category: false,
     currentPrice: false,
@@ -90,6 +92,7 @@ const StocksEditMemo = ({
           news: JSON.stringify(newsArr),
           isInterest: isInterest,
           issue: stockIssue,
+          date: selectedDate,
         };
       } else {
         params = {
@@ -99,7 +102,8 @@ const StocksEditMemo = ({
           isInterest: isInterest,
           issue: stockIssue,
           currentPrice: stockCurrentPrice,
-          diffPrice: stockPreviousClose,
+          previousClose: stockPreviousClose,
+          date: selectedDate,
         };
       }
 
@@ -193,10 +197,22 @@ const StocksEditMemo = ({
                     type="text"
                     marginBottom="10px"
                     value={stockCurrentPrice}
-                    onChange={setStockCurrentPrice}
-                    onBlur={() => {}}
+                    onChange={onChangeStockCurrentPrice}
+                    onBlur={() => {
+                      if (!checks.currentPrice) {
+                        setChecks({ ...checks, currentPrice: !checks.currentPrice });
+                      }
+                      setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                    }}
                   ></Input>
                 </Label>
+                {checks.currentPrice && !stockCurrentPrice ? (
+                  <Error>종가를 입력해주세요.</Error>
+                ) : checks.currentPrice && !numRegex.test(stockCurrentPrice || '') ? (
+                  <Error>숫자만 입력해주세요.</Error>
+                ) : (
+                  <></>
+                )}{' '}
               </StockInfoGroup>
               <StockInfoGroup>
                 <Label>
@@ -207,10 +223,22 @@ const StocksEditMemo = ({
                     type="text"
                     marginBottom="10px"
                     value={stockPreviousClose}
-                    onChange={setPreviousClose}
-                    onBlur={() => {}}
+                    onChange={onChangePreviousClose}
+                    onBlur={() => {
+                      if (!checks.currentPrice) {
+                        setChecks({ ...checks, previousClose: !checks.previousClose });
+                      }
+                      setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                    }}
                   ></Input>
-                </Label>
+                </Label>{' '}
+                {checks.previousClose && !stockPreviousClose ? (
+                  <Error>전일종가를 입력해주세요.</Error>
+                ) : checks.previousClose && !numRegex.test(stockPreviousClose || '') ? (
+                  <Error>숫자만 입력해주세요.</Error>
+                ) : (
+                  <></>
+                )}{' '}
               </StockInfoGroup>
             </>
           )}
@@ -220,8 +248,19 @@ const StocksEditMemo = ({
               <StockInfo>
                 <span>카테고리</span>
               </StockInfo>
-              <Input marginBottom="10px" value={stockCategory} onChange={setCategory}></Input>
-            </Label>
+              <Input
+                marginBottom="10px"
+                value={stockCategory}
+                onChange={onChangeCategory}
+                onBlur={() => {
+                  if (!checks.category) {
+                    setChecks({ ...checks, category: !checks.category });
+                  }
+                  setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                }}
+              ></Input>
+            </Label>{' '}
+            {checks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}{' '}
           </StockInfoGroup>
           <ChangeInfoGroup>
             <Content>
@@ -281,7 +320,7 @@ const StocksEditMemo = ({
             </StockInfo>
             <TextArea
               value={stockIssue}
-              onChange={setStockIssue}
+              onChange={onChangeStockIssue}
               style={{
                 wordBreak: 'keep-all',
                 textAlign: 'justify',
@@ -294,8 +333,8 @@ const StocksEditMemo = ({
               <StockInfo>
                 <span>뉴스</span>
               </StockInfo>
-              <Input marginBottom="10px" value={stockFirstNews} onChange={setFirstNews}></Input>
-              <Input marginBottom="10px" value={stockSecondNews} onChange={setSecondNews}></Input>
+              <Input marginBottom="10px" value={stockFirstNews} onChange={onChangeFirstNews}></Input>
+              <Input marginBottom="10px" value={stockSecondNews} onChange={onChangeSecondNews}></Input>
             </Label>
           </NewsGroup>
         </Form>
