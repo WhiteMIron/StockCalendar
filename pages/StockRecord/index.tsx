@@ -115,7 +115,7 @@ const StockRecord = () => {
   const onStock = (stock: Istock) => {
     let stockTmp = stock;
 
-    console.log(stock)
+    console.log(stock);
     if (!Array.isArray(stockTmp.news)) {
       stockTmp.news = JSON.parse(stockTmp.news);
     }
@@ -542,6 +542,7 @@ const StockRecord = () => {
               setIsSelected={setIsSelected}
               setIsRecord={setIsRecord}
               setIsEditRecord={setIsEditRecord}
+              setIsSelectedItem={setSelectedItem}
             ></StocksReadMemo>
           ) : null}
 

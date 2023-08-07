@@ -84,6 +84,24 @@ const StocksMemo = ({
     setModalOpen(!modalOpen);
   };
 
+  const onCheckInterest = () => {
+    axios
+      .get('/api/check-interest', { params: { code: stockCode?.trim() } })
+      .then((response) => {
+        if (!isEmpty(response.data)) {
+          setIsInterest(true);
+          setChecks({ ...checks, isInterest: true });
+        } else {
+          setIsInterest(null);
+        }
+      })
+      .catch((error) => {
+        alert(error.response.data);
+        console.log(error.response);
+      })
+      .finally(() => {});
+  };
+
   useEffect(() => {
     if (resetRecordState) {
       setStockCode('');
@@ -148,7 +166,7 @@ const StocksMemo = ({
         .post('/api/stock', params)
         .then((response) => {
           setIsRecord(false);
-          setStocks([...stocks, response.data]);
+          setStocks([response.data, ...stocks]);
           setIsSelectedItem(response.data);
         })
         .catch((error) => {
@@ -186,6 +204,12 @@ const StocksMemo = ({
                     if (!checks.code) {
                       setChecks({ ...checks, code: !checks.code });
                     }
+                    if (stockCode == ' ') {
+                      setIsInterest(null);
+                    } else {
+                      onCheckInterest();
+                    }
+                    setStockCode((prev) => prev?.replaceAll(' ', ''));
                   }}
                 ></Input>
               </Label>
@@ -210,10 +234,13 @@ const StocksMemo = ({
                     value={stockCode || ''}
                     onChange={onStockCode}
                     onBlur={() => {
-                      console.log(numRegex.test('이름'));
                       if (!checks.code) {
                         setChecks({ ...checks, code: !checks.code });
                       }
+                      if (!isEmpty(stockCode)) {
+                        onCheckInterest();
+                      }
+                      setStockCode((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>
@@ -249,6 +276,7 @@ const StocksMemo = ({
                         setChecks({ ...checks, currentPrice: !checks.currentPrice });
                       }
                       setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                      setStockCurrentPrice((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>{' '}
@@ -282,6 +310,7 @@ const StocksMemo = ({
                         setChecks({ ...checks, previousClose: !checks.previousClose });
                       }
                       setPreviousClose((prev) => prev?.replaceAll(',', ''));
+                      setPreviousClose((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>{' '}
@@ -373,6 +402,11 @@ const StocksMemo = ({
                 </SelectButton>
               )}
             </BtnGroup>{' '}
+            {isInterest ? (
+              <Guide>관심종목으로 등록되어있는 종목입니다. 해제하시려면 아니오를 선택해주세요.</Guide>
+            ) : (
+              <></>
+            )}
             {checks.isInterest && isInterest == null ? <Error>관심종목 여부를 선택해주세요.</Error> : <></>}
           </ChangeInfoGroup>
 
@@ -542,4 +576,11 @@ const GuideText = styled.div<GuideTextProps>`
 GuideText.defaultProps = {
   top: '-40px',
 };
+
+const Guide = styled.div`
+  color: #00bb9d;
+  margin: 8px 0 16px;
+  font-weight: bold;
+`;
+
 export default StocksMemo;

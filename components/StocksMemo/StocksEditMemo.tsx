@@ -56,9 +56,9 @@ const StocksEditMemo = ({
   const [isInterest, setIsInterest] = useState(Boolean(selectedItem?.isInterest));
   const [stockName] = useInput(selectedItem?.name);
   const [stockCode] = useInput(selectedItem?.stock_code);
-  const [stockCategory, onChangeCategory] = useInput(selectedItem?.Category.name);
+  const [stockCategory, onChangeCategory, setStockCategory] = useInput(selectedItem?.Category.name);
   const [stockCurrentPrice, onChangeStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
-  const [stockPreviousClose, onChangePreviousClose] = useInput(selectedItem?.previous_close);
+  const [stockPreviousClose, onChangePreviousClose, setStockPreviousClose] = useInput(selectedItem?.previous_close);
 
   const [stockIssue, onChangeStockIssue] = useInput(selectedItem?.issue);
   const [stockFirstNews, onChangeFirstNews] = useInput(selectedItem!!.news[0]);
@@ -93,6 +93,7 @@ const StocksEditMemo = ({
           isInterest: isInterest,
           issue: stockIssue,
           date: selectedDate,
+          stockCode: stockCode,
         };
       } else {
         params = {
@@ -104,6 +105,7 @@ const StocksEditMemo = ({
           currentPrice: stockCurrentPrice,
           previousClose: stockPreviousClose,
           date: selectedDate,
+          stockCode: stockCode,
         };
       }
 
@@ -203,6 +205,7 @@ const StocksEditMemo = ({
                         setChecks({ ...checks, currentPrice: !checks.currentPrice });
                       }
                       setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                      setStockCurrentPrice((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>
@@ -228,7 +231,8 @@ const StocksEditMemo = ({
                       if (!checks.currentPrice) {
                         setChecks({ ...checks, previousClose: !checks.previousClose });
                       }
-                      setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                      setStockPreviousClose((prev) => prev?.replaceAll(',', ''));
+                      setStockPreviousClose((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>{' '}
@@ -256,7 +260,8 @@ const StocksEditMemo = ({
                   if (!checks.category) {
                     setChecks({ ...checks, category: !checks.category });
                   }
-                  setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                  setStockCategory((prev) => prev?.replaceAll(',', ''));
+                  setStockCategory((prev) => prev?.replaceAll(' ', ''));
                 }}
               ></Input>
             </Label>{' '}

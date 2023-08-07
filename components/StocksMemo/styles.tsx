@@ -328,6 +328,9 @@ export const Table = styled.table`
 export const Td = styled.td`
   padding: 10px;
   border: 1px solid #dadada;
+  > a:hover {
+    text-decoration: underline;
+  }
 `;
 export const Tr = styled.tr`
   height: 50px;

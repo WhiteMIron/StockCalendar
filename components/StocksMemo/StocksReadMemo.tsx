@@ -16,7 +16,7 @@ import {
   Tr,
   UpPrice,
 } from './styles';
-import React, { SetStateAction, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
 import crown from '@images/crown.png';
@@ -34,6 +34,7 @@ interface StocksReadMemoProps {
   setIsRecord: React.Dispatch<SetStateAction<boolean>>;
   setIsSelected: React.Dispatch<SetStateAction<boolean>>;
   setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
+  setIsSelectedItem: React.Dispatch<SetStateAction<Istock | null>>;
   selectedItem: Istock | null;
 }
 
@@ -43,6 +44,7 @@ const StocksReadMemo = ({
   setIsRecord,
   setIsSelected,
   setIsEditRecord,
+  setIsSelectedItem,
   selectedItem,
 }: StocksReadMemoProps) => {
   let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
@@ -51,6 +53,29 @@ const StocksReadMemo = ({
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
+  useEffect(() => {
+    axios
+      .get('/api/check-interest', { params: { code: selectedItem!!.stock_code } })
+      .then((response) => {
+        if (!isEmpty(response.data)) {
+          setIsSelectedItem({ ...selectedItem!!, isInterest: true });
+
+          const findIndex = stocks.findIndex((stock) => stock.stock_code == selectedItem!!.stock_code);
+          setStocks((stocks) => [
+            {
+              ...stocks[findIndex],
+              ['isInterest']: true,
+            },
+          ]);
+        }
+      })
+      .catch((error) => {
+        alert(error.response.data);
+        console.log(error.response);
+      })
+      .finally(() => {});
+    return;
+  }, []);
 
   const onSubmit = () => {
     setModalOpen(false);
@@ -196,16 +221,14 @@ const StocksReadMemo = ({
             <Tr>
               <Th>이슈</Th>
               <Td>
-                <TextBox>
-                  {selectedItem?.issue.split('\n').map((line) => {
-                    return (
-                      <span key={uuid()}>
-                        {line}
-                        <br />
-                      </span>
-                    );
-                  })}
-                </TextBox>
+                {selectedItem?.issue.split('\n').map((line) => {
+                  return (
+                    <span key={uuid()}>
+                      {line}
+                      <br />
+                    </span>
+                  );
+                })}
               </Td>
             </Tr>
           ) : null}
