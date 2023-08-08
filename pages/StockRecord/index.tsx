@@ -41,7 +41,7 @@ import fetcher from '@utils/fetcher';
 import { Navigate, useNavigate } from 'react-router';
 import Layout from '@components/Layout';
 import StocksList from '@components/StockList/StockList';
-import { ISearch, Istock } from '@typings/stock';
+import { ISearch, IrequestSearch, Istock } from '@typings/stock';
 import StocksEditMemo from '@components/StocksMemo/StocksEditMemo';
 import StocksTodayMemo from '@components/StocksMemo/StocksTodayMemo';
 import { DateValue } from '@typings/date';
@@ -115,7 +115,6 @@ const StockRecord = () => {
   const onStock = (stock: Istock) => {
     let stockTmp = stock;
 
-    console.log(stock);
     if (!Array.isArray(stockTmp.news)) {
       stockTmp.news = JSON.parse(stockTmp.news);
     }
@@ -212,8 +211,23 @@ const StockRecord = () => {
         setFocusIdx(-1);
       }
       if (e.key === 'Enter') {
+        let params;
+
+        if (!isMovingKey) {
+          setSearchWord((prev) => {
+            return (prev = searchCandidateUniqueResult[focusIdx]?.name);
+          });
+
+          params = {
+            word: searchCandidateUniqueResult[focusIdx]?.name,
+          };
+        } else {
+          params = {
+            word: searchWord,
+          };
+        }
         axios
-          .get('/api/word-search', { params: { word: searchWord } })
+          .get('/api/word-search', { params: params })
           .then((response) => {
             let searchResult = response.data;
             if (!isEmpty(response.data)) {
@@ -252,6 +266,7 @@ const StockRecord = () => {
       searchCandidateDupResult,
       searchWord,
       focusIdx,
+      isMovingKey,
     ],
   );
   if (!userData) {
@@ -379,8 +394,12 @@ const StockRecord = () => {
                   placeholder="종목명을 입력해주세요."
                   onKeyDown={changeIdxNum}
                   onClick={() => {
-                    setIsClickSearched(false);
-                    setSearchMark(null);
+                    if (isEmpty(searchMark)) {
+                      setIsClickSearched(false);
+                    }
+
+                    // if(isEmpty(searchMark))
+                    // setSearchMark(null);
 
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);

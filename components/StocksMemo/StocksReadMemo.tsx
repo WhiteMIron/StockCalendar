@@ -8,7 +8,6 @@ import {
   PriceBox,
   ReadMemoContainer,
   SamePrice,
-  StockInfo,
   Table,
   Tbody,
   Td,
@@ -312,5 +311,17 @@ const TextBox = styled.div`
   height: 100%;
   background: white;
   overflow-y: auto;
+`;
+
+const StockInfo = styled.div`
+  display: flex;
+  align-items: center;
+  & > span {
+    display: block;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+    line-height: 1.46666667;
+  }
 `;
 export default StocksReadMemo;

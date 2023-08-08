@@ -24,3 +24,9 @@ export interface ISearch {
   name: string;
   register_date: string;
 }
+
+export interface IrequestSearch {
+  params: {
+    word: string;
+  };
+}

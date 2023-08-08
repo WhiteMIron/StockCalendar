@@ -39,7 +39,6 @@ const SignUp = () => {
       e.preventDefault();
 
       if (!mismatchError && email && password && passwordCheck) {
-        setSignUpError('');
         setSignUpSuccess(false);
         axios
           .post('/api/users', {
@@ -47,7 +46,6 @@ const SignUp = () => {
             password,
           })
           .then((response) => {
-            console.log(response);
             setSignUpSuccess(true);
           })
           .catch((error) => {
@@ -102,6 +100,7 @@ const SignUp = () => {
 
           {!signUpError && mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
           {signUpError && <Error>{signUpError}</Error>}
+
           {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
         </Label>
         <FillButton type="submit" color="#60d6bf" marginBottom="20px">

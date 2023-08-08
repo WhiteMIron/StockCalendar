@@ -371,6 +371,14 @@ const StocksMemo = ({
                 marginBottom="10px"
                 value={stockCategory || ''}
                 onChange={onCategory}
+                onClick={() => {
+                  if (isBlurChecks.interest === false) {
+                    setIsBlurChecks((isBlurChecks) => ({
+                      ...isBlurChecks,
+                      ['interest']: true,
+                    }));
+                  }
+                }}
                 onBlur={() => {
                   if (!isBlurChecks.category) {
                     setIsBlurChecks({ ...isBlurChecks, category: !isBlurChecks.category });
@@ -384,17 +392,11 @@ const StocksMemo = ({
 
           <Label>
             <StockInfoGroup>
-              <span>이슈</span>
+              <StockInfo>
+                <span>이슈</span>
+              </StockInfo>
               <TextArea
                 value={stockIssue || ''}
-                onClick={() => {
-                  if (isBlurChecks.interest === false) {
-                    setIsBlurChecks((isBlurChecks) => ({
-                      ...isBlurChecks,
-                      ['interest']: true,
-                    }));
-                  }
-                }}
                 onChange={onStockIssue}
                 style={{
                   wordBreak: 'keep-all',
@@ -407,7 +409,9 @@ const StocksMemo = ({
 
           <NewsGroup>
             <Label>
-              <span>뉴스</span>
+              <StockInfo>
+                <span>뉴스</span>
+              </StockInfo>
               <Input marginBottom="10px" value={stockFirstNews || ''} onChange={onFirstNews}></Input>
             </Label>
             <Input marginBottom="10px" value={stockSecondNews || ''} onChange={onSecondNews}></Input>
