@@ -28,7 +28,7 @@ import {
   SearchItem,
   DataDot,
 } from './styles';
-import StocksMemo from '@components/StocksMemo/StocksMemo';
+import StocksWriteMemo from '@components/StocksMemo/StocksWriteMemo';
 import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
 import SideNav from '@components/SideNav/SideNav';
 import ReactApexChart from 'react-apexcharts';
@@ -547,7 +547,7 @@ const StockRecord = () => {
           ) : null}
 
           {isRecord ? (
-            <StocksMemo
+            <StocksWriteMemo
               setResetRecordState={setResetRecordState}
               resetRecordState={resetRecordState}
               setIsEditRecord={setIsEditRecord}
@@ -559,7 +559,7 @@ const StockRecord = () => {
               selectedItem={selectedItem}
               selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
               setIsSelectedItem={setSelectedItem}
-            ></StocksMemo>
+            ></StocksWriteMemo>
           ) : null}
 
           {isEditRecord ? (

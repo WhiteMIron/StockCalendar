@@ -1,10 +1,11 @@
+import styled from '@emotion/styled';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React from 'react';
 import Clock from 'react-live-clock';
 const Header = (props: { user: IUser | undefined | false }) => {
   return (
-    <div
+    <Container
       style={{
         background: '#60d6bf',
         display: 'flex',
@@ -15,19 +16,22 @@ const Header = (props: { user: IUser | undefined | false }) => {
         paddingRight: '22px',
       }}
     >
-      {' '}
       <h1 style={{ color: '#fff' }}>
-        {<Clock format={'M월 DD일 HH:mm:ss'} ticking={true} timezone={'Asia/Seoul'} />}{' '}
+        {<Clock format={'M월 D일 HH:mm:ss'} ticking={true} timezone={'Asia/Seoul'} />}{' '}
         {props.user ? props.user.email : null}
       </h1>
-      {/* <div style={{ padding: '0 25px 0 0', width: '100%', textAlign: 'right' }}>
-        <h1 style={{ color: '#fff' }}>
-          {<Clock format={'M월 DD일 HH:mm:ss'} ticking={true} timezone={'Asia/Seoul'} />}{' '}
-          {props.user ? props.user.email : null}
-        </h1>
-      </div> */}
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  background: #60d6bf;
+  display: flex;
+  justify-content: end;
+  align-content: center;
+  min-height: 80px;
+  min-width: 1400px;
+  padding-right: 22px;
+`;
 
 export default Header;

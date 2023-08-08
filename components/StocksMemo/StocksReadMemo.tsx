@@ -60,13 +60,11 @@ const StocksReadMemo = ({
         if (!isEmpty(response.data)) {
           setIsSelectedItem({ ...selectedItem!!, isInterest: true });
 
-          const findIndex = stocks.findIndex((stock) => stock.stock_code == selectedItem!!.stock_code);
-          setStocks((stocks) => [
-            {
-              ...stocks[findIndex],
-              ['isInterest']: true,
-            },
-          ]);
+          setStocks((stocks) =>
+            stocks.map((stock) =>
+              stock.stock_code === selectedItem!!.stock_code ? { ...stock, isInterest: true } : stock,
+            ),
+          );
         }
       })
       .catch((error) => {
@@ -132,7 +130,7 @@ const StocksReadMemo = ({
                     <StockInfo>
                       {selectedItem!!.isInterest ? (
                         <Icon>
-                          <img src={crown} width="13px" height="13px"></img>
+                          <img src={crown} width="13px" height="13px" alt="관심종목"></img>
                         </Icon>
                       ) : (
                         <></>

@@ -160,13 +160,7 @@ const StocksEditMemo = ({
 
               <StockInfoGroup>
                 <Label>
-                  <StockInfo>
-                    종목코드
-                    <Icon>
-                      <img src={info} width="13px" height="13px"></img>
-                      <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
-                    </Icon>
-                  </StockInfo>
+                  <StockInfo>종목코드</StockInfo>
                   <div style={{ marginBottom: '10px', padding: '5px' }}>{stockCode}</div>
                 </Label>
               </StockInfoGroup>
@@ -180,20 +174,21 @@ const StocksEditMemo = ({
 
               <StockInfoGroup>
                 <Label>
-                  <StockInfo>
-                    종목코드
-                    <Icon>
-                      <img src={info} width="13px" height="13px"></img>
-                      <span>오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.</span>
-                    </Icon>
-                  </StockInfo>
+                  <StockInfo>종목코드</StockInfo>
                   <div style={{ marginBottom: '10px', padding: '5px' }}>{stockCode}</div>
                 </Label>
               </StockInfoGroup>
               <StockInfoGroup>
                 <Label>
                   <StockInfo>
-                    <span>종가</span>
+                    종가
+                    <GuideIcon>
+                      <img src={info} width="13px" height="13px"></img>
+                      <GuideText width="400px" left="160" top="-60">
+                        오늘일자가 아닌경우 종가, 전일종가 <br />
+                        데이터가 추가로 필요합니다.
+                      </GuideText>
+                    </GuideIcon>
                   </StockInfo>
                   <Input
                     type="text"
@@ -338,8 +333,8 @@ const StocksEditMemo = ({
               <StockInfo>
                 <span>뉴스</span>
               </StockInfo>
-              <Input marginBottom="10px" value={stockFirstNews} onChange={onChangeFirstNews}></Input>
-              <Input marginBottom="10px" value={stockSecondNews} onChange={onChangeSecondNews}></Input>
+              <Input marginBottom="10px" value={stockFirstNews || ''} onChange={onChangeFirstNews}></Input>
+              <Input marginBottom="10px" value={stockSecondNews || ''} onChange={onChangeSecondNews}></Input>
             </Label>
           </NewsGroup>
         </Form>
@@ -428,32 +423,45 @@ const FormContainer = styled.div`
   height: 100%;
 `;
 
-const Icon = styled.div`
+const GuideIcon = styled.div`
   margin-left: 5px;
   display: inline;
   position: relative;
 
-  > span {
+  > div {
     position: absolute;
     background-color: #333;
-    width: 400px;
     color: #fff;
-    top: -40px;
-    left: 150px;
     text-align: center;
     padding: 5px;
     border-radius: 5px;
     transform: translateX(-50%);
     opacity: 0;
     transition: 0.5s;
-
     visibility: hidden;
   }
-  &:hover > span {
+
+  &:hover > div {
     visibility: visible;
     opacity: 1;
   }
 `;
+
+type GuideTextProps = {
+  width?: string;
+  top?: string;
+  left?: string;
+};
+
+const GuideText = styled.div<GuideTextProps>`
+  width: ${(props) => props.width};
+  left: ${(props) => props.left};
+  top: ${(props) => props.top};
+`;
+
+GuideText.defaultProps = {
+  top: '-40px',
+};
 
 const DataInfo = styled.div``;
 export default StocksEditMemo;

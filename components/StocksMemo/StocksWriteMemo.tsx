@@ -61,7 +61,7 @@ const StocksMemo = ({
   const [modalOpen, setModalOpen] = useState(false);
 
   const [stockCode, onStockCode, setStockCode] = useInput(selectedItem?.stock_code);
-  const [stockCategory, onCategory, setCategory] = useInput(selectedItem?.Category.name);
+  const [stockCategory, onCategory, setStockCategory] = useInput(selectedItem?.Category.name);
   const [stockCurrentPrice, onStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
 
   const [stockPreviousClose, onPreviousClose, setPreviousClose] = useInput(selectedItem?.previous_close);
@@ -70,14 +70,15 @@ const StocksMemo = ({
   const [stockFirstNews, onFirstNews, setFirstNews] = useInput('');
   const [stockSecondNews, onSecondNews, setSecondNews] = useInput('');
 
-  const [checks, setChecks] = useState<ObjType>({
+  const [isBlurChecks, setIsBlurChecks] = useState<ObjType>({
     code: false,
     category: false,
     currentPrice: false,
     previousClose: false,
-    isInterest: false,
+    interest: false,
   });
 
+  const [isAlreadyInterest, setIsAlreadyInterest] = useState<boolean | null>(null);
   const numRegex = /^[0-9]+$/;
 
   const handleModal = () => {
@@ -90,9 +91,10 @@ const StocksMemo = ({
       .then((response) => {
         if (!isEmpty(response.data)) {
           setIsInterest(true);
-          setChecks({ ...checks, isInterest: true });
+          setIsAlreadyInterest(true);
         } else {
           setIsInterest(null);
+          setIsAlreadyInterest(null);
         }
       })
       .catch((error) => {
@@ -105,7 +107,7 @@ const StocksMemo = ({
   useEffect(() => {
     if (resetRecordState) {
       setStockCode('');
-      setCategory('');
+      setStockCategory('');
       setPreviousClose('');
 
       setStockIssue('');
@@ -113,14 +115,15 @@ const StocksMemo = ({
       setSecondNews('');
       setStockCurrentPrice('');
       setResetRecordState(false);
+      setIsInterest(null);
 
-      setChecks({
-        ...checks,
+      setIsBlurChecks({
+        ...isBlurChecks,
         code: false,
         category: false,
         currentPrice: false,
         diffPrice: false,
-        isInterest: false,
+        interest: false,
         previousClose: false,
       });
     }
@@ -189,163 +192,36 @@ const StocksMemo = ({
         }}
       >
         <Form autoComplete="off">
-          {cmpToday(selectedDate) ? (
-            <StockInfoGroup>
-              <Label>
-                <StockInfo>
-                  <span>종목코드</span>
-                </StockInfo>
-                <Input
-                  type="text"
-                  marginBottom="10px"
-                  value={stockCode || ''}
-                  onChange={onStockCode}
-                  onBlur={() => {
-                    if (!checks.code) {
-                      setChecks({ ...checks, code: !checks.code });
-                    }
-                    if (stockCode == ' ') {
-                      setIsInterest(null);
-                    } else {
-                      onCheckInterest();
-                    }
-                    setStockCode((prev) => prev?.replaceAll(' ', ''));
-                  }}
-                ></Input>
-              </Label>
-              {checks.code && !stockCode ? (
-                <Error>종목코드를 입력해주세요.</Error>
-              ) : checks.code && !numRegex.test(stockCode || '') ? (
-                <Error>숫자만 입력해주세요.</Error>
-              ) : (
-                <></>
-              )}{' '}
-            </StockInfoGroup>
-          ) : (
-            <>
-              <StockInfoGroup>
-                <Label>
-                  <StockInfo>
-                    <span>종목코드</span>
-                  </StockInfo>
-                  <Input
-                    type="text"
-                    marginBottom="10px"
-                    value={stockCode || ''}
-                    onChange={onStockCode}
-                    onBlur={() => {
-                      if (!checks.code) {
-                        setChecks({ ...checks, code: !checks.code });
-                      }
-                      if (!isEmpty(stockCode)) {
-                        onCheckInterest();
-                      }
-                      setStockCode((prev) => prev?.replaceAll(' ', ''));
-                    }}
-                  ></Input>
-                </Label>
-                {checks.code && !stockCode ? (
-                  <Error>종목코드를 입력해주세요.</Error>
-                ) : checks.code && !numRegex.test(stockCode || '') ? (
-                  <Error>숫자만 입력해주세요.</Error>
-                ) : (
-                  <></>
-                )}{' '}
-              </StockInfoGroup>
-
-              <StockInfoGroup>
-                <Label htmlFor="currentPrice">
-                  <StockInfo>
-                    <span>종가</span>
-                    <GuideIcon>
-                      <img src={info} width="13px" height="13px"></img>
-                      <GuideText width="400px" left="160" top="-60">
-                        오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.
-                        <br /> ,(구분자)는 제거됩니다.
-                      </GuideText>
-                    </GuideIcon>
-                  </StockInfo>
-                  <Input
-                    id="currentPrice"
-                    type="text"
-                    marginBottom="10px"
-                    value={stockCurrentPrice || ''}
-                    onChange={onStockCurrentPrice}
-                    onBlur={() => {
-                      if (!checks.currentPrice) {
-                        setChecks({ ...checks, currentPrice: !checks.currentPrice });
-                      }
-                      setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
-                      setStockCurrentPrice((prev) => prev?.replaceAll(' ', ''));
-                    }}
-                  ></Input>
-                </Label>{' '}
-                {checks.currentPrice && !stockCurrentPrice ? (
-                  <Error>종가를 입력해주세요.</Error>
-                ) : checks.currentPrice && !numRegex.test(stockCurrentPrice || '') ? (
-                  <Error>숫자만 입력해주세요.</Error>
-                ) : (
-                  <></>
-                )}{' '}
-              </StockInfoGroup>
-              <StockInfoGroup>
-                <Label htmlFor="">
-                  <StockInfo>
-                    <span>전일종가</span>
-                    <GuideIcon>
-                      <img src={info} width="13px" height="13px"></img>
-                      <GuideText width="200px" left="31">
-                        ,(구분자)는 제거됩니다.
-                      </GuideText>
-                    </GuideIcon>
-                  </StockInfo>
-                  <Input
-                    id="priceStatus"
-                    type="text"
-                    marginBottom="10px"
-                    value={stockPreviousClose || ''}
-                    onChange={onPreviousClose}
-                    onBlur={() => {
-                      if (!checks.previousClose) {
-                        setChecks({ ...checks, previousClose: !checks.previousClose });
-                      }
-                      setPreviousClose((prev) => prev?.replaceAll(',', ''));
-                      setPreviousClose((prev) => prev?.replaceAll(' ', ''));
-                    }}
-                  ></Input>
-                </Label>{' '}
-                {checks.previousClose && !stockPreviousClose ? (
-                  <Error>전일종가를 입력해주세요.</Error>
-                ) : checks.previousClose && !numRegex.test(stockPreviousClose || '') ? (
-                  <Error>숫자만 입력해주세요.</Error>
-                ) : (
-                  <></>
-                )}{' '}
-              </StockInfoGroup>
-            </>
-          )}
-
           <StockInfoGroup>
             <Label>
               <StockInfo>
-                <span> 카테고리</span>
+                <span>종목코드</span>
               </StockInfo>
               <Input
+                type="text"
                 marginBottom="10px"
-                value={stockCategory || ''}
-                onChange={onCategory}
+                value={stockCode || ''}
+                onChange={onStockCode}
                 onBlur={() => {
-                  if (!checks.category) {
-                    if (!stockCategory) {
-                      setChecks({ ...checks, category: true });
-                    } else {
-                      setChecks({ ...checks, category: false });
-                    }
+                  if (!isBlurChecks.code) {
+                    setIsBlurChecks({ ...isBlurChecks, code: !isBlurChecks.code });
                   }
+                  if (stockCode == ' ' || isEmpty(stockCode)) {
+                    setIsInterest(null);
+                  } else {
+                    onCheckInterest();
+                  }
+                  setStockCode((prev) => prev?.replaceAll(' ', ''));
                 }}
               ></Input>
-            </Label>{' '}
-            {checks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}
+            </Label>
+            {isBlurChecks.code && !stockCode ? (
+              <Error>종목코드를 입력해주세요.</Error>
+            ) : isBlurChecks.code && !numRegex.test(stockCode || '') ? (
+              <Error>숫자만 입력해주세요.</Error>
+            ) : (
+              <></>
+            )}
           </StockInfoGroup>
           <ChangeInfoGroup>
             <Content>
@@ -401,14 +277,110 @@ const StocksMemo = ({
                   아니오
                 </SelectButton>
               )}
-            </BtnGroup>{' '}
-            {isInterest ? (
+            </BtnGroup>
+            {isBlurChecks.code && isInterest && isAlreadyInterest ? (
               <Guide>관심종목으로 등록되어있는 종목입니다. 해제하시려면 아니오를 선택해주세요.</Guide>
             ) : (
               <></>
             )}
-            {checks.isInterest && isInterest == null ? <Error>관심종목 여부를 선택해주세요.</Error> : <></>}
+            {isBlurChecks.interest && isInterest === null ? <Error>관심종목 여부를 선택해주세요.</Error> : <></>}
           </ChangeInfoGroup>
+
+          {cmpToday(selectedDate) ? (
+            <></>
+          ) : (
+            <>
+              <StockInfoGroup>
+                <Label htmlFor="currentPrice">
+                  <StockInfo>
+                    <span>종가</span>
+                    <GuideIcon>
+                      <img src={info} width="13px" height="13px"></img>
+                      <GuideText width="400px" left="160" top="-60">
+                        오늘일자가 아닌경우 입력데이터가 추가로 필요합니다.
+                        <br /> ,(구분자)는 제거됩니다.
+                      </GuideText>
+                    </GuideIcon>
+                  </StockInfo>
+                  <Input
+                    id="currentPrice"
+                    type="text"
+                    marginBottom="10px"
+                    value={stockCurrentPrice || ''}
+                    onChange={onStockCurrentPrice}
+                    onBlur={() => {
+                      if (!isBlurChecks.currentPrice) {
+                        setIsBlurChecks({ ...isBlurChecks, currentPrice: !isBlurChecks.currentPrice });
+                      }
+                      setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
+                      setStockCurrentPrice((prev) => prev?.replaceAll(' ', ''));
+                    }}
+                  ></Input>
+                </Label>{' '}
+                {isBlurChecks.currentPrice && !stockCurrentPrice ? (
+                  <Error>종가를 입력해주세요.</Error>
+                ) : isBlurChecks.currentPrice && !numRegex.test(stockCurrentPrice || '') ? (
+                  <Error>숫자만 입력해주세요.</Error>
+                ) : (
+                  <></>
+                )}{' '}
+              </StockInfoGroup>
+              <StockInfoGroup>
+                <Label htmlFor="">
+                  <StockInfo>
+                    <span>전일종가</span>
+                    <GuideIcon>
+                      <img src={info} width="13px" height="13px"></img>
+                      <GuideText width="200px" left="31">
+                        ,(구분자)는 제거됩니다.
+                      </GuideText>
+                    </GuideIcon>
+                  </StockInfo>
+                  <Input
+                    id="priceStatus"
+                    type="text"
+                    marginBottom="10px"
+                    value={stockPreviousClose || ''}
+                    onChange={onPreviousClose}
+                    onBlur={() => {
+                      if (!isBlurChecks.previousClose) {
+                        setIsBlurChecks({ ...isBlurChecks, previousClose: !isBlurChecks.previousClose });
+                      }
+                      setPreviousClose((prev) => prev?.replaceAll(',', ''));
+                      setPreviousClose((prev) => prev?.replaceAll(' ', ''));
+                    }}
+                  ></Input>
+                </Label>{' '}
+                {isBlurChecks.previousClose && !stockPreviousClose ? (
+                  <Error>전일종가를 입력해주세요.</Error>
+                ) : isBlurChecks.previousClose && !numRegex.test(stockPreviousClose || '') ? (
+                  <Error>숫자만 입력해주세요.</Error>
+                ) : (
+                  <></>
+                )}{' '}
+              </StockInfoGroup>
+            </>
+          )}
+
+          <StockInfoGroup>
+            <Label>
+              <StockInfo>
+                <span> 카테고리</span>
+              </StockInfo>
+              <Input
+                marginBottom="10px"
+                value={stockCategory || ''}
+                onChange={onCategory}
+                onBlur={() => {
+                  if (!isBlurChecks.category) {
+                    setIsBlurChecks({ ...isBlurChecks, category: !isBlurChecks.category });
+                  }
+                  setStockCategory((prev) => prev?.replaceAll(' ', ''));
+                }}
+              ></Input>
+            </Label>{' '}
+            {isBlurChecks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}
+          </StockInfoGroup>
 
           <Label>
             <StockInfoGroup>
@@ -416,10 +388,11 @@ const StocksMemo = ({
               <TextArea
                 value={stockIssue || ''}
                 onClick={() => {
-                  if (!checks.isInterest) {
-                    console.log(checks.isInterest);
-
-                    setChecks({ ...checks, isInterest: !checks.isInterest });
+                  if (isBlurChecks.interest === false) {
+                    setIsBlurChecks((isBlurChecks) => ({
+                      ...isBlurChecks,
+                      ['interest']: true,
+                    }));
                   }
                 }}
                 onChange={onStockIssue}
@@ -468,11 +441,11 @@ const StocksMemo = ({
             if (stockCode && stockCategory) {
               handleModal();
             } else {
-              for (let key in checks) {
-                if (!checks[key]) {
-                  console.log('key:', key, 'checks', checks[key]);
-                  setChecks((checks) => ({
-                    ...checks,
+              for (let key in isBlurChecks) {
+                if (!isBlurChecks[key]) {
+                  console.log('key:', key, 'checks', isBlurChecks[key]);
+                  setIsBlurChecks((isBlurChecks) => ({
+                    ...isBlurChecks,
                     [key]: true,
                   }));
                 }

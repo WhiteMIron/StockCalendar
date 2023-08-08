@@ -60,7 +60,7 @@ const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
   return (
     <Container>
       <TitleBox>
-        <strong>{moment(dateValue?.toString()).format('M/DD')} 증시 요약</strong>
+        <strong>{moment(dateValue?.toString()).format('M/D')} 증시 요약</strong>
         {!isEdit ? (
           <>
             <button
