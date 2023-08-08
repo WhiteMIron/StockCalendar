@@ -213,7 +213,9 @@ const StockRecord = () => {
       if (e.key === 'Enter') {
         let params;
 
-        if (!isMovingKey) {
+        setIsClickSearched(true);
+
+        if (!isMovingKey && focusIdx !== -1) {
           setSearchWord((prev) => {
             return (prev = searchCandidateUniqueResult[focusIdx]?.name);
           });
@@ -226,6 +228,7 @@ const StockRecord = () => {
             word: searchWord,
           };
         }
+
         axios
           .get('/api/word-search', { params: params })
           .then((response) => {
@@ -234,11 +237,20 @@ const StockRecord = () => {
               setIsSearched(() => {
                 return true;
               });
-              setSearchMark(() => {
-                return searchResult.filter((searchItem: ISearch) => {
-                  return searchItem.name === searchWord;
+
+              if (focusIdx === -1) {
+                setSearchMark(() => {
+                  return searchResult.filter((searchItem: ISearch) => {
+                    return searchItem.name === searchWord;
+                  });
                 });
-              });
+              } else {
+                setSearchMark(() => {
+                  return searchResult.filter((searchItem: ISearch) => {
+                    return searchItem.name === searchCandidateUniqueResult[focusIdx]?.name;
+                  });
+                });
+              }
             } else {
               setIsSearched(false);
               setSearchMark([]);
@@ -250,7 +262,6 @@ const StockRecord = () => {
             console.log(error.response);
           })
           .finally(() => {
-            setIsClickSearched(true);
             setIsSearched(false);
           });
       }
@@ -327,7 +338,6 @@ const StockRecord = () => {
         })
         .finally(() => {});
     };
-
     if (!isClickSearched && !isMovingKey) {
       fetchData();
     }
@@ -352,7 +362,6 @@ const StockRecord = () => {
   }, [startDate, stocks]);
 
   useEffect(() => {
-    console.log('searchMark:', searchMark, ' ', 'isClickSearched:', isClickSearched);
     if (!isEmpty(searchMark)) {
       axios
         .get('/api/word-search', { params: { word: searchWord } })
@@ -394,12 +403,7 @@ const StockRecord = () => {
                   placeholder="종목명을 입력해주세요."
                   onKeyDown={changeIdxNum}
                   onClick={() => {
-                    if (isEmpty(searchMark)) {
-                      setIsClickSearched(false);
-                    }
-
-                    // if(isEmpty(searchMark))
-                    // setSearchMark(null);
+                    setIsClickSearched(false);
 
                     if (!isClickSearchInput) {
                       setIsClickSearchInput(!isClickSearchInput);
@@ -418,9 +422,14 @@ const StockRecord = () => {
                   onBlur={() => {
                     setIsClickSearchInput(!isClickSearchInput);
                     setIsSearched(() => false);
-                    setIsClickSearched(false);
+
+                    if (isEmpty(searchMark)) {
+                      setIsClickSearched(false);
+                    } else {
+                      setIsClickSearched(true);
+                    }
                   }}
-                  value={searchWord}
+                  value={searchWord || ''}
                 ></SearchInput>
                 <SearchImg
                   src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"

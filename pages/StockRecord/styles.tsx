@@ -386,7 +386,6 @@ export const StockTitle = styled.span<StockTitleProps>`
 `;
 
 export const DateInfo = styled.div`
-  /* border-bottom: 2px solid #60d6bf; */
   border-bottom: 2px solid #76baff;
   padding: 8px;
 `;
