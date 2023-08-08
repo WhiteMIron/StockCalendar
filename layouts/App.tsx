@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import loadable from '@loadable/component';
 import './App.css';
 import SideNav from '@components/SideNav/SideNav';
-import Main from '@pages/Content';
+import Main from '@components/Content';
 import Header from '@components/Header/Header';
 import fetcher from '@utils/fetcher';
 import useSWR from 'swr';

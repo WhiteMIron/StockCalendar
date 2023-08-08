@@ -31,13 +31,12 @@ const TreeMap = ({ series, setSelectedSeriesValue }: ItreeMapProps) => {
       },
     },
     title: {
-      text: '관심종목 분류', // 트리맵 차트의 제목
-      align: 'center', // 제목의 정렬 위치 ("left", "center", "right" 중 선택)
-      margin: 0, // 제목의 여백 설정
+      text: '관심종목 분류',
+      align: 'center',
+      margin: 0,
       style: {
-        fontSize: '28px', // 제목의 폰트 크기
-        fontWeight: 'bold', // 제목의 글꼴 굵기
-        fontFamily: 'Arial, sans-serif', // 제목의 글꼴
+        fontSize: '20px',
+        fontWeight: 'bold',
       },
     },
   };
@@ -58,7 +57,6 @@ const TreeMap = ({ series, setSelectedSeriesValue }: ItreeMapProps) => {
 const Container = styled.div`
   height: 100%;
   width: 30%;
-  margin-right: 20px;
 `;
 
 export default TreeMap;

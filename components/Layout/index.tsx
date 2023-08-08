@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SideNav from '@components/SideNav/SideNav';
-import Content from '@pages/Content';
+import Content from '@components/Content';
 import Header from '@components/Header/Header';
 import { IUser } from '@typings/db';
 

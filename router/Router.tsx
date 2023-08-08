@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import StockRecord from '@pages/StockRecord';
 import SideNav from '@components/SideNav/SideNav';
-import Main from '@pages/Content';
+import Main from '@components/Content';
 import Header from '@components/Header/Header';
 import loadable from '@loadable/component';
 import Interest from '@pages/Interest';
