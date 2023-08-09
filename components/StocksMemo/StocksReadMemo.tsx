@@ -180,7 +180,7 @@ const StocksReadMemo = ({
           <Tr>
             <Th>종가</Th>
             <Td>
-              {selectedItem!!.current_price > selectedItem!!.previous_close ? (
+              {Number(selectedItem!!.current_price) > Number(selectedItem!!.previous_close) ? (
                 <PriceBox color="#f93345">
                   <UpPrice>
                     <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
@@ -189,7 +189,7 @@ const StocksReadMemo = ({
                     {Number(selectedItem?.diff_price).toLocaleString()} ({selectedItem!!.diff_percent})
                   </DiffAmount>
                 </PriceBox>
-              ) : selectedItem!!.current_price < selectedItem!!.previous_close ? (
+              ) : Number(selectedItem!!.current_price) < Number(selectedItem!!.previous_close) ? (
                 <PriceBox color="#1e8df9">
                   <DownPrice>
                     <strong>{Number(selectedItem!!.current_price).toLocaleString()}</strong>
