@@ -1,102 +1,28 @@
-import { css } from '@emotion/react';
-import {
-  BtnGroup,
-  Button,
-  DiffAmount,
-  DownPrice,
-  Icon,
-  PriceBox,
-  ReadMemoContainer,
-  SamePrice,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Tr,
-  UpPrice,
-} from './styles';
 import React, { SetStateAction, useEffect, useState } from 'react';
+import { css } from '@emotion/react';
+import { DiffAmount, DownPrice, Icon, PriceBox, SamePrice, Table, Tbody, Td, Th, Tr, UpPrice } from './styles';
 import { Istock } from '@typings/stock';
 import link from '@images/link.png';
 import crown from '@images/crown.png';
 import { isEmpty } from '@utils/common';
-import styled from '@emotion/styled';
-import ModalPortal from '@components/Modal/ModalPotal';
-import { CSSTransition } from 'react-transition-group';
-import BackDrop from '@components/Modal/BackDrop';
-import Modal from '@components/Modal/Modal';
-import axios from 'axios';
 import uuid from 'react-uuid';
+import styled from '@emotion/styled';
+import axios from 'axios';
 interface StocksReadMemoProps {
-  stocks: Istock[];
-  setStocks: React.Dispatch<SetStateAction<Istock[]>>;
-  setIsRecord: React.Dispatch<SetStateAction<boolean>>;
-  setIsSelected: React.Dispatch<SetStateAction<boolean>>;
-  setIsEditRecord: React.Dispatch<SetStateAction<boolean>>;
-  setIsSelectedItem: React.Dispatch<SetStateAction<Istock | null>>;
   selectedItem: Istock | null;
-  canEdit: boolean;
 }
 
-const StocksReadMemo = ({
-  stocks,
-  setStocks,
-  setIsRecord,
-  setIsSelected,
-  setIsEditRecord,
-  setIsSelectedItem,
-  selectedItem,
-  canEdit,
-}: StocksReadMemoProps) => {
+const StocksDetail = ({ selectedItem }: StocksReadMemoProps) => {
   let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const handleModal = () => {
-    setModalOpen(!modalOpen);
-  };
-  // useEffect(() => {
-  //   axios
-  //     .get('/api/check-interest', { params: { code: selectedItem!!.stock_code } })
-  //     .then((response) => {
-  //       if (!isEmpty(response.data)) {
-  //         setIsSelectedItem({ ...selectedItem!!, isInterest: true });
-
-  //         setStocks((stocks) =>
-  //           stocks.map((stock) =>
-  //             stock.stock_code === selectedItem!!.stock_code ? { ...stock, isInterest: true } : stock,
-  //           ),
-  //         );
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       alert(error.response.data);
-  //       console.log(error.response);
-  //     })
-  //     .finally(() => {});
-  //   return;
-  // }, []);
-
-  const onSubmit = () => {
-    setModalOpen(false);
-    axios
-      .delete(`/api/stock/${selectedItem?.id}`)
-      .then((response) => {
-        setStocks(stocks.filter((stock) => stock.id !== selectedItem?.id));
-        alert('삭제되었습니다.');
-
-        setIsEditRecord(false);
-        setIsSelected(false);
-      })
-      .catch((error) => {
-        alert(error.response.data);
-        console.log(error.response);
-      })
-      .finally(() => {});
-  };
+  useEffect(() => {
+    console.log(selectedItem);
+  }, []);
 
   return (
-    <ReadMemoContainer>
-      <Table>
+    <Container>
+      <div>날짜</div>
+      {/* <Table>
         <colgroup>
           <col
             css={css`
@@ -147,38 +73,6 @@ const StocksReadMemo = ({
                     </StockInfo>
                   </a>{' '}
                 </div>
-
-                {canEdit ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Button
-                      marginRight="5px"
-                      bgColor="#00BB9D"
-                      padding="0 10px"
-                      onClick={() => {
-                        setIsSelected(false);
-                        setIsRecord(false);
-                        setIsEditRecord(true);
-                      }}
-                    >
-                      수정
-                    </Button>
-                    <Button
-                      bgColor="#8e8e8e"
-                      padding="0 10px"
-                      onClick={() => {
-                        handleModal();
-                      }}
-                    >
-                      삭제
-                    </Button>
-                  </div>
-                ) : null}
               </div>
             </Td>
           </Tr>
@@ -259,63 +153,16 @@ const StocksReadMemo = ({
             ) : null
           ) : null}
         </Tbody>
-      </Table>
-
-      <ModalPortal onClose={handleModal}>
-        <CSSTransition
-          in={modalOpen}
-          mountOnEnter
-          unmountOnExit
-          timeout={{ enter: 300, exit: 100 }}
-          classNames="backdrop"
-        >
-          <BackDrop onClose={() => setModalOpen(false)} />
-        </CSSTransition>
-
-        <CSSTransition in={modalOpen} mountOnEnter unmountOnExit timeout={{ enter: 300, exit: 100 }} classNames="modal">
-          <Modal title={'삭제하시겠습니까?'}>
-            <BtnGroup justifyContent="center">
-              <Button
-                type="button"
-                width="25%"
-                onClick={() => {
-                  setModalOpen(false);
-                }}
-                bgColor="#8e8e8e"
-                marginRight="10px"
-                marginBottom="20px"
-              >
-                취소
-              </Button>
-
-              <Button
-                type="button"
-                width="25%"
-                onClick={(e) => {
-                  onSubmit();
-                  setModalOpen(false);
-                }}
-                bgColor="#00BB9D"
-              >
-                삭제
-              </Button>
-            </BtnGroup>
-          </Modal>
-        </CSSTransition>
-      </ModalPortal>
-    </ReadMemoContainer>
+      </Table> */}
+    </Container>
   );
 };
 
-const TextBox = styled.div`
-  word-break: break-all;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
+const Container = styled.div`
+  border-radius: 8px;
   background: white;
-  overflow-y: auto;
+  border: 1px rgba(0, 0, 0, 0.2) solid;
+  width: 60%;
 `;
 
 const StockInfo = styled.div`
@@ -329,4 +176,4 @@ const StockInfo = styled.div`
     line-height: 1.46666667;
   }
 `;
-export default StocksReadMemo;
+export default StocksDetail;

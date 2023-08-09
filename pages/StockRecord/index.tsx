@@ -571,6 +571,7 @@ const StockRecord = () => {
               setIsRecord={setIsRecord}
               setIsEditRecord={setIsEditRecord}
               setIsSelectedItem={setSelectedItem}
+              canEdit={true}
             ></StocksReadMemo>
           ) : null}
 

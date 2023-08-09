@@ -58,6 +58,8 @@ const StocksMemo = ({
   setIsSelectedItem,
 }: itemProps) => {
   const [isInterest, setIsInterest] = useState<boolean | null>(null);
+  const [isAlreadyInterest, setIsAlreadyInterest] = useState<boolean | null>(null);
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const [stockCode, onStockCode, setStockCode] = useInput(selectedItem?.stock_code);
@@ -78,7 +80,6 @@ const StocksMemo = ({
     interest: false,
   });
 
-  const [isAlreadyInterest, setIsAlreadyInterest] = useState<boolean | null>(null);
   const numRegex = /^[0-9]+$/;
 
   const handleModal = () => {
@@ -89,7 +90,7 @@ const StocksMemo = ({
     axios
       .get('/api/check-interest', { params: { code: stockCode?.trim() } })
       .then((response) => {
-        if (!isEmpty(response.data)) {
+        if (!isEmpty(response.data.isInterest)) {
           setIsInterest(true);
           setIsAlreadyInterest(true);
         } else {
@@ -447,7 +448,6 @@ const StocksMemo = ({
             } else {
               for (let key in isBlurChecks) {
                 if (!isBlurChecks[key]) {
-                  console.log('key:', key, 'checks', isBlurChecks[key]);
                   setIsBlurChecks((isBlurChecks) => ({
                     ...isBlurChecks,
                     [key]: true,

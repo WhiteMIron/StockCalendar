@@ -1,23 +1,41 @@
 import styled from '@emotion/styled';
+import { Istock } from '@typings/stock';
 import { MySeries } from '@typings/treeMap';
 import { isEmpty } from '@utils/common';
 import { ApexOptions } from 'apexcharts';
-import React, { SetStateAction, useState } from 'react';
+import axios from 'axios';
+import React, { MutableRefObject, SetStateAction, useEffect, useRef, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 interface ItreeMapProps {
+  stocks: Istock[] | [];
   series: MySeries[] | [];
-  setSelectedSeriesValue: React.Dispatch<SetStateAction<string | null>>;
+  setStocks: React.Dispatch<SetStateAction<Istock[] | []>>;
 }
 
-const TreeMap = ({ series, setSelectedSeriesValue }: ItreeMapProps) => {
-  const treemapClick = (event: any, chartContext: any, config: any) => {
+const TreeMap = ({ stocks, setStocks, series }: ItreeMapProps) => {
+  useEffect(() => {}, []);
+
+  const treeMapClick = (event: any, chartContext: any, config: any) => {
     if (config.dataPointIndex !== undefined) {
-      const seriesValue = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
-      setSelectedSeriesValue(seriesValue);
+      const CategoryName = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
+      axios
+        .get('/api/interest-by-category', {
+          params: {
+            categoryName: CategoryName,
+          },
+        })
+        .then((response) => {
+          setStocks(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response);
+        })
+        .finally(() => {});
     }
   };
-  const treemapOptions: ApexOptions = {
+
+  const treeMapOptions: ApexOptions = {
     chart: {
       zoom: {
         enabled: false,
@@ -27,13 +45,15 @@ const TreeMap = ({ series, setSelectedSeriesValue }: ItreeMapProps) => {
         show: false,
       },
       events: {
-        dataPointSelection: treemapClick,
+        dataPointSelection: treeMapClick,
       },
     },
+
     title: {
       text: '관심종목 분류',
       align: 'center',
-      margin: 0,
+      offsetX: -15,
+      offsetY: 10,
       style: {
         fontSize: '20px',
         fontWeight: 'bold',
@@ -43,20 +63,22 @@ const TreeMap = ({ series, setSelectedSeriesValue }: ItreeMapProps) => {
 
   return (
     <>
-      {!isEmpty(series) ? (
-        <Container>
-          <ReactApexChart type="treemap" height="100%" options={treemapOptions} series={series}></ReactApexChart>
-        </Container>
-      ) : (
-        <></>
-      )}
+      <Container>
+        <ReactApexChart type="treemap" height="100%" options={treeMapOptions} series={series} />
+      </Container>
     </>
   );
 };
 
 const Container = styled.div`
   height: 100%;
+  /* width: 50%; */
   width: 30%;
+  border: 1px rgba(0, 0, 0, 0.2) solid;
+  border-radius: 8px;
+  padding-left: 22px;
+  padding-bottom: 20px;
+  margin-right: 20px;
 `;
 
 export default TreeMap;

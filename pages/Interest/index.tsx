@@ -2,7 +2,7 @@ import Layout from '@components/Layout';
 import styled from '@emotion/styled';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useSWR from 'swr';
 import { MySeries } from '@typings/treeMap';
@@ -10,6 +10,10 @@ import TreeMap from '@components/TreeMap/TreeMap';
 import StocksList from '@components/StockList/StockList';
 import { Istock } from '@typings/stock';
 import axios from 'axios';
+import { isEmpty } from '@utils/common';
+import NoData from '@components/NoData';
+import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
+import StocksDetail from '@components/StocksMemo/StocksDetail';
 const Interest = () => {
   const {
     data: userData,
@@ -20,113 +24,55 @@ const Interest = () => {
     dedupingInterval: 2000, // 2초
   });
   const navigate = useNavigate();
-  const [selectedSeriesValue, setSelectedSeriesValue] = useState<string | null>(null);
-  const [category, setCategory] = useState();
-
-  // const series: MySeries[] | [] = [
-  //   {
-  //     name: 'Desktops',
-  //     data: [
-  //       {
-  //         x: 'ABC',
-  //         y: 10,
-  //       },
-  //       {
-  //         x: 'DEF',
-  //         y: 60,
-  //       },
-  //       {
-  //         x: 'XYZ',
-  //         y: 41,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     name: 'dd',
-  //     data: [
-  //       {
-  //         x: 'ABC',
-  //         y: 10,
-  //       },
-  //       {
-  //         x: 'DEF',
-  //         y: 60,
-  //       },
-  //       {
-  //         x: 'XYZ',
-  //         y: 41,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     name: 'Mobile',
-  //     data: [
-  //       {
-  //         x: 'ABCD',
-  //         y: 10,
-  //       },
-  //       {
-  //         x: 'DEFG',
-  //         y: 20,
-  //       },
-  //       {
-  //         x: 'WXYZ',
-  //         y: 51,
-  //       },
-  //       {
-  //         x: 'PQR',
-  //         y: 30,
-  //       },
-  //       {
-  //         x: 'MNO',
-  //         y: 20,
-  //       },
-  //       {
-  //         x: 'CDE',
-  //         y: 30,
-  //       },
-  //     ],
-  //   },
-  // ];
-
-  const tmp = [
-    {
-      id: 1,
-      name: '바이오1',
-      count: 5,
-    },
-    {
-      id: 2,
-      name: '바이오2',
-      count: 10,
-    },
-    {
-      id: 3,
-      name: '바이오3',
-      count: 15,
-    },
-  ];
-
-  const transformedSeries = tmp.map((series) => ({
-    name: series.name,
-    data: [
-      {
-        x: series.name,
-        y: series.count,
-      },
-    ],
-  }));
-  const testSeries: MySeries[] | [] = transformedSeries;
-
-  console.log(testSeries);
   const [stocks, setStocks] = useState<Istock[]>([]);
+  const [specificStocks, setSpecificStocks] = useState<Istock[] | []>([]);
+
+  const [series, setSeries] = useState<MySeries[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+
+  const [isRecord, setIsRecord] = useState(false);
+  const [isEditRecord, setIsEditRecord] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    axios
+      .get('/api/interest-category')
+      .then((response) => {
+        setSeries(transformedSeries(response.data));
+        setLoading(true);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => {});
+  }, []);
+
+  const transformedSeries = (categoryInfo: IResponseCategory[]) => {
+    return categoryInfo?.map((info) => ({
+      name: info.name,
+      data: [
+        {
+          x: info.name,
+          y: info.stockCount,
+        },
+      ],
+    }));
+  };
 
   const onStock = (stock: Istock) => {
-    let stockTmp = stock;
+    axios
+      .get('/api/specific-stock-all', { params: { code: stock.stock_code } })
+      .then((response) => {
+        setSpecificStocks(response.data);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => {});
 
-    if (!Array.isArray(stockTmp.news)) {
-      stockTmp.news = JSON.parse(stockTmp.news);
-    }
+    setIsSelected(true);
   };
 
   if (!userData) {
@@ -160,13 +106,27 @@ const Interest = () => {
             borderBottomRightRadius: '8px',
           }}
         >
-          <TreeMap series={testSeries} setSelectedSeriesValue={setSelectedSeriesValue} />
-          <StocksList stocks={stocks} onStock={onStock}>
-            <DateInfoGroup>
-              <DateInfo>종목 리스트</DateInfo>{' '}
-              {selectedSeriesValue && <p>Selected Series Value: {selectedSeriesValue}</p>}
-            </DateInfoGroup>
-          </StocksList>
+          {loading ? (
+            !isEmpty(series) ? (
+              <>
+                <TreeMap series={series} stocks={stocks} setStocks={setStocks} />
+                <StocksList stocks={stocks} onStock={onStock}>
+                  <DateInfoGroup>
+                    <DateInfo>종목 리스트</DateInfo>
+                  </DateInfoGroup>
+                </StocksList>
+
+                {isSelected && !isEmpty(specificStocks) ? (
+                  <>
+                    {/* {specificStocks?.map(() => {})} */}
+                    <StocksDetail selectedItem={specificStocks[currentPage - 1]}></StocksDetail>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <NoData text={'관심 종목에 등록된 데이터가 없습니다.'}></NoData>
+            )
+          ) : null}
         </div>
       </div>
     </Layout>
