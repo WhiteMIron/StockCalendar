@@ -324,9 +324,10 @@ export const Table = styled.table`
   border-style: hidden;
   border-radius: 8px;
   box-shadow: 0 0 0 1px #dadada;
+  /* border: 1px solid #ccc; */
 `;
 export const Td = styled.td`
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #dadada;
   > a:hover {
     text-decoration: underline;

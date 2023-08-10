@@ -54,27 +54,6 @@ const StocksReadMemo = ({
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
-  // useEffect(() => {
-  //   axios
-  //     .get('/api/check-interest', { params: { code: selectedItem!!.stock_code } })
-  //     .then((response) => {
-  //       if (!isEmpty(response.data)) {
-  //         setIsSelectedItem({ ...selectedItem!!, isInterest: true });
-
-  //         setStocks((stocks) =>
-  //           stocks.map((stock) =>
-  //             stock.stock_code === selectedItem!!.stock_code ? { ...stock, isInterest: true } : stock,
-  //           ),
-  //         );
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       alert(error.response.data);
-  //       console.log(error.response);
-  //     })
-  //     .finally(() => {});
-  //   return;
-  // }, []);
 
   const onSubmit = () => {
     setModalOpen(false);

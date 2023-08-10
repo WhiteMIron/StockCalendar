@@ -1,69 +1,172 @@
-import React from 'react';
-import './Pagination.css';
-// import fillArrow from '../../resources/images/fill-arrow.svg';
-// import inverseArrow from '../../resources/images/inverse-arrow.svg';
-const Pagination = ({ postsPerPage, totalPosts, paginate, currentPage }: number | any) => {
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+import styled from '@emotion/styled';
+import React, { SetStateAction, useState } from 'react';
+import prev from '@images/page_prev.png';
+import prevHover from '@images/page_prevhover.png';
+import next from '@images/page_next.png';
+import nextHover from '@images/page_nexthover.png';
+import { Istock } from '@typings/stock';
+import axios from 'axios';
 
-  function minusCurrentIndex(currentPage: number) {
-    return new Promise(function (resolve, reject) {
-      if (currentPage > 1) {
-        const idx = currentPage - 1;
-        paginate(idx);
-      }
-    });
-  }
+interface IpaginationProps {
+  totalCount: number;
+  countControl: number;
+  currentPage: number;
+  setCurrentPage: React.Dispatch<SetStateAction<number>>;
+  setStocks: React.Dispatch<SetStateAction<Istock[]>>;
+  stockCode: string;
+}
 
-  function plusCurrentIndex(currentPage: number) {
-    return new Promise(function (resolve, reject) {
-      if (currentPage < pageNumbers.length) {
-        const idx = currentPage + 1;
-        paginate(idx);
-      }
-    });
-  }
+const Pagination = ({
+  stockCode,
+  totalCount,
+  countControl,
+  currentPage,
+  setCurrentPage,
+  setStocks,
+}: IpaginationProps) => {
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+  const calculateOffset = (currentPage: number, countControl: number) => {
+    return Math.max(0, Math.floor((currentPage - 1) / countControl));
+  };
+
+  const onPrev = () => {
+    const offset = calculateOffset(currentPage, countControl) - 1;
+    axios
+      .get('/api/specific-stock-all', {
+        params: { code: stockCode, offset: offset, countControl: countControl },
+      })
+      .then((response) => {
+        let stocks = response.data.stock;
+        totalCount = response.data.totalCount;
+        stocks.map((stock: Istock) => {
+          if (!Array.isArray(stock.news)) {
+            stock.news = JSON.parse(stock.news);
+          }
+          return stock;
+        });
+        setStocks(stocks);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => {});
+  };
+
+  const onNext = () => {
+    const offset = calculateOffset(currentPage, countControl) + 1;
+    axios
+      .get('/api/specific-stock-all', {
+        params: { code: stockCode, offset: offset, countControl: countControl },
+      })
+      .then((response) => {
+        let stocks = response.data.stock;
+        totalCount = response.data.totalCount;
+        stocks.map((stock: Istock) => {
+          if (!Array.isArray(stock.news)) {
+            stock.news = JSON.parse(stock.news);
+          }
+          return stock;
+        });
+        setStocks(stocks);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => {});
+  };
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+
+    for (let i = 1; i <= totalCount; i++) {
+      pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  };
+  const pageNumbers = getPageNumbers();
 
   return (
-    <div>
-      <nav>
-        <ul className="pagination-ul">
-          <img
-            className="pagination-list-previous"
-            // src={fillArrow}
-            alt="이전 목록 보기"
+    <Container>
+      {totalCount % currentPage < countControl ? (
+        <PageArrowBox>
+          <PagePrev src={prev} onClick={onPrev} />
+        </PageArrowBox>
+      ) : (
+        <></>
+      )}
+
+      {pageNumbers.map((number) => {
+        return (
+          <PageItem
             onClick={() => {
-              minusCurrentIndex(currentPage);
+              handlePageChange(number);
             }}
-            height="2.1vh"
-          />
-          {pageNumbers.map((number) => (
-            <li key={number} className="pagination-item">
-              <span
-                className={currentPage === number ? 'pagination-color' : ''}
-                onClick={() => {
-                  paginate(number);
-                }}
-              >
-                {number}
-              </span>
-            </li>
-          ))}
-          <img
-            className="pagination-list-next"
-            // src={fillArrow}
-            alt="다음 목록 보기"
-            onClick={() => {
-              plusCurrentIndex(currentPage);
-            }}
-            height="2.1vh"
-          />
-        </ul>
-      </nav>
-    </div>
+            key="number"
+            className={currentPage === number ? 'active' : ''}
+          >
+            {number}
+          </PageItem>
+        );
+      })}
+
+      {!(totalCount % currentPage > countControl) ? (
+        <PageArrowBox>
+          <PageNext src={next} onClick={onNext} />
+        </PageArrowBox>
+      ) : (
+        <></>
+      )}
+    </Container>
   );
 };
 
+const Container = styled.ul`
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+`;
+
+const PageArrowBox = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PagePrev = styled.img`
+  width: 18px;
+  height: 18px;
+  &:hover {
+    content: url(${prevHover});
+    cursor: pointer;
+  }
+`;
+
+const PageNext = styled.img`
+  width: 18px;
+  height: 18px;
+  &:hover {
+    content: url(${nextHover});
+    cursor: pointer;
+  }
+`;
+
+const PageItem = styled.li`
+  padding: 0 5;
+  &.active {
+    border-radius: 4px;
+    background-color: #60d6bf;
+
+    color: #fff;
+  }
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
+
+const PagePrevBtn = styled.button``;
 export default Pagination;

@@ -25,16 +25,10 @@ const Interest = () => {
   });
   const navigate = useNavigate();
   const [stocks, setStocks] = useState<Istock[]>([]);
-  const [specificStocks, setSpecificStocks] = useState<Istock[] | []>([]);
-
+  const [selectedStockCode, setSelectedStockCode] = useState('');
   const [series, setSeries] = useState<MySeries[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
-
-  const [isRecord, setIsRecord] = useState(false);
-  const [isEditRecord, setIsEditRecord] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Istock | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     axios
@@ -61,17 +55,8 @@ const Interest = () => {
     }));
   };
 
-  const onStock = (stock: Istock) => {
-    axios
-      .get('/api/specific-stock-all', { params: { code: stock.stock_code } })
-      .then((response) => {
-        setSpecificStocks(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      })
-      .finally(() => {});
-
+  const onStock = async (stock: Istock) => {
+    setSelectedStockCode(stock.stock_code);
     setIsSelected(true);
   };
 
@@ -116,10 +101,9 @@ const Interest = () => {
                   </DateInfoGroup>
                 </StocksList>
 
-                {isSelected && !isEmpty(specificStocks) ? (
+                {isSelected && !isEmpty(stocks) ? (
                   <>
-                    {/* {specificStocks?.map(() => {})} */}
-                    <StocksDetail selectedItem={specificStocks[currentPage - 1]}></StocksDetail>
+                    <StocksDetail selectedStockCode={selectedStockCode}></StocksDetail>
                   </>
                 ) : null}
               </>

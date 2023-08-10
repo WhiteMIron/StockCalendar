@@ -2,6 +2,7 @@ import React, { MouseEventHandler, ReactNode, SetStateAction, useEffect } from '
 import StockItem from './StockItem';
 import { StockListContainer } from './styles';
 import { Istock } from '@typings/stock';
+import uuid from 'react-uuid';
 
 interface StocksListProps {
   stocks: Istock[];
@@ -18,7 +19,7 @@ const StockList = ({ children, stocks, onStock }: StocksListProps) => {
         {stocks.map((stock: Istock) => (
           <StockItem
             stock={stock}
-            key={stock.id}
+            key={uuid()}
             onStock={() => {
               onStock(stock);
             }}
