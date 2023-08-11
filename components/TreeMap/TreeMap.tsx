@@ -76,9 +76,10 @@ const Container = styled.div`
   width: 30%;
   border: 1px rgba(0, 0, 0, 0.2) solid;
   border-radius: 8px;
-  padding-left: 10px;
+  padding-left: 20px;
   padding-bottom: 20px;
   margin-right: 20px;
+  flex-shrink: 0;
 `;
 
 export default TreeMap;

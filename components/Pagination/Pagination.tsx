@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import React, { SetStateAction, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import prev from '@images/page_prev.png';
 import prevHover from '@images/page_prevhover.png';
 import next from '@images/page_next.png';
@@ -9,7 +9,7 @@ import axios from 'axios';
 
 interface IpaginationProps {
   totalCount: number;
-  countControl: number;
+  numPerPage: number;
   currentPage: number;
   setCurrentPage: React.Dispatch<SetStateAction<number>>;
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
@@ -19,23 +19,21 @@ interface IpaginationProps {
 const Pagination = ({
   stockCode,
   totalCount,
-  countControl,
+  numPerPage,
   currentPage,
   setCurrentPage,
   setStocks,
 }: IpaginationProps) => {
+  const [offset, setOffset] = useState(0);
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
-  const calculateOffset = (currentPage: number, countControl: number) => {
-    return Math.max(0, Math.floor((currentPage - 1) / countControl));
-  };
 
   const onPrev = () => {
-    const offset = calculateOffset(currentPage, countControl) - 1;
     axios
       .get('/api/specific-stock-all', {
-        params: { code: stockCode, offset: offset, countControl: countControl },
+        params: { code: stockCode, offset: offset - 1, numPerPage: numPerPage },
       })
       .then((response) => {
         let stocks = response.data.stock;
@@ -47,6 +45,7 @@ const Pagination = ({
           return stock;
         });
         setStocks(stocks);
+        setOffset(offset - 1);
       })
       .catch((error) => {
         console.log(error.response);
@@ -55,10 +54,9 @@ const Pagination = ({
   };
 
   const onNext = () => {
-    const offset = calculateOffset(currentPage, countControl) + 1;
     axios
       .get('/api/specific-stock-all', {
-        params: { code: stockCode, offset: offset, countControl: countControl },
+        params: { code: stockCode, offset: offset + 1, numPerPage: numPerPage },
       })
       .then((response) => {
         let stocks = response.data.stock;
@@ -70,6 +68,7 @@ const Pagination = ({
           return stock;
         });
         setStocks(stocks);
+        setOffset(offset + 1);
       })
       .catch((error) => {
         console.log(error.response);
@@ -78,19 +77,21 @@ const Pagination = ({
   };
 
   const getPageNumbers = () => {
+    var startPage = offset * numPerPage + 1;
+    var endPage = Math.min(startPage + numPerPage - 1, totalCount);
+
     const pageNumbers = [];
 
-    for (let i = 1; i <= totalCount; i++) {
+    for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
     }
-
     return pageNumbers;
   };
   const pageNumbers = getPageNumbers();
 
   return (
     <Container>
-      {totalCount % currentPage < countControl ? (
+      {offset > 0 ? (
         <PageArrowBox>
           <PagePrev src={prev} onClick={onPrev} />
         </PageArrowBox>
@@ -104,7 +105,7 @@ const Pagination = ({
             onClick={() => {
               handlePageChange(number);
             }}
-            key="number"
+            key={number}
             className={currentPage === number ? 'active' : ''}
           >
             {number}
@@ -112,7 +113,7 @@ const Pagination = ({
         );
       })}
 
-      {!(totalCount % currentPage > countControl) ? (
+      {offset < Math.floor(totalCount / numPerPage) ? (
         <PageArrowBox>
           <PageNext src={next} onClick={onNext} />
         </PageArrowBox>
@@ -155,7 +156,7 @@ const PageNext = styled.img`
 `;
 
 const PageItem = styled.li`
-  padding: 0 5;
+  padding: 0 10;
   &.active {
     border-radius: 4px;
     background-color: #60d6bf;
