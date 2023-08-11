@@ -26,6 +26,7 @@ const Interest = () => {
   const navigate = useNavigate();
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [selectedStockCode, setSelectedStockCode] = useState('');
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
   const [series, setSeries] = useState<MySeries[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -94,7 +95,13 @@ const Interest = () => {
           {loading ? (
             !isEmpty(series) ? (
               <>
-                <TreeMap series={series} stocks={stocks} setStocks={setStocks} />
+                <TreeMap
+                  series={series}
+                  stocks={stocks}
+                  setStocks={setStocks}
+                  setIsSelected={setIsSelected}
+                  setSelectedCategoryName={setSelectedCategoryName}
+                />
                 <StocksList stocks={stocks} onStock={onStock}>
                   <DateInfoGroup>
                     <DateInfo>종목 리스트</DateInfo>
@@ -103,7 +110,10 @@ const Interest = () => {
 
                 {isSelected && !isEmpty(stocks) ? (
                   <>
-                    <StocksDetail selectedStockCode={selectedStockCode}></StocksDetail>
+                    <StocksDetail
+                      selectedStockCode={selectedStockCode}
+                      selectedCategoryName={selectedCategoryName}
+                    ></StocksDetail>
                   </>
                 ) : null}
               </>

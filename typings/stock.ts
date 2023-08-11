@@ -8,9 +8,6 @@ export interface Istock {
   current_price: string;
   previous_close: string;
   diff_percent: string;
-  title: string;
-  desc: string;
-  reason: string;
   createdAt: Date;
   stock_code: string;
   diff_price: string;
@@ -19,6 +16,7 @@ export interface Istock {
   news: string;
   isInterest: boolean;
   register_date: string;
+  category_name: string;
 }
 
 export interface ISearch {

@@ -10,28 +10,27 @@ import styled from '@emotion/styled';
 import Pagination from '@components/Pagination/Pagination';
 import axios from 'axios';
 interface StocksReadMemoProps {
-  // selectedItem: Istock | null;
-  // currentPage: number;
-  // setCurrentPage: React.Dispatch<SetStateAction<number>>;
   selectedStockCode: string;
-  // stockName: string;
-  // stocks: Istock[];
-  // totalCount: number;
-  // setStocks: React.Dispatch<SetStateAction<Istock[]>>;
+  selectedCategoryName: string;
 }
 
 //여기서받게할까?
 
-const StocksDetail = ({ selectedStockCode }: StocksReadMemoProps) => {
+const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMemoProps) => {
   let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
   const [currentPage, setCurrentPage] = useState(1);
   const [stocks, setStocks] = useState<Istock[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(1);
   const numPerPage = 5;
+
   useEffect(() => {
+    setCurrentPage(1);
+
     axios
-      .get('/api/specific-stock-all', { params: { code: selectedStockCode, offset: 0, numPerPage: 5 } })
+      .get('/api/specific-stock-all', {
+        params: { code: selectedStockCode, offset: 0, numPerPage: numPerPage, categoryName: selectedCategoryName },
+      })
       .then((response) => {
         const { stock, totalCount } = response.data;
         let stocksTmp = stock;
@@ -47,31 +46,24 @@ const StocksDetail = ({ selectedStockCode }: StocksReadMemoProps) => {
         setIsLoading(true);
       })
       .catch((error) => {
+        alert('에러');
         console.log(error.response);
       })
       .finally(() => {});
     return;
   }, [selectedStockCode]);
+
   return (
     <Container>
       {isLoading ? (
-        <div
-          style={{
-            margin: '0 auto',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ display: 'flex', height: '50px', justifyContent: 'center', alignItems: 'center' }}>
-            <span>{stocks[(currentPage - 1) % numPerPage]?.register_date}</span>{' '}
-          </div>
+        <TopBox>
+          <ButtonBox></ButtonBox>
 
-          <div
-            style={{
-              position: 'absolute',
-              right: '50',
-            }}
-          >
+          <DateInfoBox>
+            <span>{stocks[(currentPage - 1) % numPerPage]?.register_date}</span>{' '}
+          </DateInfoBox>
+
+          <PaginationBox>
             <Pagination
               stockCode={stocks[(currentPage - 1) % numPerPage]?.stock_code || ''}
               setCurrentPage={setCurrentPage}
@@ -80,17 +72,12 @@ const StocksDetail = ({ selectedStockCode }: StocksReadMemoProps) => {
               numPerPage={numPerPage}
               setStocks={setStocks}
             />
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              right: '5',
-              top: 0,
-            }}
-          >
+          </PaginationBox>
+
+          <PageInfoBox>
             ({currentPage}/{totalCount})
-          </div>
-        </div>
+          </PageInfoBox>
+        </TopBox>
       ) : null}
 
       {isLoading ? (
@@ -127,13 +114,6 @@ const StocksDetail = ({ selectedStockCode }: StocksReadMemoProps) => {
                   >
                     <a href={financeAddress + stocks[(currentPage - 1) % numPerPage]?.stock_code} target="_blank">
                       <StockInfo>
-                        {stocks[(currentPage - 1) % numPerPage]!!.isInterest ? (
-                          <Icon>
-                            <img src={crown} width="13px" height="13px" alt="관심종목"></img>
-                          </Icon>
-                        ) : (
-                          <></>
-                        )}
                         {stocks[(currentPage - 1) % numPerPage]!!.name}
                         {'('}
                         {stocks[(currentPage - 1) % numPerPage]!!.stock_code}
@@ -236,6 +216,31 @@ const StocksDetail = ({ selectedStockCode }: StocksReadMemoProps) => {
   );
 };
 
+const TopBox = styled.div`
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+`;
+
+const ButtonBox = styled.div``;
+
+const DateInfoBox = styled.div`
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PaginationBox = styled.div`
+  position: absolute;
+  right: 50;
+`;
+const PageInfoBox = styled.div`
+  position: absolute;
+  right: 5;
+  top: 0;
+`;
+
 const Container = styled.div`
   position: relative;
   border-radius: 8px;
@@ -260,7 +265,6 @@ const StockInfo = styled.div`
 `;
 const Table = styled.table`
   width: 100%;
-  /* height: 100%; */
   border-spacing: 0px;
   border-collapse: collapse;
   font-size: 15px;

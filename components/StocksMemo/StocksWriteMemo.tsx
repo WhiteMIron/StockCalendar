@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback, useEffect, useState, ChangeEvent } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState, ChangeEvent, useRef } from 'react';
 
 import styled from '@emotion/styled';
 import {
@@ -25,6 +25,8 @@ import { Istock } from '@typings/stock';
 import moment from 'moment';
 import info from '@images/info.png';
 import { cmpToday, isEmpty } from '@utils/common';
+import ToastEdit from '@components/TextEdit/ToastEdit';
+import { Editor } from '@toast-ui/react-editor';
 interface itemProps {
   stocks: Istock[];
   selectedItem: Istock | null;
@@ -81,6 +83,7 @@ const StocksMemo = ({
   });
 
   const numRegex = /^[0-9]+$/;
+  const editorRef = useRef<Editor | null>(null);
 
   const handleModal = () => {
     setModalOpen(!modalOpen);
@@ -309,6 +312,14 @@ const StocksMemo = ({
                     marginBottom="10px"
                     value={stockCurrentPrice || ''}
                     onChange={onStockCurrentPrice}
+                    onClick={() => {
+                      if (isBlurChecks.interest === false) {
+                        setIsBlurChecks((isBlurChecks) => ({
+                          ...isBlurChecks,
+                          ['interest']: true,
+                        }));
+                      }
+                    }}
                     onBlur={() => {
                       if (!isBlurChecks.currentPrice) {
                         setIsBlurChecks({ ...isBlurChecks, currentPrice: !isBlurChecks.currentPrice });
@@ -373,7 +384,7 @@ const StocksMemo = ({
                 value={stockCategory || ''}
                 onChange={onCategory}
                 onClick={() => {
-                  if (isBlurChecks.interest === false) {
+                  if (cmpToday(selectedDate) && isBlurChecks.interest === false) {
                     setIsBlurChecks((isBlurChecks) => ({
                       ...isBlurChecks,
                       ['interest']: true,
@@ -391,12 +402,10 @@ const StocksMemo = ({
             {isBlurChecks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}
           </StockInfoGroup>
 
-          <Label>
-            <StockInfoGroup>
-              <StockInfo>
-                <span>이슈</span>
-              </StockInfo>
-              <TextArea
+          {/* <Label> */}
+          <StockInfoGroup>
+            <StockInfo></StockInfo>
+            {/* <TextArea
                 value={stockIssue || ''}
                 onChange={onStockIssue}
                 style={{
@@ -404,18 +413,30 @@ const StocksMemo = ({
                   textAlign: 'justify',
                   height: '360px',
                 }}
-              ></TextArea>
-            </StockInfoGroup>
-          </Label>
+              ></TextArea> */}
+
+            <ToastEdit stockIssue={stockIssue} setStockIssue={setStockIssue} />
+          </StockInfoGroup>
+          {/* </Label> */}
 
           <NewsGroup>
             <Label>
               <StockInfo>
                 <span>뉴스</span>
               </StockInfo>
-              <Input marginBottom="10px" value={stockFirstNews || ''} onChange={onFirstNews}></Input>
+              <Input
+                placeholder="링크를 작성해주세요(선택)"
+                marginBottom="10px"
+                value={stockFirstNews || ''}
+                onChange={onFirstNews}
+              ></Input>
             </Label>
-            <Input marginBottom="10px" value={stockSecondNews || ''} onChange={onSecondNews}></Input>
+            <Input
+              placeholder="링크를 작성해주세요(선택)"
+              marginBottom="10px"
+              value={stockSecondNews || ''}
+              onChange={onSecondNews}
+            ></Input>
           </NewsGroup>
         </Form>
       </FormContainer>

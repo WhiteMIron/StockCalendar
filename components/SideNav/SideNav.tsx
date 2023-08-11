@@ -47,7 +47,7 @@ const SideNav = () => {
           </NavTitle>
         </StyledNavLink>
 
-        <StyledNavLink to="/mypage">
+        <StyledNavLink to="/test">
           {' '}
           <NavTitle>
             {' '}

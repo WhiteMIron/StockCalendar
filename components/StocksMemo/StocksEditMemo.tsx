@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback, useEffect, useState, ChangeEvent } from 'react';
+import React, { SetStateAction, useCallback, useEffect, useState, ChangeEvent, useRef } from 'react';
 
 import {
   Button,
@@ -25,6 +25,8 @@ import moment from 'moment';
 import info from '@images/info.png';
 import styled from '@emotion/styled';
 import { cmpToday } from '@utils/common';
+import ToastEdit from '@components/TextEdit/ToastEdit';
+import { Editor, Viewer } from '@toast-ui/react-editor';
 interface itemProps {
   stocks: Istock[];
   selectedItem: Istock | null;
@@ -60,7 +62,7 @@ const StocksEditMemo = ({
   const [stockCurrentPrice, onChangeStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
   const [stockPreviousClose, onChangePreviousClose, setStockPreviousClose] = useInput(selectedItem?.previous_close);
 
-  const [stockIssue, onChangeStockIssue] = useInput(selectedItem?.issue);
+  const [stockIssue, onChangeStockIssue, setStockIssue] = useInput(selectedItem!!.issue);
   const [stockFirstNews, onChangeFirstNews] = useInput(selectedItem!!.news[0]);
   const [stockSecondNews, onChangeSecondNews] = useInput(selectedItem!!.news[1]);
 
@@ -71,6 +73,7 @@ const StocksEditMemo = ({
     previousClose: false,
   });
 
+  const editorRef = useRef<Editor | null>(null);
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
@@ -314,11 +317,11 @@ const StocksEditMemo = ({
               )}
             </Content>
           </ChangeInfoGroup>
-          <Label>
-            <StockInfo>
-              <span>이슈</span>
-            </StockInfo>
-            <TextArea
+          {/* <Label> */}
+          <StockInfo></StockInfo>
+          <ToastEdit stockIssue={stockIssue} setStockIssue={setStockIssue} />
+
+          {/* <TextArea
               value={stockIssue}
               onChange={onChangeStockIssue}
               style={{
@@ -326,8 +329,8 @@ const StocksEditMemo = ({
                 textAlign: 'justify',
                 height: '360px',
               }}
-            ></TextArea>
-          </Label>
+            ></TextArea> */}
+          {/* </Label> */}
           <NewsGroup>
             <Label>
               <StockInfo>

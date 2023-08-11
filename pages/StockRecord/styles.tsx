@@ -331,7 +331,7 @@ export const StockItem = styled.li`
   }
 `;
 export const NewsGroup = styled.div`
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 `;
 
 export const ChangeInfoGroup = styled.div`

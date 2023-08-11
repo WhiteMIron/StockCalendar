@@ -27,6 +27,7 @@ import BackDrop from '@components/Modal/BackDrop';
 import Modal from '@components/Modal/Modal';
 import axios from 'axios';
 import uuid from 'react-uuid';
+import { Viewer } from '@toast-ui/react-editor';
 interface StocksReadMemoProps {
   stocks: Istock[];
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
@@ -108,13 +109,13 @@ const StocksReadMemo = ({
                 >
                   <a href={financeAddress + selectedItem?.stock_code} target="_blank">
                     <StockInfo>
-                      {selectedItem!!.isInterest ? (
+                      {/* {selectedItem!!.isInterest ? (
                         <Icon>
                           <img src={crown} width="13px" height="13px" alt="관심종목"></img>
                         </Icon>
                       ) : (
                         <></>
-                      )}
+                      )} */}
                       {selectedItem!!.name}
                       {'('}
                       {selectedItem!!.stock_code}
@@ -202,14 +203,7 @@ const StocksReadMemo = ({
             <Tr>
               <Th>이슈</Th>
               <Td>
-                {selectedItem?.issue.split('\n').map((line) => {
-                  return (
-                    <span key={uuid()}>
-                      {line}
-                      <br />
-                    </span>
-                  );
-                })}
+                <Viewer initialValue={selectedItem!!.issue}></Viewer>
               </Td>
             </Tr>
           ) : null}
