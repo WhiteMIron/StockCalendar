@@ -9,6 +9,7 @@ import uuid from 'react-uuid';
 import styled from '@emotion/styled';
 import Pagination from '@components/Pagination/Pagination';
 import axios from 'axios';
+import { Viewer } from '@toast-ui/react-editor';
 interface StocksReadMemoProps {
   selectedStockCode: string;
   selectedCategoryName: string;
@@ -168,20 +169,13 @@ const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMem
             </Tr>
             <Tr>
               <Th>카테고리</Th>
-              <Td>{stocks[(currentPage - 1) % numPerPage]!!.Category.name}</Td>
+              <Td>{stocks[(currentPage - 1) % numPerPage]!!.category_name}</Td>
             </Tr>
             {!isEmpty(stocks[(currentPage - 1) % numPerPage]!!.issue) ? (
               <Tr>
                 <Th>이슈</Th>
                 <Td>
-                  {stocks[(currentPage - 1) % numPerPage]?.issue.split('\n').map((line) => {
-                    return (
-                      <span key={uuid()}>
-                        {line}
-                        <br />
-                      </span>
-                    );
-                  })}
+                  <Viewer initialValue={stocks[(currentPage - 1) % numPerPage]!!.issue}></Viewer>
                 </Td>
               </Tr>
             ) : null}

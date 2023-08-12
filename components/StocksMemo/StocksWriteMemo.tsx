@@ -65,7 +65,7 @@ const StocksMemo = ({
   const [modalOpen, setModalOpen] = useState(false);
 
   const [stockCode, onStockCode, setStockCode] = useInput(selectedItem?.stock_code);
-  const [stockCategory, onCategory, setStockCategory] = useInput(selectedItem?.Category.name);
+  const [stockCategory, onCategory, setStockCategory] = useInput(selectedItem?.category_name);
   const [stockCurrentPrice, onStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
 
   const [stockPreviousClose, onPreviousClose, setPreviousClose] = useInput(selectedItem?.previous_close);
@@ -83,7 +83,6 @@ const StocksMemo = ({
   });
 
   const numRegex = /^[0-9]+$/;
-  const editorRef = useRef<Editor | null>(null);
 
   const handleModal = () => {
     setModalOpen(!modalOpen);
@@ -464,15 +463,30 @@ const StocksMemo = ({
           bgColor="#00BB9D"
           color="#fff"
           onClick={() => {
-            if (stockCode && stockCategory) {
-              handleModal();
+            if (cmpToday(selectedDate)) {
+              if (stockCode && stockCategory) {
+                handleModal();
+              } else {
+                for (let key in isBlurChecks) {
+                  if (!isBlurChecks[key]) {
+                    setIsBlurChecks((isBlurChecks) => ({
+                      ...isBlurChecks,
+                      [key]: true,
+                    }));
+                  }
+                }
+              }
             } else {
-              for (let key in isBlurChecks) {
-                if (!isBlurChecks[key]) {
-                  setIsBlurChecks((isBlurChecks) => ({
-                    ...isBlurChecks,
-                    [key]: true,
-                  }));
+              if (stockCode && stockCategory && stockCurrentPrice && stockPreviousClose) {
+                handleModal();
+              } else {
+                for (let key in isBlurChecks) {
+                  if (!isBlurChecks[key]) {
+                    setIsBlurChecks((isBlurChecks) => ({
+                      ...isBlurChecks,
+                      [key]: true,
+                    }));
+                  }
                 }
               }
             }

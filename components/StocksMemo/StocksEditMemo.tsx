@@ -58,16 +58,17 @@ const StocksEditMemo = ({
   const [isInterest, setIsInterest] = useState(Boolean(selectedItem?.isInterest));
   const [stockName] = useInput(selectedItem?.name);
   const [stockCode] = useInput(selectedItem?.stock_code);
-  const [stockCategory, onChangeCategory, setStockCategory] = useInput(selectedItem?.Category.name);
+  const [stockCategory, onChangeCategory, setStockCategory] = useInput(selectedItem?.category_name);
   const [stockCurrentPrice, onChangeStockCurrentPrice, setStockCurrentPrice] = useInput(selectedItem?.current_price);
   const [stockPreviousClose, onChangePreviousClose, setStockPreviousClose] = useInput(selectedItem?.previous_close);
 
-  const [stockIssue, onChangeStockIssue, setStockIssue] = useInput(selectedItem!!.issue);
+  const [stockIssue, , setStockIssue] = useInput(selectedItem!!.issue);
   const [stockFirstNews, onChangeFirstNews] = useInput(selectedItem!!.news[0]);
   const [stockSecondNews, onChangeSecondNews] = useInput(selectedItem!!.news[1]);
 
   const numRegex = /^[0-9]+$/;
-  const [checks, setChecks] = useState<ObjType>({
+
+  const [isBlurChecks, setIsBlurChecks] = useState<ObjType>({
     category: false,
     currentPrice: false,
     previousClose: false,
@@ -199,17 +200,17 @@ const StocksEditMemo = ({
                     value={stockCurrentPrice}
                     onChange={onChangeStockCurrentPrice}
                     onBlur={() => {
-                      if (!checks.currentPrice) {
-                        setChecks({ ...checks, currentPrice: !checks.currentPrice });
+                      if (!isBlurChecks.currentPrice) {
+                        setIsBlurChecks({ ...isBlurChecks, currentPrice: !isBlurChecks.currentPrice });
                       }
                       setStockCurrentPrice((prev) => prev?.replaceAll(',', ''));
                       setStockCurrentPrice((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>
-                {checks.currentPrice && !stockCurrentPrice ? (
+                {isBlurChecks.currentPrice && !stockCurrentPrice ? (
                   <Error>종가를 입력해주세요.</Error>
-                ) : checks.currentPrice && !numRegex.test(stockCurrentPrice || '') ? (
+                ) : isBlurChecks.currentPrice && !numRegex.test(stockCurrentPrice || '') ? (
                   <Error>숫자만 입력해주세요.</Error>
                 ) : (
                   <></>
@@ -226,17 +227,17 @@ const StocksEditMemo = ({
                     value={stockPreviousClose}
                     onChange={onChangePreviousClose}
                     onBlur={() => {
-                      if (!checks.currentPrice) {
-                        setChecks({ ...checks, previousClose: !checks.previousClose });
+                      if (!isBlurChecks.currentPrice) {
+                        setIsBlurChecks({ ...isBlurChecks, previousClose: !isBlurChecks.previousClose });
                       }
                       setStockPreviousClose((prev) => prev?.replaceAll(',', ''));
                       setStockPreviousClose((prev) => prev?.replaceAll(' ', ''));
                     }}
                   ></Input>
                 </Label>{' '}
-                {checks.previousClose && !stockPreviousClose ? (
+                {isBlurChecks.previousClose && !stockPreviousClose ? (
                   <Error>전일종가를 입력해주세요.</Error>
-                ) : checks.previousClose && !numRegex.test(stockPreviousClose || '') ? (
+                ) : isBlurChecks.previousClose && !numRegex.test(stockPreviousClose || '') ? (
                   <Error>숫자만 입력해주세요.</Error>
                 ) : (
                   <></>
@@ -255,15 +256,15 @@ const StocksEditMemo = ({
                 value={stockCategory}
                 onChange={onChangeCategory}
                 onBlur={() => {
-                  if (!checks.category) {
-                    setChecks({ ...checks, category: !checks.category });
+                  if (!isBlurChecks.category) {
+                    setIsBlurChecks({ ...isBlurChecks, category: !isBlurChecks.category });
                   }
                   setStockCategory((prev) => prev?.replaceAll(',', ''));
                   setStockCategory((prev) => prev?.replaceAll(' ', ''));
                 }}
               ></Input>
             </Label>{' '}
-            {checks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}{' '}
+            {isBlurChecks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}{' '}
           </StockInfoGroup>
           <ChangeInfoGroup>
             <Content>
@@ -317,20 +318,10 @@ const StocksEditMemo = ({
               )}
             </Content>
           </ChangeInfoGroup>
-          {/* <Label> */}
+
           <StockInfo></StockInfo>
           <ToastEdit stockIssue={stockIssue} setStockIssue={setStockIssue} />
 
-          {/* <TextArea
-              value={stockIssue}
-              onChange={onChangeStockIssue}
-              style={{
-                wordBreak: 'keep-all',
-                textAlign: 'justify',
-                height: '360px',
-              }}
-            ></TextArea> */}
-          {/* </Label> */}
           <NewsGroup>
             <Label>
               <StockInfo>
@@ -366,7 +357,33 @@ const StocksEditMemo = ({
           bgColor="#00BB9D"
           color="#fff"
           onClick={() => {
-            handleModal();
+            if (cmpToday(selectedDate)) {
+              if (stockCode && stockCategory) {
+                handleModal();
+              } else {
+                for (let key in isBlurChecks) {
+                  if (!isBlurChecks[key]) {
+                    setIsBlurChecks((isBlurChecks) => ({
+                      ...isBlurChecks,
+                      [key]: true,
+                    }));
+                  }
+                }
+              }
+            } else {
+              if (stockCode && stockCategory && stockCurrentPrice && stockPreviousClose) {
+                handleModal();
+              } else {
+                for (let key in isBlurChecks) {
+                  if (!isBlurChecks[key]) {
+                    setIsBlurChecks((isBlurChecks) => ({
+                      ...isBlurChecks,
+                      [key]: true,
+                    }));
+                  }
+                }
+              }
+            }
           }}
         >
           저장

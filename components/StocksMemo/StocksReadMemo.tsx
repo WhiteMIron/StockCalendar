@@ -109,13 +109,6 @@ const StocksReadMemo = ({
                 >
                   <a href={financeAddress + selectedItem?.stock_code} target="_blank">
                     <StockInfo>
-                      {/* {selectedItem!!.isInterest ? (
-                        <Icon>
-                          <img src={crown} width="13px" height="13px" alt="관심종목"></img>
-                        </Icon>
-                      ) : (
-                        <></>
-                      )} */}
                       {selectedItem!!.name}
                       {'('}
                       {selectedItem!!.stock_code}
@@ -197,7 +190,7 @@ const StocksReadMemo = ({
           </Tr>
           <Tr>
             <Th>카테고리</Th>
-            <Td>{selectedItem!!.Category.name}</Td>
+            <Td>{selectedItem!!.category_name}</Td>
           </Tr>
           {!isEmpty(selectedItem!!.issue) ? (
             <Tr>

@@ -11,11 +11,11 @@ export interface Istock {
   createdAt: Date;
   stock_code: string;
   diff_price: string;
-  Category: Icategory;
   issue: string;
   news: string;
   isInterest: boolean;
   register_date: string;
+  category_id: number;
   category_name: string;
 }
 
