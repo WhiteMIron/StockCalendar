@@ -40,7 +40,7 @@ export const CalendarContainer = styled.div`
 
 export const CalendarBox = styled.div`
   margin-top: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   .react-calendar {
     padding: 0 10px;
     background-color: #fff;
@@ -58,8 +58,6 @@ export const CalendarBox = styled.div`
   .react-calendar__viewContainer {
   }
   .react-calendar__tile {
-    /* height: 60px; */
-
     height: 55px;
   }
   .react-calendar__month-view__weekdays {

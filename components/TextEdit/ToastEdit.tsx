@@ -8,14 +8,16 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import DOMPurify from 'dompurify';
-import styled from '@emotion/styled';
 import { isEmpty } from '@utils/common';
+import styled from '@emotion/styled';
 
 interface IToastEditProps {
-  stockIssue: string;
-  setStockIssue: React.Dispatch<SetStateAction<string>>;
+  placeHolder?: string;
+  height: string;
+  content: string;
+  setContent: React.Dispatch<SetStateAction<string>>;
 }
-const ToastEdit = ({ stockIssue, setStockIssue }: IToastEditProps) => {
+const ToastEdit = ({ placeHolder, height, content, setContent }: IToastEditProps) => {
   const customToolbarItems = [['heading', 'bold'], ['hr'], ['ul', 'ol', 'task']];
   const editorRef = useRef<Editor | null>(null);
 
@@ -28,18 +30,19 @@ const ToastEdit = ({ stockIssue, setStockIssue }: IToastEditProps) => {
       const trimmedContent = content.replace(/<br>/gi, '').replace(/\n/g, '').trim();
 
       if (!isEmpty(trimmedContent)) {
-        setStockIssue(sanitizedHtml);
+        setContent(sanitizedHtml);
       } else {
-        setStockIssue('');
+        setContent('');
       }
     }
   };
   return (
     <>
+      {/* <Container> */}
       <Editor
-        initialValue={stockIssue}
-        placeholder="이슈를 작성해주세요."
-        height="350px"
+        initialValue={content}
+        placeholder={placeHolder}
+        height={height}
         initialEditType="wysiwyg"
         useCommandShortcut={true}
         usageStatistics={false}
@@ -50,8 +53,13 @@ const ToastEdit = ({ stockIssue, setStockIssue }: IToastEditProps) => {
         ref={editorRef}
         onBlur={onBlurHandler}
       />
+      {/* </Container> */}
     </>
   );
 };
+
+const Container = styled.div`
+  /* border: 1px solid #dadada; */
+`;
 
 export default ToastEdit;

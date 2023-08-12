@@ -320,7 +320,7 @@ const StocksEditMemo = ({
           </ChangeInfoGroup>
 
           <StockInfo></StockInfo>
-          <ToastEdit stockIssue={stockIssue} setStockIssue={setStockIssue} />
+          <ToastEdit height="350px" content={stockIssue} setContent={setStockIssue} />
 
           <NewsGroup>
             <Label>

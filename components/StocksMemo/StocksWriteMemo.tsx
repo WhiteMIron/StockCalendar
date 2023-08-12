@@ -401,22 +401,15 @@ const StocksMemo = ({
             {isBlurChecks.category && !stockCategory ? <Error>카테고리를 입력해주세요.</Error> : <></>}
           </StockInfoGroup>
 
-          {/* <Label> */}
           <StockInfoGroup>
             <StockInfo></StockInfo>
-            {/* <TextArea
-                value={stockIssue || ''}
-                onChange={onStockIssue}
-                style={{
-                  wordBreak: 'keep-all',
-                  textAlign: 'justify',
-                  height: '360px',
-                }}
-              ></TextArea> */}
-
-            <ToastEdit stockIssue={stockIssue} setStockIssue={setStockIssue} />
+            <ToastEdit
+              placeHolder="이슈를 작성해주세요.(선택)"
+              height="350px"
+              content={stockIssue}
+              setContent={setStockIssue}
+            />
           </StockInfoGroup>
-          {/* </Label> */}
 
           <NewsGroup>
             <Label>

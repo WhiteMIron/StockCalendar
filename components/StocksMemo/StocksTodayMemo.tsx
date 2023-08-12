@@ -7,6 +7,8 @@ import axios from 'axios';
 import moment from 'moment';
 import { DateValue } from '@typings/date';
 import uuid from 'react-uuid';
+import ToastEdit from '@components/TextEdit/ToastEdit';
+import { Viewer } from '@toast-ui/react-editor';
 interface StocksTodayMemoProps {
   dateValue: DateValue;
   selectedDate: string;
@@ -87,21 +89,28 @@ const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
       </TitleBox>
       {!isEdit ? (
         <TextBox>
-          {summary.split('\n').map((line) => {
-            return (
-              <span key={uuid()}>
-                {line}
-                <br />
-              </span>
-            );
-          })}
+          <Viewer initialValue={summary}></Viewer>
         </TextBox>
       ) : (
-        <TextArea value={summary} onChange={onSummary} ref={summaryTextBox}></TextArea>
+        <ToastEdit
+          placeHolder="오늘의 증시요약을 작성해주세요."
+          height="100%"
+          content={summary}
+          setContent={setSummary}
+        />
       )}
     </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: white;
+  overflow-y: auto;
+`;
 
 const TextBox = styled.div`
   word-break: break-all;
@@ -115,26 +124,7 @@ const TextBox = styled.div`
   overflow-y: auto;
   padding: 20px;
 `;
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  background: white;
-  overflow-y: auto;
-`;
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 100%;
-  border: 1px rgba(0, 0, 0, 0.2) solid;
-  overflow-y: auto;
-  border-radius: 8px;
-  resize: none;
-  &:focus {
-    border: 1px solid #25d790;
-  }
-`;
+
 const TitleBox = styled.div`
   display: flex;
   align-items: center;
