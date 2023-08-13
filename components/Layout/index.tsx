@@ -3,6 +3,7 @@ import SideNav from '@components/SideNav/SideNav';
 import Content from '@components/Content';
 import Header from '@components/Header/Header';
 import { IUser } from '@typings/db';
+import Test from '@pages/Test/Test';
 
 const Layout = (props: { children: React.ReactNode; user: IUser | undefined | false }) => {
   return (

@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useState } from 'react';
+import React, { MouseEventHandler, SetStateAction, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import { DiffAmount, DownPrice, Icon, PriceBox, SamePrice, Tbody, Td, Th, Tr, UpPrice } from './styles';
 import { Istock } from '@typings/stock';
@@ -13,11 +13,10 @@ import { Viewer } from '@toast-ui/react-editor';
 interface StocksReadMemoProps {
   selectedStockCode: string;
   selectedCategoryName: string;
+  fetchApiName: string;
 }
 
-//여기서받게할까?
-
-const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMemoProps) => {
+const StocksDetail = ({ fetchApiName, selectedStockCode, selectedCategoryName }: StocksReadMemoProps) => {
   let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
   const [currentPage, setCurrentPage] = useState(1);
   const [stocks, setStocks] = useState<Istock[]>([]);
@@ -26,10 +25,8 @@ const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMem
   const numPerPage = 5;
 
   useEffect(() => {
-    setCurrentPage(1);
-
     axios
-      .get('/api/specific-stock-all', {
+      .get(`/api/${fetchApiName}`, {
         params: { code: selectedStockCode, offset: 0, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
@@ -47,31 +44,36 @@ const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMem
         setIsLoading(true);
       })
       .catch((error) => {
-        alert('에러');
         console.log(error.response);
       })
       .finally(() => {});
     return;
   }, [selectedStockCode]);
 
+  useEffect(() => {
+    console.log(stocks);
+    return;
+  }, [currentPage]);
+
   return (
     <Container>
       {isLoading ? (
         <TopBox>
           <ButtonBox></ButtonBox>
-
           <DateInfoBox>
             <span>{stocks[(currentPage - 1) % numPerPage]?.register_date}</span>{' '}
           </DateInfoBox>
-
           <PaginationBox>
             <Pagination
+              setIsLoading={setIsLoading}
+              selectedCategoryName={selectedCategoryName}
               stockCode={stocks[(currentPage - 1) % numPerPage]?.stock_code || ''}
               setCurrentPage={setCurrentPage}
               currentPage={currentPage}
               totalCount={totalCount}
               numPerPage={numPerPage}
               setStocks={setStocks}
+              fetchApiName={fetchApiName}
             />
           </PaginationBox>
 
@@ -115,9 +117,9 @@ const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMem
                   >
                     <a href={financeAddress + stocks[(currentPage - 1) % numPerPage]?.stock_code} target="_blank">
                       <StockInfo>
-                        {stocks[(currentPage - 1) % numPerPage]!!.name}
+                        {stocks[(currentPage - 1) % numPerPage]?.name}
                         {'('}
-                        {stocks[(currentPage - 1) % numPerPage]!!.stock_code}
+                        {stocks[(currentPage - 1) % numPerPage]?.stock_code}
                         {')'}
                         <Icon>
                           <img src={link} width="13px" height="13px"></img>
@@ -132,36 +134,36 @@ const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMem
             <Tr>
               <Th>종가</Th>
               <Td>
-                {Number(stocks[(currentPage - 1) % numPerPage]!!.current_price) >
-                Number(stocks[(currentPage - 1) % numPerPage]!!.previous_close) ? (
+                {Number(stocks[(currentPage - 1) % numPerPage]?.current_price) >
+                Number(stocks[(currentPage - 1) % numPerPage]?.previous_close) ? (
                   <PriceBox color="#f93345">
                     <UpPrice>
-                      <strong>{Number(stocks[(currentPage - 1) % numPerPage]!!.current_price).toLocaleString()}</strong>
+                      <strong>{Number(stocks[(currentPage - 1) % numPerPage]?.current_price).toLocaleString()}</strong>
                     </UpPrice>
                     <DiffAmount>
                       {Number(stocks[(currentPage - 1) % numPerPage]?.diff_price).toLocaleString()} (
-                      {stocks[(currentPage - 1) % numPerPage]!!.diff_percent})
+                      {stocks[(currentPage - 1) % numPerPage]?.diff_percent})
                     </DiffAmount>
                   </PriceBox>
-                ) : Number(stocks[(currentPage - 1) % numPerPage]!!.current_price) <
-                  Number(stocks[(currentPage - 1) % numPerPage]!!.previous_close) ? (
+                ) : Number(stocks[(currentPage - 1) % numPerPage]?.current_price) <
+                  Number(stocks[(currentPage - 1) % numPerPage]?.previous_close) ? (
                   <PriceBox color="#1e8df9">
                     <DownPrice>
-                      <strong>{Number(stocks[(currentPage - 1) % numPerPage]!!.current_price).toLocaleString()}</strong>
+                      <strong>{Number(stocks[(currentPage - 1) % numPerPage]?.current_price).toLocaleString()}</strong>
                     </DownPrice>
                     <DiffAmount>
                       {Number(stocks[(currentPage - 1) % numPerPage]?.diff_price).toLocaleString()} (
-                      {stocks[(currentPage - 1) % numPerPage]!!.diff_percent})
+                      {stocks[(currentPage - 1) % numPerPage]?.diff_percent})
                     </DiffAmount>
                   </PriceBox>
                 ) : (
                   <PriceBox color="#424242">
                     <SamePrice>
-                      <strong>{Number(stocks[(currentPage - 1) % numPerPage]!!.current_price).toLocaleString()}</strong>
+                      <strong>{Number(stocks[(currentPage - 1) % numPerPage]?.current_price).toLocaleString()}</strong>
                     </SamePrice>
                     <DiffAmount>
                       {Number(stocks[(currentPage - 1) % numPerPage]?.diff_price).toLocaleString()} (
-                      {stocks[(currentPage - 1) % numPerPage]!!.diff_percent})
+                      {stocks[(currentPage - 1) % numPerPage]?.diff_percent})
                     </DiffAmount>
                   </PriceBox>
                 )}
@@ -169,35 +171,35 @@ const StocksDetail = ({ selectedStockCode, selectedCategoryName }: StocksReadMem
             </Tr>
             <Tr>
               <Th>카테고리</Th>
-              <Td>{stocks[(currentPage - 1) % numPerPage]!!.category_name}</Td>
+              <Td>{stocks[(currentPage - 1) % numPerPage]?.category_name}</Td>
             </Tr>
-            {!isEmpty(stocks[(currentPage - 1) % numPerPage]!!.issue) ? (
+            {!isEmpty(stocks[(currentPage - 1) % numPerPage]?.issue) ? (
               <Tr>
                 <Th>이슈</Th>
                 <Td>
-                  <Viewer initialValue={stocks[(currentPage - 1) % numPerPage]!!.issue}></Viewer>
+                  <Viewer initialValue={stocks[(currentPage - 1) % numPerPage]?.issue}></Viewer>
                 </Td>
               </Tr>
             ) : null}
-            {!isEmpty(stocks[(currentPage - 1) % numPerPage]!!.news) ? (
-              !isEmpty(stocks[(currentPage - 1) % numPerPage]!!.news[0]) ? (
+            {!isEmpty(stocks[(currentPage - 1) % numPerPage]?.news) ? (
+              !isEmpty(stocks[(currentPage - 1) % numPerPage]?.news[0]) ? (
                 <Tr>
                   <Th rowSpan={2}>뉴스</Th>
                   <Td>
-                    <a href={stocks[(currentPage - 1) % numPerPage]!!.news[0]} target="_blank">
-                      {stocks[(currentPage - 1) % numPerPage]!!.news[0]}
+                    <a href={stocks[(currentPage - 1) % numPerPage]?.news[0]} target="_blank">
+                      {stocks[(currentPage - 1) % numPerPage]?.news[0]}
                     </a>
                   </Td>
                 </Tr>
               ) : null
             ) : null}
-            {!isEmpty(stocks[(currentPage - 1) % numPerPage]!!.news) ? (
-              !isEmpty(stocks[(currentPage - 1) % numPerPage]!!.news[1]) ? (
+            {!isEmpty(stocks[(currentPage - 1) % numPerPage]?.news) ? (
+              !isEmpty(stocks[(currentPage - 1) % numPerPage]?.news[1]) ? (
                 <Tr>
-                  {!isEmpty(stocks[(currentPage - 1) % numPerPage]!!.news[0]) ? null : <Th rowSpan={2}>뉴스</Th>}
+                  {!isEmpty(stocks[(currentPage - 1) % numPerPage]?.news[0]) ? null : <Th rowSpan={2}>뉴스</Th>}
                   <Td>
-                    <a href={stocks[(currentPage - 1) % numPerPage]!!.news[1]} target="_blank">
-                      {stocks[(currentPage - 1) % numPerPage]!!.news[1]}
+                    <a href={stocks[(currentPage - 1) % numPerPage]?.news[1]} target="_blank">
+                      {stocks[(currentPage - 1) % numPerPage]?.news[1]}
                     </a>
                   </Td>
                 </Tr>
@@ -216,7 +218,9 @@ const TopBox = styled.div`
   align-items: center;
 `;
 
-const ButtonBox = styled.div``;
+const ButtonBox = styled.div`
+  margin-right: 50px;
+`;
 
 const DateInfoBox = styled.div`
   display: flex;

@@ -1,43 +1,17 @@
 import styled from '@emotion/styled';
-import { Istock } from '@typings/stock';
 import { MySeries } from '@typings/treeMap';
-import { isEmpty } from '@utils/common';
 import { ApexOptions } from 'apexcharts';
-import axios from 'axios';
-import React, { SetStateAction, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 interface ItreeMapProps {
-  stocks: Istock[] | [];
+  treeMapTitle: string;
   series: MySeries[] | [];
-  setStocks: React.Dispatch<SetStateAction<Istock[] | []>>;
-  setIsSelected: React.Dispatch<SetStateAction<boolean>>;
-  setSelectedCategoryName: React.Dispatch<SetStateAction<string>>;
+  onTreeMapClick: (e: any, chart?: any, options?: any) => void;
 }
 
-const TreeMap = ({ stocks, setStocks, series, setIsSelected, setSelectedCategoryName }: ItreeMapProps) => {
+const TreeMap = ({ onTreeMapClick, series, treeMapTitle }: ItreeMapProps) => {
   useEffect(() => {}, []);
-
-  const treeMapClick = (event: any, chartContext: any, config: any) => {
-    if (config.dataPointIndex !== undefined) {
-      const categoryName = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
-      axios
-        .get('/api/interest-by-category', {
-          params: {
-            categoryName: categoryName,
-          },
-        })
-        .then((response) => {
-          setStocks(response.data);
-          setSelectedCategoryName(categoryName);
-          setIsSelected(false);
-        })
-        .catch((error) => {
-          console.log(error.response);
-        })
-        .finally(() => {});
-    }
-  };
 
   const treeMapOptions: ApexOptions = {
     chart: {
@@ -49,7 +23,7 @@ const TreeMap = ({ stocks, setStocks, series, setIsSelected, setSelectedCategory
         show: false,
       },
       events: {
-        dataPointSelection: treeMapClick,
+        dataPointSelection: onTreeMapClick,
       },
     },
     dataLabels: {
@@ -59,7 +33,7 @@ const TreeMap = ({ stocks, setStocks, series, setIsSelected, setSelectedCategory
       },
     },
     title: {
-      text: '관심종목 분류',
+      text: treeMapTitle,
       align: 'center',
       offsetX: -15,
       offsetY: 10,
@@ -81,7 +55,6 @@ const TreeMap = ({ stocks, setStocks, series, setIsSelected, setSelectedCategory
 
 const Container = styled.div`
   height: 100%;
-  /* width: 50%; */
   width: 20%;
   border: 1px rgba(0, 0, 0, 0.2) solid;
   border-radius: 8px;

@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
 import React from 'react';
 import Clock from 'react-live-clock';
 const Header = (props: { user: IUser | undefined | false }) => {
@@ -18,7 +17,14 @@ const Header = (props: { user: IUser | undefined | false }) => {
     >
       <h1 style={{ color: '#fff' }}>
         {<Clock format={'M월 D일 HH:mm:ss'} ticking={true} timezone={'Asia/Seoul'} />}{' '}
-        {props.user ? props.user.email : null}
+        {props.user ? (
+          <>
+            <NameInfo>{props.user.email}</NameInfo>
+            <MenuBox>로그아웃</MenuBox>
+          </>
+        ) : (
+          <></>
+        )}
       </h1>
     </Container>
   );
@@ -34,4 +40,20 @@ const Container = styled.div`
   padding-right: 22px;
 `;
 
+const NameInfo = styled.span`
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    > div {
+      display: block;
+    }
+  }
+`;
+
+const MenuBox = styled.div`
+  display: none;
+  position: absolute;
+  right: 20;
+`;
 export default Header;

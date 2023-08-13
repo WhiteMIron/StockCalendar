@@ -26,6 +26,7 @@ const config: Configuration = {
       '@typings': path.resolve(__dirname, 'typings'),
       '@images': path.resolve(__dirname, 'images'),
       '@mockup': path.resolve(__dirname, 'mockup'),
+      '@constants': path.resolve(__dirname, 'constants'),
     },
   },
   entry: {

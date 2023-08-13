@@ -201,11 +201,6 @@ export const Input = styled.input<inputProps>`
   box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.1);
   padding: 5px;
   transition: border 80ms ease-out, box-shadow 80ms ease-out;
-  &:focus {
-    /* --saf-0: rgba(var(--sk_highlight, 18, 100, 163), 1);
-    box-shadow: 0 0 0 1px var(--saf-0), 0 0 0 5px #67dbad;
-   */
-  }
 `;
 
 export const SearchContainer = styled.div`
@@ -328,9 +323,7 @@ export const StockItem = styled.li`
     text-decoration: underline;
   }
 `;
-export const NewsGroup = styled.div`
-  /* margin-bottom: 20px; */
-`;
+export const NewsGroup = styled.div``;
 
 export const ChangeInfoGroup = styled.div`
   display: flex;

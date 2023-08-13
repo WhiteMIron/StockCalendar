@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import React, { SetStateAction, useEffect, useState } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import prev from '@images/page_prev.png';
 import prevHover from '@images/page_prevhover.png';
 import next from '@images/page_next.png';
@@ -14,6 +14,9 @@ interface IpaginationProps {
   setCurrentPage: React.Dispatch<SetStateAction<number>>;
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
   stockCode: string;
+  fetchApiName: string;
+  selectedCategoryName: string;
+  setIsLoading: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const Pagination = ({
@@ -23,6 +26,8 @@ const Pagination = ({
   currentPage,
   setCurrentPage,
   setStocks,
+  fetchApiName,
+  selectedCategoryName,
 }: IpaginationProps) => {
   const [offset, setOffset] = useState(0);
 
@@ -32,12 +37,11 @@ const Pagination = ({
 
   const onPrev = () => {
     axios
-      .get('/api/specific-stock-all', {
-        params: { code: stockCode, offset: offset - 1, numPerPage: numPerPage },
+      .get(`/api/${fetchApiName}`, {
+        params: { code: stockCode, offset: offset - 1, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
         let stocks = response.data.stock;
-        totalCount = response.data.totalCount;
         stocks.map((stock: Istock) => {
           if (!Array.isArray(stock.news)) {
             stock.news = JSON.parse(stock.news);
@@ -45,7 +49,8 @@ const Pagination = ({
           return stock;
         });
         setStocks(stocks);
-        setOffset(offset - 1);
+        setOffset((prev) => prev - 1);
+        setCurrentPage(() => offset * numPerPage);
       })
       .catch((error) => {
         console.log(error.response);
@@ -55,12 +60,11 @@ const Pagination = ({
 
   const onNext = () => {
     axios
-      .get('/api/specific-stock-all', {
-        params: { code: stockCode, offset: offset + 1, numPerPage: numPerPage },
+      .get(`/api/${fetchApiName}`, {
+        params: { code: stockCode, offset: offset + 1, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
         let stocks = response.data.stock;
-        totalCount = response.data.totalCount;
         stocks.map((stock: Istock) => {
           if (!Array.isArray(stock.news)) {
             stock.news = JSON.parse(stock.news);
@@ -68,7 +72,8 @@ const Pagination = ({
           return stock;
         });
         setStocks(stocks);
-        setOffset(offset + 1);
+        setOffset((prev) => prev + 1);
+        setCurrentPage(() => (offset + 1) * numPerPage + 1);
       })
       .catch((error) => {
         console.log(error.response);

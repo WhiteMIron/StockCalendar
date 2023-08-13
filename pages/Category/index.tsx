@@ -2,7 +2,7 @@ import Layout from '@components/Layout';
 import styled from '@emotion/styled';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
-import React, { SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import useSWR from 'swr';
 import { MySeries } from '@typings/treeMap';
@@ -12,10 +12,9 @@ import { Istock } from '@typings/stock';
 import axios from 'axios';
 import { isEmpty } from '@utils/common';
 import NoData from '@components/NoData';
-import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
 import StocksDetail from '@components/StocksMemo/StocksDetail';
 import { defines } from '@constants/index';
-const Interest = () => {
+const Category = () => {
   const {
     data: userData,
     error,
@@ -31,15 +30,10 @@ const Interest = () => {
   const [series, setSeries] = useState<MySeries[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
-  const fetchApiName = 'specific-interest-stock-all';
-
-  if (!userData) {
-    navigate('/login');
-  }
-
+  const fetchApiName = 'specific-stock-all';
   useEffect(() => {
     axios
-      .get('/api/interest-category')
+      .get('/api/category')
       .then((response) => {
         setSeries(transformedSeries(response.data));
         setLoading(true);
@@ -61,6 +55,7 @@ const Interest = () => {
       ],
     }));
   };
+
   const onStock = async (stock: Istock) => {
     setSelectedStockCode(stock.stock_code);
     setIsSelected(true);
@@ -70,9 +65,8 @@ const Interest = () => {
     if (config.dataPointIndex !== undefined) {
       const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
 
-      //해당 카테고리에 속한  종목들의 name가져옴
       axios
-        .get('/api/interest-stock-in-category', {
+        .get('/api/stock-in-category', {
           params: {
             categoryName: value,
           },
@@ -89,6 +83,10 @@ const Interest = () => {
     }
   };
 
+  if (!userData) {
+    navigate('/login');
+  }
+
   return (
     <Layout user={userData}>
       <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
@@ -104,10 +102,10 @@ const Interest = () => {
           {loading ? (
             !isEmpty(series) ? (
               <>
-                <TreeMap treeMapTitle={defines.treeMapTitle.interest} onTreeMapClick={onTreeMapClick} series={series} />
+                <TreeMap treeMapTitle={defines.treeMapTitle.category} onTreeMapClick={onTreeMapClick} series={series} />
                 <StocksList stocks={stocks} onStock={onStock}>
                   <DateInfoGroup>
-                    <DateInfo>종목 리스트</DateInfo>
+                    <DateInfo>{defines.Text.stockListTitle}</DateInfo>
                   </DateInfoGroup>
                 </StocksList>
 
@@ -139,4 +137,4 @@ const DateInfo = styled.div`
   padding: 8px;
 `;
 
-export default Interest;
+export default Category;

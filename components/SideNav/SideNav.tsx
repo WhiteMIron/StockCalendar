@@ -1,9 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavContainer, NavContents, NavTitle, Icon } from './style';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import star from '@images/star.png';
 import styled from '@emotion/styled';
 const SideNav = () => {
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  const CategorySubMenu = () => {
+    return (
+      <NavSubMenu>
+        <StyledNavLink to="/category-view">
+          <NavTitle>카테고리 분류 </NavTitle>
+        </StyledNavLink>
+
+        <StyledNavLink to="/category-edit">
+          <NavTitle>카테고리 편집</NavTitle>
+        </StyledNavLink>
+      </NavSubMenu>
+    );
+  };
+  const handleSubMenuClick = () => {
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    if (location.pathname.includes('/category-view') || location.pathname.includes('/category-edit')) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+    }
+    return;
+  }, [location]);
+
   return (
     <NavContainer>
       <h1
@@ -15,51 +44,18 @@ const SideNav = () => {
         주식 캘린더
       </h1>
       <NavContents>
-        <StyledNavLink to="/stockrecord">
-          {' '}
-          <NavTitle>
-            {' '}
-            <Icon>
-              {/* <img src={star} width="auto" height="24px"></img> */}
-              종목 기록
-            </Icon>{' '}
-          </NavTitle>
+        <StyledNavLink to="/stock-record">
+          <NavTitle>종목기록</NavTitle>
         </StyledNavLink>
-
         <StyledNavLink to="/interest">
-          {' '}
-          <NavTitle>
-            {' '}
-            <Icon>
-              {/* <img src={star} width="auto" height="24px"></img> */}
-              관심 종목
-            </Icon>{' '}
-          </NavTitle>
+          <NavTitle>관심종목</NavTitle>
         </StyledNavLink>
-        <StyledNavLink to="/category">
-          {' '}
-          <NavTitle>
-            {' '}
-            <Icon>
-              {/* <img src={star} width="auto" height="24px"></img> */}
-              카테고리
-            </Icon>{' '}
-          </NavTitle>
+        <NavTitle onMouseEnter={handleSubMenuClick}>카테고리 {open ? '▲' : '▼'}</NavTitle>
+        {open && <CategorySubMenu />}
+        <StyledNavLink to="/my-page">
+          <NavTitle>마이 페이지</NavTitle>
         </StyledNavLink>
-
-        <StyledNavLink to="/test">
-          {' '}
-          <NavTitle>
-            {' '}
-            <Icon>
-              {/* <img src={star} width="auto" height="24px"></img> */}
-              마이페이지
-            </Icon>{' '}
-          </NavTitle>
-        </StyledNavLink>
-
         {/* <NavTitle>📈 기록 분석</NavTitle> */}
-        {/* <NavTitle>😊 마이페이지</NavTitle> */}
       </NavContents>
     </NavContainer>
   );
@@ -70,6 +66,9 @@ const StyledNavLink = styled(NavLink)`
   &.active {
     background-color: #189cda;
   }
+`;
+const NavSubMenu = styled.ul`
+  padding: 0 22px;
 `;
 
 export default SideNav;
