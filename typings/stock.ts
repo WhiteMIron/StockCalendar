@@ -1,7 +1,4 @@
-export interface Icategory {
-  id: number;
-  name: string;
-}
+
 export interface Istock {
   id: number;
   name: string;

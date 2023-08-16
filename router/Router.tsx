@@ -6,6 +6,7 @@ import Interest from '@pages/Interest';
 import Category from '@pages/Category';
 import MyPage from '@pages/MyPage';
 import Test from '@pages/Test/Test';
+import CategoryEdit from '@pages/CategoryEdit';
 const SignUp = loadable(() => import('@pages/SignUp'));
 const Login = loadable(() => import('@pages/Login'));
 const Router = () => {
@@ -17,7 +18,7 @@ const Router = () => {
       <Route path="/stock-record" element={<StockRecord />} />
       <Route path="/interest" element={<Interest />} />
       <Route path="/category-view" element={<Category />} />
-      <Route path="/category-edit" element={<Category />} />
+      <Route path="/category-edit" element={<CategoryEdit />} />
 
       <Route path="/my-page" element={<MyPage />} />
       <Route path="/test" element={<Test />} />

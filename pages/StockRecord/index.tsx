@@ -30,9 +30,7 @@ import {
 } from './styles';
 import StocksWriteMemo from '@components/StocksMemo/StocksWriteMemo';
 import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
-import SideNav from '@components/SideNav/SideNav';
-import ReactApexChart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
+
 import axios from 'axios';
 import useSWR from 'swr';
 import { IUser } from '@typings/db';
@@ -48,9 +46,10 @@ import { DateValue } from '@typings/date';
 import useInput from '@hooks/useInput';
 import { isEmpty } from '@utils/common';
 import uuid from 'react-uuid';
-import { start } from 'repl';
-
+import defines from '@constants/defines';
+import Loading from '@components/Loading/Loading';
 const StockRecord = () => {
+  const [loading, setLoading] = useState(false);
   const [dateValue, onChangeDateValue] = useState<DateValue>(new Date());
   const navigate = useNavigate();
 
@@ -77,13 +76,13 @@ const StockRecord = () => {
   const [isMovingKey, setIsMovingKey] = useState(false);
 
   const [startDate, setStartDate] = useState(moment(dateValue?.toString()).format('YYYY/MM'));
-
+  const [isDataLoading, setDataLoading] = useState(false);
   const {
     data: userData,
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>('/api/users', fetcher, {
+  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
 
@@ -102,15 +101,6 @@ const StockRecord = () => {
     setIsSelected(false);
     setIsEditRecord(false);
   };
-  const onLogout = useCallback(() => {
-    axios
-      .post('/api/users/logout', null, {
-        withCredentials: true,
-      })
-      .then(() => {
-        mutate(false, false);
-      });
-  }, []);
 
   const onStock = (stock: Istock) => {
     let stockTmp = stock;
@@ -147,7 +137,7 @@ const StockRecord = () => {
     }
 
     axios
-      .get('/api/word-search', { params: { word: searchWord } })
+      .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
       .then((response) => {
         if (!isEmpty(response.data)) {
           setIsSearched(() => {
@@ -161,9 +151,7 @@ const StockRecord = () => {
           setIsSearched(false);
         }
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {
         setIsClickSearched(true);
         setIsSearched(false);
@@ -230,7 +218,7 @@ const StockRecord = () => {
         }
 
         axios
-          .get('/api/word-search', { params: params })
+          .get(`${defines.server.url}/api/word-search`, { params: params })
           .then((response) => {
             let searchResult = response.data;
             if (!isEmpty(response.data)) {
@@ -258,9 +246,7 @@ const StockRecord = () => {
               setSearchCandidateUniqueResult(() => []);
             }
           })
-          .catch((error) => {
-            console.log(error.response);
-          })
+          .catch((error) => {})
           .finally(() => {
             setIsSearched(false);
           });
@@ -282,9 +268,7 @@ const StockRecord = () => {
   );
   if (!userData) {
     navigate('/login');
-    // return <Navigate to="/login"></Navigate>;
   }
-
   useEffect(() => {
     let abortController = new AbortController();
     let dateTmp;
@@ -293,13 +277,12 @@ const StockRecord = () => {
 
       const date = moment(dateTmp).format('YYYY/MM/DD');
       axios
-        .get('/api/stock', { params: { date: date } })
+        .get(`${defines.server.url}/api/stock`, { params: { date: date } })
         .then((response) => {
           setStocks(response.data);
+          setLoading(true);
         })
-        .catch((error) => {
-          console.log(error.response);
-        })
+        .catch((error) => {})
         .finally(() => {
           setIsSelected(false);
           setIsRecord(false);
@@ -313,7 +296,7 @@ const StockRecord = () => {
   useEffect(() => {
     const fetchData = async () => {
       await axios
-        .get('/api/word-search', { params: { word: searchWord } })
+        .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
         .then((response) => {
           if (!isEmpty(response.data)) {
             setSearchCandidateDupResult(response.data);
@@ -333,38 +316,38 @@ const StockRecord = () => {
             setSearchMark([]);
           }
         })
-        .catch((error) => {
-          console.log(error.response);
-        })
+        .catch((error) => {})
         .finally(() => {});
     };
-    if (!isClickSearched && !isMovingKey) {
+    if (!isClickSearched && !isMovingKey && loading) {
       fetchData();
     }
     return () => {};
   }, [searchWord]);
 
   useEffect(() => {
+    setDataLoading(false);
     const fetchData = async () => {
       await axios
-        .get('/api/record-all-search', { params: { startDate: startDate } })
+        .get(`${defines.server.url}/api/record-all-search`, { params: { startDate: startDate } })
         .then((response) => {
           setDataMark(response.data);
         })
-        .catch((error) => {
-          console.log(error.response);
-        })
-        .finally(() => {});
+        .catch((error) => {})
+        .finally(() => {
+          setTimeout(() => {
+            setDataLoading(true);
+          }, 100);
+        });
     };
-
     fetchData();
     return () => {};
   }, [startDate, stocks]);
 
   useEffect(() => {
-    if (!isEmpty(searchMark)) {
+    if (!isEmpty(searchMark) && loading) {
       axios
-        .get('/api/word-search', { params: { word: searchWord } })
+        .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
         .then((response) => {
           let searchResult = response.data;
           if (!isEmpty(response.data)) {
@@ -377,235 +360,239 @@ const StockRecord = () => {
             setSearchMark([]);
           }
         })
-        .catch((error) => {
-          console.log(error.response);
-        })
+        .catch((error) => {})
         .finally(() => {});
     }
   }, [stocks]);
 
   return (
     <Layout user={userData}>
-      <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignContent: 'center',
-            width: '100%',
-            padding: '20px',
-            borderBottomRightRadius: '8px',
-          }}
-        >
-          <CalendarContainer>
-            <SearchForm>
-              <SearchBox className={isSearched === true ? 'active' : ''}>
-                <SearchInput
-                  placeholder="종목명을 입력해주세요."
-                  onKeyDown={changeIdxNum}
-                  onClick={() => {
-                    setIsClickSearched(false);
-
-                    if (!isClickSearchInput) {
-                      setIsClickSearchInput(!isClickSearchInput);
-                    }
-
-                    if (!isEmpty(searchCandidateDupResult)) {
-                      setIsSearched(true);
-                    } else {
-                      setIsSearched(false);
-                    }
-                  }}
-                  onFocus={() => {
-                    setFocusIdx(-1);
-                  }}
-                  onChange={onChangeSearchWord}
-                  onBlur={() => {
-                    setIsClickSearchInput(!isClickSearchInput);
-                    setIsSearched(() => false);
-
-                    if (isEmpty(searchMark)) {
+      {loading ? (
+        <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+              width: '100%',
+              padding: '20px',
+              borderBottomRightRadius: '8px',
+            }}
+          >
+            <CalendarContainer>
+              <SearchForm>
+                <SearchBox className={isSearched === true ? 'active' : ''}>
+                  <SearchInput
+                    placeholder="종목명을 입력해주세요."
+                    onKeyDown={changeIdxNum}
+                    onClick={() => {
                       setIsClickSearched(false);
-                    } else {
-                      setIsClickSearched(true);
-                    }
-                  }}
-                  value={searchWord || ''}
-                ></SearchInput>
-                <SearchImg
-                  src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
-                  alt="검색"
-                  onClick={() => {
-                    axios
-                      .get('/api/word-search', { params: { word: searchWord } })
-                      .then((response) => {
-                        let searchResult = response.data;
-                        if (!isEmpty(searchResult)) {
-                          setIsSearched(() => {
-                            return true;
-                          });
-                          setSearchMark(() => {
-                            return searchResult.filter((searchItem: ISearch) => {
-                              return searchItem.name === searchWord;
-                            });
-                          });
-                        } else {
-                          setSearchCandidateDupResult(() => []);
-                          setSearchCandidateUniqueResult(() => []);
-                          setSearchMark([]);
-                        }
-                      })
-                      .catch((error) => {
-                        console.log(error.response);
-                      })
-                      .finally(() => {
-                        setIsClickSearched(true);
+
+                      if (!isClickSearchInput) {
+                        setIsClickSearchInput(!isClickSearchInput);
+                      }
+
+                      if (!isEmpty(searchCandidateDupResult)) {
+                        setIsSearched(true);
+                      } else {
                         setIsSearched(false);
-                      });
-                  }}
-                ></SearchImg>
-                {isClickSearchInput && !isSearched ? (
-                  <SearchContainer className={isEmpty(searchWord) ? '' : 'searched'} />
+                      }
+                    }}
+                    onFocus={() => {
+                      setFocusIdx(-1);
+                    }}
+                    onChange={onChangeSearchWord}
+                    onBlur={() => {
+                      setIsClickSearchInput(!isClickSearchInput);
+                      setIsSearched(() => false);
+
+                      if (isEmpty(searchMark)) {
+                        setIsClickSearched(false);
+                      } else {
+                        setIsClickSearched(true);
+                      }
+                    }}
+                    value={searchWord || ''}
+                  ></SearchInput>
+                  <SearchImg
+                    src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
+                    alt="검색"
+                    onClick={() => {
+                      axios
+                        .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
+                        .then((response) => {
+                          let searchResult = response.data;
+                          if (!isEmpty(searchResult)) {
+                            setIsSearched(() => {
+                              return true;
+                            });
+                            setSearchMark(() => {
+                              return searchResult.filter((searchItem: ISearch) => {
+                                return searchItem.name === searchWord;
+                              });
+                            });
+                          } else {
+                            setSearchCandidateDupResult(() => []);
+                            setSearchCandidateUniqueResult(() => []);
+                            setSearchMark([]);
+                          }
+                        })
+                        .catch((error) => {})
+                        .finally(() => {
+                          setIsClickSearched(true);
+                          setIsSearched(false);
+                        });
+                    }}
+                  ></SearchImg>
+                  {isClickSearchInput && !isSearched ? (
+                    <SearchContainer className={isEmpty(searchWord) ? '' : 'searched'} />
+                  ) : (
+                    <></>
+                  )}
+                </SearchBox>
+                {isSearched ? (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      border: '1px rgba(0, 0, 0, 0.2) solid',
+                      width: '100%',
+                      zIndex: '1',
+                      left: '0',
+                      bottom: '-200px',
+                      backgroundColor: '#fff',
+                      borderTop: 'none',
+                      borderBottomLeftRadius: '8px',
+                      borderBottomRightRadius: '8px',
+                      overflow: 'auto',
+                      height: '200px',
+                    }}
+                  >
+                    <ul
+                      style={{
+                        margin: '0',
+                      }}
+                    >
+                      {searchCandidateUniqueResult.map((search, idx: number) => (
+                        <SearchItem
+                          key={uuid()}
+                          data-name={search.name}
+                          onMouseDown={onClickSearchItem}
+                          isFocus={focusIdx === idx}
+                          onMouseMove={() => mousedown(idx)}
+                          isMovingKey={isMovingKey}
+                        >
+                          {search.name}
+                        </SearchItem>
+                      ))}
+                    </ul>
+                  </div>
                 ) : (
                   <></>
                 )}
-              </SearchBox>
-              {isSearched ? (
-                <div
-                  style={{
-                    position: 'absolute',
-                    border: '1px rgba(0, 0, 0, 0.2) solid',
-                    width: '100%',
-                    zIndex: '1',
-                    left: '0',
-                    bottom: '-200px',
-                    backgroundColor: '#fff',
-                    borderTop: 'none',
-                    borderBottomLeftRadius: '8px',
-                    borderBottomRightRadius: '8px',
-                    overflow: 'auto',
-                    height: '200px',
+                {!isEmpty(searchMark) && isClickSearched ? (
+                  <div style={{ marginTop: '10px', textAlign: 'center' }}>검색 건수 : {searchMark?.length}건</div>
+                ) : isClickSearched ? (
+                  <div style={{ marginTop: '10px', textAlign: 'center' }}>검색 결과가 없습니다.</div>
+                ) : (
+                  <></>
+                )}
+              </SearchForm>
+              <CalendarBox>
+                <Calendar
+                  onActiveStartDateChange={onActiveStartDateChange}
+                  onClickDay={onClickDay}
+                  onChange={onChangeDateValue}
+                  value={dateValue}
+                  showNeighboringMonth={false}
+                  calendarType="US"
+                  formatDay={(locale, date) => moment(date).format('DD')}
+                  tileContent={({ date, view }) => {
+                    let html = [];
+                    if (dataMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
+                      html.push(<DataDot key={uuid()} />);
+                    }
+
+                    if (searchMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
+                      html.push(<SearchDot key={uuid()} />);
+                    }
+                    return (
+                      <>
+                        <div
+                          style={{
+                            marginTop: '5px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          {html}
+                        </div>
+                      </>
+                    );
                   }}
-                >
-                  <ul
-                    style={{
-                      margin: '0',
-                    }}
-                  >
-                    {searchCandidateUniqueResult.map((search, idx: number) => (
-                      <SearchItem
-                        key={uuid()}
-                        data-name={search.name}
-                        onMouseDown={onClickSearchItem}
-                        isFocus={focusIdx === idx}
-                        onMouseMove={() => mousedown(idx)}
-                        isMovingKey={isMovingKey}
-                      >
-                        {search.name}
-                      </SearchItem>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <></>
-              )}
-              {!isEmpty(searchMark) && isClickSearched ? (
-                <div style={{ marginTop: '10px', textAlign: 'center' }}>검색 건수 : {searchMark?.length}건</div>
-              ) : isClickSearched ? (
-                <div style={{ marginTop: '10px', textAlign: 'center' }}>검색 결과가 없습니다.</div>
-              ) : (
-                <></>
-              )}
-            </SearchForm>
-            <CalendarBox>
-              <Calendar
-                onActiveStartDateChange={onActiveStartDateChange}
-                onClickDay={onClickDay}
-                onChange={onChangeDateValue}
-                value={dateValue}
-                showNeighboringMonth={false}
-                calendarType="US"
-                formatDay={(locale, date) => moment(date).format('DD')}
-                tileContent={({ date, view }) => {
-                  let html = [];
-                  if (dataMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
-                    html.push(<DataDot key={uuid()} />);
-                  }
-
-                  if (searchMark?.find((x) => x.register_date === moment(date).format('YYYY/MM/DD'))) {
-                    html.push(<SearchDot key={uuid()} />);
-                  }
-                  return (
-                    <>
-                      <div
-                        style={{
-                          marginTop: '5px',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        }}
-                      >
-                        {html}
-                      </div>
-                    </>
-                  );
-                }}
+                />
+              </CalendarBox>
+              <StocksTodayMemo
+                dateValue={dateValue}
+                selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
               />
-            </CalendarBox>
-            <StocksTodayMemo dateValue={dateValue} selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')} />
-          </CalendarContainer>
-          <StocksList stocks={stocks} onStock={onStock}>
-            <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
-              +추가
-            </Button>
-            <DateInfoGroup>
-              {dateValue ? <DateInfo>{moment(dateValue?.toString()).format('YYYY/MM/DD')}</DateInfo> : null}
-            </DateInfoGroup>
-          </StocksList>
+            </CalendarContainer>
+            <StocksList stocks={stocks} onStock={onStock} isDataLoading={isDataLoading}>
+              <Button width="100%" color="#60d6bf" onClick={onClickAddBtn}>
+                +추가
+              </Button>
 
-          {selected ? (
-            <StocksReadMemo
-              stocks={stocks}
-              setStocks={setStocks}
-              selectedItem={selectedItem}
-              setIsSelected={setIsSelected}
-              setIsRecord={setIsRecord}
-              setIsEditRecord={setIsEditRecord}
-              setIsSelectedItem={setSelectedItem}
-              canEdit={true}
-            ></StocksReadMemo>
-          ) : null}
+              <DateInfoGroup>
+                {dateValue ? <DateInfo>{moment(dateValue?.toString()).format('YYYY/MM/DD')}</DateInfo> : null}
+              </DateInfoGroup>
+            </StocksList>
 
-          {isRecord ? (
-            <StocksWriteMemo
-              setResetRecordState={setResetRecordState}
-              resetRecordState={resetRecordState}
-              setIsEditRecord={setIsEditRecord}
-              isEditRecord={isEditRecord}
-              stocks={stocks}
-              setStocks={setStocks}
-              setIsSelected={setIsSelected}
-              setIsRecord={setIsRecord}
-              selectedItem={selectedItem}
-              selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
-              setIsSelectedItem={setSelectedItem}
-            ></StocksWriteMemo>
-          ) : null}
+            {selected ? (
+              <StocksReadMemo
+                stocks={stocks}
+                setStocks={setStocks}
+                selectedItem={selectedItem}
+                setIsSelected={setIsSelected}
+                setIsRecord={setIsRecord}
+                setIsEditRecord={setIsEditRecord}
+                setIsSelectedItem={setSelectedItem}
+                canEdit={true}
+              ></StocksReadMemo>
+            ) : null}
 
-          {isEditRecord ? (
-            <StocksEditMemo
-              setIsEditRecord={setIsEditRecord}
-              isEditRecord={isEditRecord}
-              stocks={stocks}
-              setStocks={setStocks}
-              setIsSelected={setIsSelected}
-              setIsRecord={setIsRecord}
-              selectedItem={selectedItem}
-              selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
-              setIsSelectedItem={setSelectedItem}
-            ></StocksEditMemo>
-          ) : null}
+            {isRecord ? (
+              <StocksWriteMemo
+                setResetRecordState={setResetRecordState}
+                resetRecordState={resetRecordState}
+                setIsEditRecord={setIsEditRecord}
+                isEditRecord={isEditRecord}
+                stocks={stocks}
+                setStocks={setStocks}
+                setIsSelected={setIsSelected}
+                setIsRecord={setIsRecord}
+                selectedItem={selectedItem}
+                selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
+                setIsSelectedItem={setSelectedItem}
+              ></StocksWriteMemo>
+            ) : null}
+
+            {isEditRecord ? (
+              <StocksEditMemo
+                setIsEditRecord={setIsEditRecord}
+                isEditRecord={isEditRecord}
+                stocks={stocks}
+                setStocks={setStocks}
+                setIsSelected={setIsSelected}
+                setIsRecord={setIsRecord}
+                selectedItem={selectedItem}
+                selectedDate={moment(dateValue?.toString()).format('YYYY/MM/DD')}
+                setIsSelectedItem={setSelectedItem}
+              ></StocksEditMemo>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : (
+        <Loading />
+      )}
     </Layout>
   );
 };

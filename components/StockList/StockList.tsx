@@ -3,29 +3,37 @@ import StockItem from './StockItem';
 import { StockListContainer } from './styles';
 import { Istock } from '@typings/stock';
 import uuid from 'react-uuid';
+import Loading from '@components/Loading/Loading';
 
 interface StocksListProps {
   stocks: Istock[];
   onStock: (stock: Istock) => void;
 
   children: ReactNode;
+  isDataLoading: boolean;
 }
 
-const StockList = ({ children, stocks, onStock }: StocksListProps) => {
+const StockList = ({ children, stocks, onStock, isDataLoading }: StocksListProps) => {
   return (
     <StockListContainer>
       {children}
-      <ul style={{ marginTop: '5px' }}>
-        {stocks.map((stock: Istock) => (
-          <StockItem
-            stock={stock}
-            key={uuid()}
-            onStock={() => {
-              onStock(stock);
-            }}
-          ></StockItem>
-        ))}
-      </ul>
+      {isDataLoading ? (
+        <>
+          <ul style={{ marginTop: '5px' }}>
+            {stocks.map((stock: Istock) => (
+              <StockItem
+                stock={stock}
+                key={uuid()}
+                onStock={() => {
+                  onStock(stock);
+                }}
+              ></StockItem>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <Loading />
+      )}
     </StockListContainer>
   );
 };

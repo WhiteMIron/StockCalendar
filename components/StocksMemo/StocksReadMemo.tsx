@@ -28,6 +28,7 @@ import Modal from '@components/Modal/Modal';
 import axios from 'axios';
 import uuid from 'react-uuid';
 import { Viewer } from '@toast-ui/react-editor';
+import defines from '@constants/defines';
 interface StocksReadMemoProps {
   stocks: Istock[];
   setStocks: React.Dispatch<SetStateAction<Istock[]>>;
@@ -49,8 +50,6 @@ const StocksReadMemo = ({
   selectedItem,
   canEdit,
 }: StocksReadMemoProps) => {
-  let financeAddress = 'https://finance.naver.com/item/main.nhn?code=';
-
   const [modalOpen, setModalOpen] = useState(false);
   const handleModal = () => {
     setModalOpen(!modalOpen);
@@ -59,7 +58,7 @@ const StocksReadMemo = ({
   const onSubmit = () => {
     setModalOpen(false);
     axios
-      .delete(`/api/stock/${selectedItem?.id}`)
+      .delete(`${defines.server.url}/api/stock/${selectedItem?.id}`)
       .then((response) => {
         setStocks(stocks.filter((stock) => stock.id !== selectedItem?.id));
         alert('삭제되었습니다.');
@@ -69,7 +68,6 @@ const StocksReadMemo = ({
       })
       .catch((error) => {
         alert(error.response.data);
-        console.log(error.response);
       })
       .finally(() => {});
   };
@@ -107,7 +105,7 @@ const StocksReadMemo = ({
                     flexShrink: 0,
                   }}
                 >
-                  <a href={financeAddress + selectedItem?.stock_code} target="_blank">
+                  <a href={defines.financeAddress + selectedItem?.stock_code} target="_blank">
                     <StockInfo>
                       {selectedItem!!.name}
                       {'('}
@@ -188,10 +186,17 @@ const StocksReadMemo = ({
               )}
             </Td>
           </Tr>
-          <Tr>
-            <Th>카테고리</Th>
-            <Td>{selectedItem!!.category_name}</Td>
-          </Tr>
+
+          {!isEmpty(selectedItem!!.category_name) ? (
+            <>
+              <Tr>
+                <Th>카테고리</Th>
+                <Td>{selectedItem!!.category_name}</Td>
+              </Tr>
+            </>
+          ) : (
+            <></>
+          )}
           {!isEmpty(selectedItem!!.issue) ? (
             <Tr>
               <Th>이슈</Th>

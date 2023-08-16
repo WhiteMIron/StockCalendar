@@ -10,6 +10,7 @@ import styled from '@emotion/styled';
 import Pagination from '@components/Pagination/Pagination';
 import axios from 'axios';
 import { Viewer } from '@toast-ui/react-editor';
+import defines from '@constants/defines';
 interface StocksReadMemoProps {
   selectedStockCode: string;
   selectedCategoryName: string;
@@ -26,7 +27,7 @@ const StocksDetail = ({ fetchApiName, selectedStockCode, selectedCategoryName }:
 
   useEffect(() => {
     axios
-      .get(`/api/${fetchApiName}`, {
+      .get(`${defines.server.url}/api/${fetchApiName}`, {
         params: { code: selectedStockCode, offset: 0, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
@@ -43,17 +44,10 @@ const StocksDetail = ({ fetchApiName, selectedStockCode, selectedCategoryName }:
         setStocks(stocksTmp);
         setIsLoading(true);
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {});
     return;
   }, [selectedStockCode]);
-
-  useEffect(() => {
-    console.log(stocks);
-    return;
-  }, [currentPage]);
 
   return (
     <Container>
@@ -169,10 +163,18 @@ const StocksDetail = ({ fetchApiName, selectedStockCode, selectedCategoryName }:
                 )}
               </Td>
             </Tr>
-            <Tr>
-              <Th>카테고리</Th>
-              <Td>{stocks[(currentPage - 1) % numPerPage]?.category_name}</Td>
-            </Tr>
+
+            {!isEmpty(stocks[(currentPage - 1) % numPerPage]?.category_name) ? (
+              <>
+                <Tr>
+                  <Th>카테고리</Th>
+                  <Td>{stocks[(currentPage - 1) % numPerPage]?.category_name}</Td>
+                </Tr>
+              </>
+            ) : (
+              <></>
+            )}
+
             {!isEmpty(stocks[(currentPage - 1) % numPerPage]?.issue) ? (
               <Tr>
                 <Th>이슈</Th>
@@ -245,7 +247,6 @@ const Container = styled.div`
   background: white;
   border: 1px rgba(0, 0, 0, 0.2) solid;
   width: 70%;
-  max-height: 100vh;
   display: flex;
   flex-direction: column;
 `;

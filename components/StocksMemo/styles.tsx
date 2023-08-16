@@ -153,7 +153,6 @@ export const Label = styled.label`
   & > span {
     display: block;
     text-align: left;
-    /* padding-bottom: 8px; */
     font-size: 15px;
     cursor: pointer;
     line-height: 1.46666667;
@@ -308,10 +307,10 @@ export const MemoContainer = styled.div`
   flex-direction: column;
   width: 60%;
   border-radius: 8px;
-  /* box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2); */
-
   background: white;
   border: 1px rgba(0, 0, 0, 0.2) solid;
+  overflow: visible;
+  position: relative;
 `;
 
 export const Table = styled.table`
@@ -451,21 +450,21 @@ export const Icon = styled.div`
   margin-right: 3px;
   margin-left: 5px;
   display: inline;
-  position: relative;
-
+  /* position: relative; */
   > span {
     position: absolute;
     background-color: #333;
     width: 400px;
     color: #fff;
-    top: -40px;
+    /* top: -40px; */
+    top: -18px;
+    left: 98px;
     text-align: center;
     padding: 5px;
     border-radius: 5px;
     transform: translateX(-50%);
     opacity: 0;
     transition: 0.5s;
-
     visibility: hidden;
   }
 

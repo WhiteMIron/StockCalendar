@@ -28,6 +28,8 @@ export const LoginContents = styled.div`
 `;
 
 export const Form = styled.form`
+  position: relative;
+
   margin: 0 auto;
   width: 400px;
   max-width: 400px;

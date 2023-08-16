@@ -6,7 +6,12 @@ import { IUser } from '@typings/db';
 import useSWR from 'swr';
 import { useNavigate } from 'react-router';
 import person from '@images/person.png';
+import register from '@images/register.png';
+import interest from '@images/interest.png';
+import category from '@images/category.png';
 import axios from 'axios';
+import defines from '@constants/defines';
+import Loading from '@components/Loading/Loading';
 
 interface ImyPageInfo {
   stockTotalCount: string;
@@ -20,77 +25,83 @@ const MyPage = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>('/api/users', fetcher, {
+  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const navigate = useNavigate();
   const [myPageInfo, setMyPageInfo] = useState<ImyPageInfo>();
-
+  const [loading, setLoading] = useState(false);
   if (!userData) {
     navigate('/login');
   }
 
   useEffect(() => {
     axios
-      .get('/api/total-count-info')
+      .get(`${defines.server.url}/api/total-count-info`)
       .then((response) => {
-        console.log(response.data);
         setMyPageInfo(response.data);
+        setTimeout(() => {
+          setLoading(true);
+        }, 200);
       })
       .catch((error) => {});
   }, []);
 
   return (
     <Layout user={userData}>
-      <Container>
-        <ContentBox>
-          <UserInfoContainer>
-            <UserInfoBox>
-              <ImageBox>
-                <img height="200px" src={person}></img>
-              </ImageBox>
-              {userData ? <NameInfo>{userData.email}</NameInfo> : null}
-            </UserInfoBox>
-          </UserInfoContainer>
-          <ActivityInfoContainer>
-            <ActivityInfoBox>
-              <StockInfoContainer>
-                <InfoBox>
-                  <ImageBox>
-                    <img height="140px" src={person}></img>
-                  </ImageBox>
-                  <ActivityTitle>
-                    <strong>등록 종목 수</strong>
-                  </ActivityTitle>
-                  <Info>{myPageInfo?.stockTotalCount}</Info>
-                </InfoBox>
-              </StockInfoContainer>
-              <InterestInfo>
-                <InfoBox>
-                  <ImageBox>
-                    <img height="140px" src={person}></img>
-                  </ImageBox>
-                  <ActivityTitle>
-                    <strong>관심 종목 수</strong>
-                  </ActivityTitle>
-                  <Info>{myPageInfo?.interestTotalCount}</Info>
-                </InfoBox>
-              </InterestInfo>
-              <CategoryInfo>
-                <InfoBox>
-                  <ImageBox>
-                    <img height="140px" src={person}></img>
-                  </ImageBox>
-                  <ActivityTitle>
-                    <strong>카테고리 수</strong>
-                  </ActivityTitle>
-                  <Info>{myPageInfo?.categoryTotalCount}</Info>
-                </InfoBox>
-              </CategoryInfo>
-            </ActivityInfoBox>
-          </ActivityInfoContainer>
-        </ContentBox>
-      </Container>
+      {loading ? (
+        <Container>
+          <ContentBox>
+            <UserInfoContainer>
+              <UserInfoBox>
+                <ImageBox>
+                  <img height="200px" src={person}></img>
+                </ImageBox>
+                {userData ? <NameInfo>{userData.email}</NameInfo> : null}
+              </UserInfoBox>
+            </UserInfoContainer>
+            <ActivityInfoContainer>
+              <ActivityInfoBox>
+                <StockInfoContainer>
+                  <InfoBox>
+                    <ImageBox>
+                      <img height="140px" src={register}></img>
+                    </ImageBox>
+                    <ActivityTitle>
+                      <strong>등록 종목 수</strong>
+                    </ActivityTitle>
+                    <Info>{myPageInfo?.stockTotalCount}</Info>
+                  </InfoBox>
+                </StockInfoContainer>
+                <InterestInfo>
+                  <InfoBox>
+                    <ImageBox>
+                      <img height="140px" src={interest}></img>
+                    </ImageBox>
+                    <ActivityTitle>
+                      <strong>관심 종목 수</strong>
+                    </ActivityTitle>
+                    <Info>{myPageInfo?.interestTotalCount}</Info>
+                  </InfoBox>
+                </InterestInfo>
+                <CategoryInfo>
+                  <InfoBox>
+                    <ImageBox>
+                      <img height="140px" src={category}></img>
+                    </ImageBox>
+                    <ActivityTitle>
+                      <strong>카테고리 수</strong>
+                    </ActivityTitle>
+                    <Info>{myPageInfo?.categoryTotalCount}</Info>
+                  </InfoBox>
+                </CategoryInfo>
+              </ActivityInfoBox>
+            </ActivityInfoContainer>
+          </ContentBox>
+        </Container>
+      ) : (
+        <Loading />
+      )}
     </Layout>
   );
 };
@@ -112,7 +123,7 @@ const UserInfoBox = styled.div`
   padding: 20px;
 `;
 const UserInfoContainer = styled.div`
-  margin-top: 5px;
+  margin-bottom: 50px;
   font-size: 50px;
   padding: 0 20px;
 `;
@@ -174,6 +185,7 @@ const ActivityInfoBox = styled.div`
 `;
 
 const NameInfo = styled.div`
+  margin-top: 5px;
   font-size: 25px;
   display: flex;
   justify-content: center;

@@ -6,10 +6,10 @@ import useInput from '@hooks/useInput';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
-import { isEmpty } from '@utils/common';
+import defines from '@constants/defines';
 
 const SignUp = () => {
-  const { data, error, revalidate } = useSWR('/api/users', fetcher);
+  const { data, error, revalidate } = useSWR(`${defines.server.url}/api/users`, fetcher);
   const [email, onChangeEmail] = useInput('');
   const [password, , setPassword] = useInput('');
   const [passwordCheck, , setPasswordCheck] = useInput('');
@@ -41,7 +41,7 @@ const SignUp = () => {
       if (!mismatchError && email && password && passwordCheck) {
         setSignUpSuccess(false);
         axios
-          .post('/api/users', {
+          .post(`${defines.server.url}/api/users`, {
             email,
             password,
           })
@@ -49,7 +49,6 @@ const SignUp = () => {
             setSignUpSuccess(true);
           })
           .catch((error) => {
-            console.log(error.response);
             setSignUpError(error.response.data);
           })
           .finally(() => {});

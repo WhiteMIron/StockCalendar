@@ -21,12 +21,11 @@ import useInput from '@hooks/useInput';
 import BackDrop from '@components/Modal/BackDrop';
 import axios from 'axios';
 import { Istock } from '@typings/stock';
-import moment from 'moment';
 import info from '@images/info.png';
 import styled from '@emotion/styled';
 import { cmpToday } from '@utils/common';
 import ToastEdit from '@components/TextEdit/ToastEdit';
-import { Editor, Viewer } from '@toast-ui/react-editor';
+import defines from '@constants/defines';
 interface itemProps {
   stocks: Istock[];
   selectedItem: Istock | null;
@@ -74,7 +73,6 @@ const StocksEditMemo = ({
     previousClose: false,
   });
 
-  const editorRef = useRef<Editor | null>(null);
   const handleModal = () => {
     setModalOpen(!modalOpen);
   };
@@ -114,7 +112,7 @@ const StocksEditMemo = ({
       }
 
       axios
-        .put('/api/stock', params)
+        .put(`${defines.server.url}/api/stock`, params)
         .then((response) => {
           setStocks(
             stocks.map((stock) => {
@@ -132,10 +130,10 @@ const StocksEditMemo = ({
           setIsSelectedItem(response.data);
           setIsEditRecord(false);
           setIsSelected(true);
+          alert('수정되었습니다.');
         })
         .catch((error) => {
           alert(error.response.data);
-          console.log(error.response);
         })
         .finally(() => {});
     },

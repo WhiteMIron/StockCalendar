@@ -13,6 +13,7 @@ import {
   TextArea,
   DateInfo,
   SelectButton,
+  Icon,
 } from './styles';
 import { ChangeInfoGroup, Content, NewsGroup, StockInfoGroup } from '@pages/StockRecord/styles';
 import ModalPortal from '@components/Modal/ModalPotal';
@@ -26,7 +27,8 @@ import moment from 'moment';
 import info from '@images/info.png';
 import { cmpToday, isEmpty } from '@utils/common';
 import ToastEdit from '@components/TextEdit/ToastEdit';
-import { Editor } from '@toast-ui/react-editor';
+import defines from '@constants/defines';
+import link from '@images/link.png';
 interface itemProps {
   stocks: Istock[];
   selectedItem: Istock | null;
@@ -90,7 +92,7 @@ const StocksMemo = ({
 
   const onCheckInterest = () => {
     axios
-      .get('/api/check-interest', { params: { code: stockCode?.trim() } })
+      .get(`${defines.server.url}/api/check-interest`, { params: { code: stockCode?.trim() } })
       .then((response) => {
         if (!isEmpty(response.data.isInterest)) {
           setIsInterest(true);
@@ -102,7 +104,6 @@ const StocksMemo = ({
       })
       .catch((error) => {
         alert(error.response.data);
-        console.log(error.response);
       })
       .finally(() => {});
   };
@@ -169,7 +170,7 @@ const StocksMemo = ({
         };
       }
       axios
-        .post('/api/stock', params)
+        .post(`${defines.server.url}/api/stock`, params)
         .then((response) => {
           setIsRecord(false);
           setStocks([response.data, ...stocks]);
@@ -177,7 +178,6 @@ const StocksMemo = ({
         })
         .catch((error) => {
           alert(error.response.data);
-          console.log(error.response);
         })
         .finally(() => {});
     },
@@ -197,9 +197,15 @@ const StocksMemo = ({
         <Form autoComplete="off">
           <StockInfoGroup>
             <Label>
-              <StockInfo>
-                <span>종목코드</span>
-              </StockInfo>
+              <a href={defines.financeAddress + selectedItem?.stock_code} target="_blank">
+                <StockInfo>
+                  <span>종목코드</span>{' '}
+                  <Icon>
+                    <img src={link} width="13px" height="13px"></img>
+                    <span>네이버증권으로 이동합니다.</span>
+                  </Icon>
+                </StockInfo>
+              </a>
               <Input
                 type="text"
                 marginBottom="10px"

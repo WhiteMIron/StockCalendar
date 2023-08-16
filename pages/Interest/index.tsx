@@ -12,16 +12,17 @@ import { Istock } from '@typings/stock';
 import axios from 'axios';
 import { isEmpty } from '@utils/common';
 import NoData from '@components/NoData';
-import StocksReadMemo from '@components/StocksMemo/StocksReadMemo';
 import StocksDetail from '@components/StocksMemo/StocksDetail';
 import { defines } from '@constants/index';
+import { IResponseCategory } from '@typings/category';
+import Loading from '@components/Loading/Loading';
 const Interest = () => {
   const {
     data: userData,
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>('/api/users', fetcher, {
+  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const navigate = useNavigate();
@@ -32,21 +33,23 @@ const Interest = () => {
   const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const fetchApiName = 'specific-interest-stock-all';
-
+  const [isDataLoading, setDataLoading] = useState(false);
   if (!userData) {
     navigate('/login');
   }
 
   useEffect(() => {
     axios
-      .get('/api/interest-category')
+      .get(`${defines.server.url}/api/interest-category`)
       .then((response) => {
         setSeries(transformedSeries(response.data));
-        setLoading(true);
+
+        setTimeout(() => {
+          setLoading(true);
+          setDataLoading(true);
+        }, 200);
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {});
   }, []);
 
@@ -69,10 +72,9 @@ const Interest = () => {
   const onTreeMapClick = (event: any, chartContext: any, config: any) => {
     if (config.dataPointIndex !== undefined) {
       const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
-
-      //해당 카테고리에 속한  종목들의 name가져옴
+      setDataLoading(false);
       axios
-        .get('/api/interest-stock-in-category', {
+        .get(`${defines.server.url}/api/interest-stock-in-category`, {
           params: {
             categoryName: value,
           },
@@ -81,10 +83,11 @@ const Interest = () => {
           setStocks(response.data);
           setSelectedCategoryName(value);
           setIsSelected(false);
+          setTimeout(() => {
+            setDataLoading(true);
+          }, 100);
         })
-        .catch((error) => {
-          console.log(error.response);
-        })
+        .catch((error) => {})
         .finally(() => {});
     }
   };
@@ -105,9 +108,9 @@ const Interest = () => {
             !isEmpty(series) ? (
               <>
                 <TreeMap treeMapTitle={defines.treeMapTitle.interest} onTreeMapClick={onTreeMapClick} series={series} />
-                <StocksList stocks={stocks} onStock={onStock}>
+                <StocksList stocks={stocks} onStock={onStock} isDataLoading={isDataLoading}>
                   <DateInfoGroup>
-                    <DateInfo>종목 리스트</DateInfo>
+                    <DateInfo>관심 종목 리스트</DateInfo>
                   </DateInfoGroup>
                 </StocksList>
 
@@ -124,7 +127,9 @@ const Interest = () => {
             ) : (
               <NoData text={defines.Nodata.interestStockText}></NoData>
             )
-          ) : null}
+          ) : (
+            <Loading />
+          )}
         </div>
       </div>
     </Layout>

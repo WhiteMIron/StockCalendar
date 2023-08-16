@@ -6,6 +6,7 @@ import next from '@images/page_next.png';
 import nextHover from '@images/page_nexthover.png';
 import { Istock } from '@typings/stock';
 import axios from 'axios';
+import defines from '@constants/defines';
 
 interface IpaginationProps {
   totalCount: number;
@@ -37,7 +38,7 @@ const Pagination = ({
 
   const onPrev = () => {
     axios
-      .get(`/api/${fetchApiName}`, {
+      .get(`${defines.server.url}/api/${fetchApiName}`, {
         params: { code: stockCode, offset: offset - 1, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
@@ -52,15 +53,13 @@ const Pagination = ({
         setOffset((prev) => prev - 1);
         setCurrentPage(() => offset * numPerPage);
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {});
   };
 
   const onNext = () => {
     axios
-      .get(`/api/${fetchApiName}`, {
+      .get(`${defines.server.url}/api/${fetchApiName}`, {
         params: { code: stockCode, offset: offset + 1, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
@@ -75,9 +74,7 @@ const Pagination = ({
         setOffset((prev) => prev + 1);
         setCurrentPage(() => (offset + 1) * numPerPage + 1);
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {});
   };
 

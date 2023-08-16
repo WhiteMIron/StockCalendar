@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { NavContainer, NavContents, NavTitle, Icon } from './style';
+import { NavContainer, NavContents, NavTitle } from './style';
 import { NavLink, useLocation } from 'react-router-dom';
-import star from '@images/star.png';
 import styled from '@emotion/styled';
 const SideNav = () => {
   const [open, setOpen] = useState(false);
@@ -13,22 +12,19 @@ const SideNav = () => {
         <StyledNavLink to="/category-view">
           <NavTitle>카테고리 분류 </NavTitle>
         </StyledNavLink>
-
         <StyledNavLink to="/category-edit">
           <NavTitle>카테고리 편집</NavTitle>
         </StyledNavLink>
       </NavSubMenu>
     );
   };
-  const handleSubMenuClick = () => {
+  const handleMenuClick = () => {
     setOpen(true);
   };
 
   useEffect(() => {
     if (location.pathname.includes('/category-view') || location.pathname.includes('/category-edit')) {
       setOpen(true);
-    } else {
-      setOpen(false);
     }
     return;
   }, [location]);
@@ -50,12 +46,12 @@ const SideNav = () => {
         <StyledNavLink to="/interest">
           <NavTitle>관심종목</NavTitle>
         </StyledNavLink>
-        <NavTitle onMouseEnter={handleSubMenuClick}>카테고리 {open ? '▲' : '▼'}</NavTitle>
+        <NavTitle onClick={handleMenuClick}>카테고리 {open ? '▲' : '▼'}</NavTitle>
         {open && <CategorySubMenu />}
+
         <StyledNavLink to="/my-page">
           <NavTitle>마이 페이지</NavTitle>
         </StyledNavLink>
-        {/* <NavTitle>📈 기록 분석</NavTitle> */}
       </NavContents>
     </NavContainer>
   );
@@ -63,6 +59,7 @@ const SideNav = () => {
 
 const StyledNavLink = styled(NavLink)`
   display: block;
+
   &.active {
     background-color: #189cda;
   }

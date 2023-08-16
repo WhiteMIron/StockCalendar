@@ -9,6 +9,7 @@ import { DateValue } from '@typings/date';
 import uuid from 'react-uuid';
 import ToastEdit from '@components/TextEdit/ToastEdit';
 import { Viewer } from '@toast-ui/react-editor';
+import defines from '@constants/defines';
 interface StocksTodayMemoProps {
   dateValue: DateValue;
   selectedDate: string;
@@ -16,36 +17,30 @@ interface StocksTodayMemoProps {
 const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [summary, onSummary, setSummary] = useInput('');
-  const summaryTextBox = useRef<HTMLTextAreaElement>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (summaryTextBox.current) {
-      summaryTextBox.current.focus();
-    }
-    return;
-  }, [isEdit]);
-
-  useEffect(() => {
-    setSummary('');
+    setSummary(() => '');
     axios
-      .get('/api/summary', {
+      .get(`${defines.server.url}/api/summary`, {
         params: { date: selectedDate },
       })
       .then((response) => {
         if (response.data.content) {
           setSummary(response.data.content);
+        } else {
+          setSummary(() => '');
         }
+        setLoading(true);
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {});
     return;
   }, [selectedDate]);
 
   const onSubmit = () => {
     axios
-      .post('/api/summary', {
+      .post(`${defines.server.url}/api/summary`, {
         content: summary,
         date: selectedDate,
       })
@@ -53,52 +48,52 @@ const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
         setSummary(response.data.content);
         setIsEdit(!isEdit);
       })
-      .catch((error) => {
-        console.log(error.response);
-      })
+      .catch((error) => {})
       .finally(() => {});
   };
 
   return (
     <Container>
-      <TitleBox>
-        <strong>{moment(dateValue?.toString()).format('M/D')} 증시 요약</strong>
-        {!isEdit ? (
-          <>
-            <button
-              style={{
-                border: 'none',
-                background: 'none',
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-              title="편집"
-            >
-              <img src={edit} alt="편집"></img>
-            </button>{' '}
-          </>
-        ) : (
-          <>
-            <Button color="#fff" bgColor="dodgerblue" height="22px" marginLeft="5px" onClick={onSubmit}>
-              저장
-            </Button>
-          </>
-        )}
-      </TitleBox>
-      {!isEdit ? (
-        <TextBox>
-          <Viewer initialValue={summary}></Viewer>
-        </TextBox>
-      ) : (
-        <ToastEdit
-          placeHolder="오늘의 증시요약을 작성해주세요."
-          height="100%"
-          content={summary}
-          setContent={setSummary}
-        />
-      )}
+      {loading ? (
+        <>
+          <TitleBox>
+            <strong>{moment(dateValue?.toString()).format('M/D')} 증시 요약</strong>
+            {!isEdit ? (
+              <>
+                <button
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => {
+                    setIsEdit(!isEdit);
+                  }}
+                  title="편집"
+                >
+                  <img src={edit} alt="편집"></img>
+                </button>{' '}
+              </>
+            ) : (
+              <>
+                <Button color="#fff" bgColor="dodgerblue" height="22px" marginLeft="5px" onClick={onSubmit}>
+                  저장
+                </Button>
+              </>
+            )}
+          </TitleBox>
+          {!isEdit ? (
+            <TextBox>{summary && <Viewer initialValue={summary} />}</TextBox>
+          ) : (
+            <ToastEdit
+              placeHolder="오늘의 증시요약을 작성해주세요."
+              height="100%"
+              content={summary}
+              setContent={setSummary}
+            />
+          )}
+        </>
+      ) : null}
     </Container>
   );
 };

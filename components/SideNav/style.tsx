@@ -1,12 +1,14 @@
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 export const NavContainer = styled.div`
-  /* height: 100%; */
+  min-width: 200px;
   min-height: 900px;
   width: 13%;
   padding: 0 10px;
   background: #222;
 `;
+
 export const NavTitle = styled.li`
   color: #fff;
   margin-bottom: 10px;
@@ -19,7 +21,6 @@ export const NavTitle = styled.li`
 `;
 
 export const NavContents = styled.ul`
-  /* text-align: center; */
   font-size: 17px;
 `;
 
