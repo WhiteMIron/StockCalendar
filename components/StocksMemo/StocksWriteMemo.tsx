@@ -92,7 +92,7 @@ const StocksMemo = ({
 
   const onCheckInterest = () => {
     axios
-      .get(`${defines.server.url}/api/check-interest`, { params: { code: stockCode?.trim() } })
+      .get(`/api/check-interest`, { params: { code: stockCode?.trim() } })
       .then((response) => {
         if (!isEmpty(response.data.isInterest)) {
           setIsInterest(true);
@@ -170,7 +170,7 @@ const StocksMemo = ({
         };
       }
       axios
-        .post(`${defines.server.url}/api/stock`, params)
+        .post(`/api/stock`, params)
         .then((response) => {
           setIsRecord(false);
           setStocks([response.data, ...stocks]);

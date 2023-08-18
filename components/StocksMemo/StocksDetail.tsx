@@ -27,7 +27,7 @@ const StocksDetail = ({ fetchApiName, selectedStockCode, selectedCategoryName }:
 
   useEffect(() => {
     axios
-      .get(`${defines.server.url}/api/${fetchApiName}`, {
+      .get(`/api/${fetchApiName}`, {
         params: { code: selectedStockCode, offset: 0, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {

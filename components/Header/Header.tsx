@@ -13,7 +13,7 @@ const Header = (props: { user: IUser | undefined | false }) => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const onCloseUserProfile = useCallback((e) => {
@@ -24,7 +24,7 @@ const Header = (props: { user: IUser | undefined | false }) => {
 
   const onLogout = useCallback(() => {
     axios
-      .post(`${defines.server.url}/api/users/logout`, null, {
+      .post(`/api/users/logout`, null, {
         withCredentials: true,
       })
       .then(() => {

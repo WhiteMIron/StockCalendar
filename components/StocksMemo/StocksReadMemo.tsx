@@ -58,7 +58,7 @@ const StocksReadMemo = ({
   const onSubmit = () => {
     setModalOpen(false);
     axios
-      .delete(`${defines.server.url}/api/stock/${selectedItem?.id}`)
+      .delete(`/api/stock/${selectedItem?.id}`)
       .then((response) => {
         setStocks(stocks.filter((stock) => stock.id !== selectedItem?.id));
         alert('삭제되었습니다.');

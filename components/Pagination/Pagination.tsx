@@ -38,7 +38,7 @@ const Pagination = ({
 
   const onPrev = () => {
     axios
-      .get(`${defines.server.url}/api/${fetchApiName}`, {
+      .get(`/api/${fetchApiName}`, {
         params: { code: stockCode, offset: offset - 1, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {
@@ -59,7 +59,7 @@ const Pagination = ({
 
   const onNext = () => {
     axios
-      .get(`${defines.server.url}/api/${fetchApiName}`, {
+      .get(`/api/${fetchApiName}`, {
         params: { code: stockCode, offset: offset + 1, numPerPage: numPerPage, categoryName: selectedCategoryName },
       })
       .then((response) => {

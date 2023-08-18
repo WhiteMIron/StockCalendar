@@ -9,7 +9,7 @@ import defines from '@constants/defines';
 import Loading from '@components/Loading/Loading';
 
 const Login = () => {
-  const { data, error, revalidate, mutate } = useSWR(`${defines.server.url}/api/users`, fetcher);
+  const { data, error, revalidate, mutate } = useSWR(`/api/users`, fetcher);
   const [logInError, setLogInError] = useState('');
 
   const [email, onChangeEmail] = useInput('');

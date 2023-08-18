@@ -49,7 +49,7 @@ const CategoryReadMemo = ({ categorys, setCategorys, selectedCategory, setIsRead
   const [categoryName, onChangeCategoryName, setCategoryName] = useInput('');
   const onSubmit = () => {
     axios
-      .put(`${defines.server.url}/api/category/${selectedCategory?.id}`, {
+      .put(`/api/category/${selectedCategory?.id}`, {
         categoryName: categoryName,
       })
       .then((response) => {
@@ -72,7 +72,7 @@ const CategoryReadMemo = ({ categorys, setCategorys, selectedCategory, setIsRead
 
   const onDeleteSubmit = () => {
     axios
-      .delete(`${defines.server.url}/api/category/${selectedCategory?.id}`)
+      .delete(`/api/category/${selectedCategory?.id}`)
       .then((response) => {
         setCategorys(categorys.filter((category) => category.id !== selectedCategory?.id));
         alert('삭제되었습니다.');
@@ -89,7 +89,7 @@ const CategoryReadMemo = ({ categorys, setCategorys, selectedCategory, setIsRead
     setIsEdit(false);
 
     axios
-      .get(`${defines.server.url}/api/stock-in-category`, {
+      .get(`/api/stock-in-category`, {
         params: {
           categoryName: selectedCategory?.name,
         },

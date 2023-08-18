@@ -15,7 +15,7 @@ const SignUp = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
 
@@ -50,7 +50,7 @@ const SignUp = () => {
       if (!mismatchError && email && password && passwordCheck) {
         setSignUpSuccess(false);
         axios
-          .post(`${defines.server.url}/api/users`, {
+          .post(`/api/users`, {
             email,
             password,
           })
@@ -73,6 +73,23 @@ const SignUp = () => {
     },
     [email, password, mismatchError],
   );
+
+  if (signUpSuccess) {
+    axios
+      .post(
+        `/api/users/login`,
+        { email, password },
+        {
+          withCredentials: true,
+        },
+      )
+      .then((response) => {
+        revalidate();
+      })
+      .catch((error) => {})
+      .finally(() => {});
+  }
+
   if (userData) {
     return <Navigate to="/stock-record"></Navigate>;
   }
@@ -107,7 +124,7 @@ const SignUp = () => {
           {!signUpError && mismatchError && <Error>비밀번호가 일치하지 않습니다.</Error>}
           {signUpError && <Error>{signUpError}</Error>}
 
-          {signUpSuccess && <Success>회원가입되었습니다! 로그인해주세요.</Success>}
+          {signUpSuccess && <Success>회원가입되었습니다!</Success>}
         </Label>
         <FillButton type="submit" color="#60d6bf" marginBottom="20px">
           회원가입

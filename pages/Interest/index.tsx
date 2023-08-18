@@ -22,7 +22,7 @@ const Interest = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ const Interest = () => {
 
   useEffect(() => {
     axios
-      .get(`${defines.server.url}/api/interest-category`)
+      .get(`/api/interest-category`)
       .then((response) => {
         setSeries(transformedSeries(response.data));
 
@@ -74,7 +74,7 @@ const Interest = () => {
       const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
       setDataLoading(false);
       axios
-        .get(`${defines.server.url}/api/interest-stock-in-category`, {
+        .get(`/api/interest-stock-in-category`, {
           params: {
             categoryName: value,
           },

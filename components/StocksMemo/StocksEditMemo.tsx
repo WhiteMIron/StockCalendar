@@ -112,7 +112,7 @@ const StocksEditMemo = ({
       }
 
       axios
-        .put(`${defines.server.url}/api/stock`, params)
+        .put(`/api/stock`, params)
         .then((response) => {
           setStocks(
             stocks.map((stock) => {

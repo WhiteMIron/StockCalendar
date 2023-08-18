@@ -82,7 +82,7 @@ const StockRecord = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
 
@@ -137,7 +137,7 @@ const StockRecord = () => {
     }
 
     axios
-      .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
+      .get(`/api/word-search`, { params: { word: searchWord } })
       .then((response) => {
         if (!isEmpty(response.data)) {
           setIsSearched(() => {
@@ -218,7 +218,7 @@ const StockRecord = () => {
         }
 
         axios
-          .get(`${defines.server.url}/api/word-search`, { params: params })
+          .get(`/api/word-search`, { params: params })
           .then((response) => {
             let searchResult = response.data;
             if (!isEmpty(response.data)) {
@@ -277,7 +277,7 @@ const StockRecord = () => {
 
       const date = moment(dateTmp).format('YYYY/MM/DD');
       axios
-        .get(`${defines.server.url}/api/stock`, { params: { date: date } })
+        .get(`/api/stock`, { params: { date: date } })
         .then((response) => {
           setStocks(response.data);
           setLoading(true);
@@ -296,7 +296,7 @@ const StockRecord = () => {
   useEffect(() => {
     const fetchData = async () => {
       await axios
-        .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
+        .get(`/api/word-search`, { params: { word: searchWord } })
         .then((response) => {
           if (!isEmpty(response.data)) {
             setSearchCandidateDupResult(response.data);
@@ -329,7 +329,7 @@ const StockRecord = () => {
     setDataLoading(false);
     const fetchData = async () => {
       await axios
-        .get(`${defines.server.url}/api/record-all-search`, { params: { startDate: startDate } })
+        .get(`/api/record-all-search`, { params: { startDate: startDate } })
         .then((response) => {
           setDataMark(response.data);
         })
@@ -347,7 +347,7 @@ const StockRecord = () => {
   useEffect(() => {
     if (!isEmpty(searchMark) && loading) {
       axios
-        .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
+        .get(`/api/word-search`, { params: { word: searchWord } })
         .then((response) => {
           let searchResult = response.data;
           if (!isEmpty(response.data)) {
@@ -418,7 +418,7 @@ const StockRecord = () => {
                     alt="검색"
                     onClick={() => {
                       axios
-                        .get(`${defines.server.url}/api/word-search`, { params: { word: searchWord } })
+                        .get(`/api/word-search`, { params: { word: searchWord } })
                         .then((response) => {
                           let searchResult = response.data;
                           if (!isEmpty(searchResult)) {

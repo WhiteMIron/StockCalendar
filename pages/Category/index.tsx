@@ -22,7 +22,7 @@ const Category = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const Category = () => {
   const [isDataLoading, setDataLoading] = useState(false);
   useEffect(() => {
     axios
-      .get(`${defines.server.url}/api/category`)
+      .get(`/api/category`)
       .then((response) => {
         setSeries(transformedSeries(response.data));
 
@@ -71,7 +71,7 @@ const Category = () => {
       const value = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
       setDataLoading(false);
       axios
-        .get(`${defines.server.url}/api/stock-in-category`, {
+        .get(`/api/stock-in-category`, {
           params: {
             categoryName: value,
           },

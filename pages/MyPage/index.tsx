@@ -25,7 +25,7 @@ const MyPage = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const MyPage = () => {
 
   useEffect(() => {
     axios
-      .get(`${defines.server.url}/api/total-count-info`)
+      .get(`/api/total-count-info`)
       .then((response) => {
         setMyPageInfo(response.data);
         setTimeout(() => {

@@ -22,7 +22,7 @@ const CategoryEdit = () => {
     error,
     revalidate,
     mutate,
-  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+  } = useSWR<IUser | false>(`/api/users`, fetcher, {
     dedupingInterval: 2000, // 2초
   });
 
@@ -33,7 +33,7 @@ const CategoryEdit = () => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     axios
-      .get(`${defines.server.url}/api/all-category`)
+      .get(`/api/all-category`)
       .then((response) => {
         setCategorys(response.data);
 

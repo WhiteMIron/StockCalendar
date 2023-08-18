@@ -22,7 +22,7 @@ const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
   useEffect(() => {
     setSummary(() => '');
     axios
-      .get(`${defines.server.url}/api/summary`, {
+      .get(`/api/summary`, {
         params: { date: selectedDate },
       })
       .then((response) => {
@@ -40,7 +40,7 @@ const StocksTodayMemo = ({ selectedDate, dateValue }: StocksTodayMemoProps) => {
 
   const onSubmit = () => {
     axios
-      .post(`${defines.server.url}/api/summary`, {
+      .post(`/api/summary`, {
         content: summary,
         date: selectedDate,
       })
