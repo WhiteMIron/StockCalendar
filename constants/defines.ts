@@ -6,7 +6,7 @@ export default {
   server: {
     // dev로 수행하는 경우 webpack config 에서 Proxy 를 사용하기때문에 주소 삭제
 
-    url: process.env.NODE_ENV === 'production' ? 'https://app.stock-calendar.site' : '',
+    url: process.env.NODE_ENV === 'production' ? '' : '',
 
     // url: process.env.NODE_ENV === 'production' ? '' : '',
 

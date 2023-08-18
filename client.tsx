@@ -8,7 +8,8 @@ import axios from 'axios';
 import App from './layouts/App';
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? 'http://localhost:3095' : 'http://localhost:3095';
+axios.defaults.baseURL =
+  process.env.NODE_ENV === 'production' ? 'https://app.stock-calendar.site' : 'http://localhost:3095';
 
 render(
   <HashRouter>

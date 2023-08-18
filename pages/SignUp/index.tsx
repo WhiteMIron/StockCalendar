@@ -1,15 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Header, SingUpContainer, Success, Error } from './styles';
 import { FillButton, Form, Input, Label, SignUpContainer } from '@pages/Login/styles';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import useInput from '@hooks/useInput';
-import useSWR from 'swr';
-import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import defines from '@constants/defines';
+import { IUser } from '@typings/db';
+import useSWR from 'swr';
+import fetcher from '@utils/fetcher';
 
 const SignUp = () => {
-  const { data, error, revalidate } = useSWR(`${defines.server.url}/api/users`, fetcher);
+  const {
+    data: userData,
+    error,
+    revalidate,
+    mutate,
+  } = useSWR<IUser | false>(`${defines.server.url}/api/users`, fetcher, {
+    dedupingInterval: 2000, // 2초
+  });
+
   const [email, onChangeEmail] = useInput('');
   const [password, , setPassword] = useInput('');
   const [passwordCheck, , setPasswordCheck] = useInput('');
@@ -64,11 +73,9 @@ const SignUp = () => {
     },
     [email, password, mismatchError],
   );
-
-  if (data === undefined) {
-    return <div>로딩중...</div>;
+  if (userData) {
+    return <Navigate to="/stock-record"></Navigate>;
   }
-
   return (
     <SingUpContainer>
       <Header>주식 캘린더</Header>

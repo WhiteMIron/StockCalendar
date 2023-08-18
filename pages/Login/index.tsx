@@ -25,7 +25,7 @@ const Login = () => {
         setIsLoading(true);
         axios
           .post(
-            `${defines.server.url}/api/users/login`,
+            `/api/users/login`,
             { email, password },
             {
               withCredentials: true,
